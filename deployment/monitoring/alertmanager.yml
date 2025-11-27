@@ -1,0 +1,201 @@
+# ============================================================================
+# Alertmanager Configuration for LLM Inference Gateway
+# ============================================================================
+
+global:
+  resolve_timeout: 5m
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+
+# ============================================================================
+# Templates
+# ============================================================================
+
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# ============================================================================
+# Routing Tree
+# ============================================================================
+
+route:
+  # Default receiver
+  receiver: 'default'
+
+  # Group alerts by these labels
+  group_by: ['alertname', 'cluster', 'service']
+
+  # Wait before sending initial notification
+  group_wait: 10s
+
+  # Wait before sending subsequent notifications for same group
+  group_interval: 10s
+
+  # Minimum time between repeat notifications
+  repeat_interval: 12h
+
+  # Child routes
+  routes:
+    # Critical alerts go to PagerDuty and Slack
+    - match:
+        severity: critical
+      receiver: 'pagerduty-critical'
+      continue: true
+      group_wait: 0s
+      group_interval: 5m
+      repeat_interval: 4h
+
+    - match:
+        severity: critical
+      receiver: 'slack-critical'
+      group_wait: 0s
+
+    # Warning alerts go to Slack only
+    - match:
+        severity: warning
+      receiver: 'slack-warnings'
+      group_wait: 30s
+      repeat_interval: 4h
+
+    # Info alerts go to default channel
+    - match:
+        severity: info
+      receiver: 'slack-info'
+      repeat_interval: 24h
+
+    # Provider-specific alerts
+    - match:
+        alertname: ProviderUnhealthy
+      receiver: 'slack-providers'
+      group_wait: 1m
+
+    # Performance alerts
+    - match_re:
+        alertname: High(Latency|ErrorRate|Memory|CPU)
+      receiver: 'slack-performance'
+
+# ============================================================================
+# Receivers
+# ============================================================================
+
+receivers:
+  # Default receiver
+  - name: 'default'
+    slack_configs:
+      - channel: '#llm-gateway-alerts'
+        title: 'LLM Gateway Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        send_resolved: true
+
+  # Critical alerts to PagerDuty
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - service_key: '${PAGERDUTY_SERVICE_KEY}'
+        description: '{{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}'
+        details:
+          firing: '{{ .Alerts.Firing | len }}'
+          resolved: '{{ .Alerts.Resolved | len }}'
+          cluster: '{{ .CommonLabels.cluster }}'
+          environment: '{{ .CommonLabels.environment }}'
+
+  # Critical alerts to Slack
+  - name: 'slack-critical'
+    slack_configs:
+      - channel: '#llm-gateway-critical'
+        username: 'AlertManager'
+        icon_emoji: ':rotating_light:'
+        title: ':fire: CRITICAL: {{ .GroupLabels.alertname }}'
+        text: |
+          *Summary:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Cluster:* {{ .CommonLabels.cluster }}
+          *Environment:* {{ .CommonLabels.environment }}
+
+          *Affected Instances:*
+          {{ range .Alerts }}
+          - {{ .Labels.instance }} ({{ .Labels.job }})
+          {{ end }}
+        send_resolved: true
+        actions:
+          - type: button
+            text: 'View in Grafana'
+            url: 'https://grafana.example.com/d/llm-gateway'
+          - type: button
+            text: 'View in Prometheus'
+            url: 'https://prometheus.example.com/alerts'
+
+  # Warning alerts
+  - name: 'slack-warnings'
+    slack_configs:
+      - channel: '#llm-gateway-alerts'
+        username: 'AlertManager'
+        icon_emoji: ':warning:'
+        title: ':warning: WARNING: {{ .GroupLabels.alertname }}'
+        text: |
+          *Summary:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+
+          {{ range .Alerts }}
+          - {{ .Labels.instance }}: {{ .Annotations.description }}
+          {{ end }}
+        send_resolved: true
+
+  # Info alerts
+  - name: 'slack-info'
+    slack_configs:
+      - channel: '#llm-gateway-info'
+        username: 'AlertManager'
+        icon_emoji: ':information_source:'
+        title: 'INFO: {{ .GroupLabels.alertname }}'
+        text: '{{ .CommonAnnotations.summary }}'
+        send_resolved: true
+
+  # Provider alerts
+  - name: 'slack-providers'
+    slack_configs:
+      - channel: '#llm-gateway-providers'
+        username: 'AlertManager'
+        icon_emoji: ':electric_plug:'
+        title: 'Provider Issue: {{ .GroupLabels.alertname }}'
+        text: |
+          *Provider:* {{ .CommonLabels.provider }}
+          *Status:* {{ if eq .Status "firing" }}Unhealthy{{ else }}Recovered{{ end }}
+          *Description:* {{ .CommonAnnotations.description }}
+        send_resolved: true
+
+  # Performance alerts
+  - name: 'slack-performance'
+    slack_configs:
+      - channel: '#llm-gateway-performance'
+        username: 'AlertManager'
+        icon_emoji: ':chart_with_downwards_trend:'
+        title: 'Performance Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          *Metric:* {{ .GroupLabels.alertname }}
+          *Current Value:* {{ .CommonAnnotations.value }}
+          *Threshold:* {{ .CommonAnnotations.threshold }}
+
+          {{ range .Alerts }}
+          - {{ .Labels.instance }}
+          {{ end }}
+        send_resolved: true
+
+# ============================================================================
+# Inhibition Rules
+# ============================================================================
+
+inhibit_rules:
+  # Inhibit warning alerts if critical alert is firing for same instance
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'instance']
+
+  # Inhibit pod alerts if node alert is firing
+  - source_match:
+      alertname: 'NodeDown'
+    target_match_re:
+      alertname: 'Pod.*'
+    equal: ['node']

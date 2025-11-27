@@ -1,0 +1,36 @@
+[package]
+name = "gateway-routing"
+description = "Intelligent routing and load balancing for the Inference Gateway"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[features]
+default = []
+
+[dependencies]
+gateway-core = { workspace = true }
+
+# Async
+tokio = { workspace = true, features = ["sync", "time"] }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Utilities
+tracing = { workspace = true }
+rand = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+regex = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true

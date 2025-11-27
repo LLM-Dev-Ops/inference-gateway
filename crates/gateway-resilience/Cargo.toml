@@ -1,0 +1,28 @@
+[package]
+name = "gateway-resilience"
+description = "Resilience patterns (circuit breaker, retry, bulkhead) for LLM Inference Gateway"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gateway-core = { workspace = true }
+
+# Async
+tokio = { workspace = true, features = ["sync", "time"] }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Utilities
+thiserror = { workspace = true }
+tracing = { workspace = true }
+parking_lot = { workspace = true }
+rand = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true

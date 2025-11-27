@@ -1,0 +1,50 @@
+# ============================================================================
+# LLM Inference Gateway - Hardened Distroless Dockerfile
+# For maximum security in production environments
+# ============================================================================
+
+# ============================================================================
+# Stage 1: Builder
+# ============================================================================
+FROM rust:1.75-slim-bookworm AS builder
+
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    cmake \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Cache dependencies
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build --release && \
+    rm -rf src
+
+# Build application
+COPY src ./src
+RUN cargo build --release --locked && \
+    strip target/release/llm-inference-gateway
+
+# ============================================================================
+# Stage 2: Distroless Runtime (No shell, minimal attack surface)
+# ============================================================================
+FROM gcr.io/distroless/cc-debian12:nonroot
+
+# Copy CA certificates
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Copy binary
+COPY --from=builder /app/target/release/llm-inference-gateway /llm-inference-gateway
+
+# Expose ports
+EXPOSE 8080 9090
+
+# Use non-root user (built into distroless)
+USER nonroot:nonroot
+
+# Run application
+ENTRYPOINT ["/llm-inference-gateway"]

@@ -1,0 +1,148 @@
+[package]
+name = "llm-inference-gateway"
+description = "Enterprise-grade LLM Inference Gateway with OpenAI-compatible API"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75.0"
+license = "LicenseRef-LLM-DevOps-Commercial"
+repository = "https://github.com/llm-devops/llm-inference-gateway"
+authors = ["LLM DevOps Team"]
+keywords = ["llm", "gateway", "openai", "api", "inference"]
+categories = ["web-programming", "api-bindings"]
+
+[[bin]]
+name = "llm-inference-gateway"
+path = "src/main.rs"
+
+[dependencies]
+gateway-core = { path = "crates/gateway-core" }
+gateway-config = { path = "crates/gateway-config" }
+gateway-providers = { path = "crates/gateway-providers" }
+gateway-routing = { path = "crates/gateway-routing" }
+gateway-resilience = { path = "crates/gateway-resilience" }
+gateway-telemetry = { path = "crates/gateway-telemetry" }
+gateway-server = { path = "crates/gateway-server" }
+
+tokio = { version = "1.35", features = ["full"] }
+tracing = "0.1"
+
+[workspace]
+resolver = "2"
+members = [
+    "crates/gateway-core",
+    "crates/gateway-config",
+    "crates/gateway-providers",
+    "crates/gateway-routing",
+    "crates/gateway-resilience",
+    "crates/gateway-telemetry",
+    "crates/gateway-server",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75.0"
+license = "LicenseRef-LLM-DevOps-Commercial"
+repository = "https://github.com/llm-devops/llm-inference-gateway"
+authors = ["LLM DevOps Team"]
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+futures = "0.3"
+futures-util = "0.3"
+async-stream = "0.3"
+
+# HTTP server
+axum = { version = "0.7", features = ["macros"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["trace", "cors", "compression-gzip", "timeout", "request-id"] }
+hyper = { version = "1.1", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls", "gzip"] }
+reqwest-eventsource = "0.6"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+toml = "0.8"
+
+# Validation
+validator = { version = "0.18", features = ["derive"] }
+
+# Observability
+opentelemetry = { version = "0.24", features = ["trace"] }
+opentelemetry_sdk = { version = "0.24", features = ["rt-tokio"] }
+opentelemetry-otlp = { version = "0.17", features = ["tonic"] }
+prometheus = "0.13"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+tracing-opentelemetry = "0.25"
+
+# Concurrency
+dashmap = "6.0"
+arc-swap = "1.7"
+parking_lot = "0.12"
+
+# Utilities
+uuid = { version = "1.6", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+bytes = "1.5"
+url = "2.5"
+humantime-serde = "1.1"
+thiserror = "1.0"
+anyhow = "1.0"
+rand = "0.8"
+regex = "1.10"
+notify = "6.1"
+pin-project-lite = "0.2"
+secrecy = { version = "0.8", features = ["serde"] }
+sha2 = "0.10"
+base64 = "0.22"
+http = "1.1"
+http-body-util = "0.1"
+mime = "0.3"
+
+# Internal crates
+gateway-core = { path = "crates/gateway-core" }
+gateway-config = { path = "crates/gateway-config" }
+gateway-providers = { path = "crates/gateway-providers" }
+gateway-routing = { path = "crates/gateway-routing" }
+gateway-resilience = { path = "crates/gateway-resilience" }
+gateway-telemetry = { path = "crates/gateway-telemetry" }
+gateway-server = { path = "crates/gateway-server" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"
+unwrap_used = "deny"
+expect_used = "warn"
+panic = "deny"
+cast_possible_truncation = "warn"
+cast_sign_loss = "warn"
+cast_precision_loss = "warn"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[profile.test]
+opt-level = 0
+debug = true

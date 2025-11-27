@@ -1,0 +1,37 @@
+[package]
+name = "gateway-core"
+description = "Core types, traits, and error handling for LLM Inference Gateway"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Async
+async-trait = { workspace = true }
+futures = { workspace = true }
+futures-util = { workspace = true }
+tokio = { workspace = true }
+
+# Utilities
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+bytes = { workspace = true }
+secrecy = { workspace = true }
+pin-project-lite = { workspace = true }
+http = { workspace = true }
+
+# Validation
+validator = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }
+
+[lints]
+workspace = true

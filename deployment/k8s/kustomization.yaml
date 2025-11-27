@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: llm-gateway
+
+commonLabels:
+  app.kubernetes.io/name: llm-gateway
+  app.kubernetes.io/managed-by: kustomize
+
+commonAnnotations:
+  contact: devops@example.com
+  documentation: https://github.com/your-org/llm-gateway
+
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - configmap.yaml
+  - hpa.yaml
+  - pdb.yaml
+  - network-policy.yaml
+  - serviceaccount.yaml
+
+configMapGenerator:
+  - name: llm-gateway-config
+    files:
+      - configs/config.yaml
+
+secretGenerator:
+  - name: llm-provider-secrets
+    envs:
+      - secrets/.env
+
+images:
+  - name: llm-gateway
+    newName: ghcr.io/your-org/llm-gateway
+    newTag: latest

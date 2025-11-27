@@ -1,0 +1,54 @@
+[package]
+name = "gateway-providers"
+description = "LLM Provider implementations for the Inference Gateway"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[features]
+default = ["openai", "anthropic"]
+openai = []
+anthropic = []
+google = []
+azure = []
+bedrock = []
+vllm = []
+ollama = []
+together = []
+all = ["openai", "anthropic", "google", "azure", "bedrock", "vllm", "ollama", "together"]
+
+[dependencies]
+gateway-core = { workspace = true }
+
+# Async
+tokio = { workspace = true, features = ["sync", "time"] }
+async-trait = { workspace = true }
+futures = { workspace = true }
+futures-util = { workspace = true }
+async-stream = { workspace = true }
+
+# HTTP client
+reqwest = { workspace = true }
+reqwest-eventsource = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Utilities
+thiserror = { workspace = true }
+tracing = { workspace = true }
+url = { workspace = true }
+bytes = { workspace = true }
+dashmap = { workspace = true }
+secrecy = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }
+wiremock = "0.6"
+
+[lints]
+workspace = true

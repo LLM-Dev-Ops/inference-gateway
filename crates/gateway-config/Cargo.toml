@@ -1,0 +1,42 @@
+[package]
+name = "gateway-config"
+description = "Configuration management for LLM Inference Gateway"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gateway-core = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+toml = { workspace = true }
+
+# Async
+tokio = { workspace = true, features = ["fs", "sync"] }
+async-trait = { workspace = true }
+
+# Utilities
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+secrecy = { workspace = true }
+url = { workspace = true }
+humantime-serde = { workspace = true }
+arc-swap = { workspace = true }
+notify = { workspace = true }
+tracing = { workspace = true }
+regex = { workspace = true }
+
+# Validation
+validator = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }
+tempfile = "3.10"
+
+[lints]
+workspace = true

@@ -1,0 +1,54 @@
+[package]
+name = "gateway-server"
+description = "HTTP server for the LLM Inference Gateway"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[features]
+default = []
+
+[dependencies]
+gateway-core = { workspace = true }
+gateway-config = { workspace = true }
+gateway-providers = { workspace = true }
+gateway-routing = { workspace = true }
+gateway-resilience = { workspace = true }
+gateway-telemetry = { workspace = true }
+
+# Async
+tokio = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+futures-util = { workspace = true }
+
+# HTTP server
+axum = { workspace = true }
+axum-extra = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+http = { workspace = true }
+http-body-util = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Utilities
+tracing = { workspace = true }
+uuid = { workspace = true }
+bytes = { workspace = true }
+thiserror = { workspace = true }
+mime = { workspace = true }
+parking_lot = { workspace = true }
+arc-swap = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true
