@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "llm-gateway.configMapName" . }}
+  labels:
+    {{- include "llm-gateway.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    server:
+      host: {{ .Values.gateway.server.host | quote }}
+      port: {{ .Values.gateway.server.port }}
+      metrics_port: {{ .Values.gateway.server.metricsPort }}
+      request_timeout: {{ .Values.gateway.server.requestTimeout }}
+      shutdown_timeout: {{ .Values.gateway.server.shutdownTimeout }}
+      max_connections: {{ .Values.gateway.server.maxConnections }}
+
+    logging:
+      level: {{ .Values.gateway.logging.level | quote }}
+      format: {{ .Values.gateway.logging.format | quote }}
+      request_logging: {{ .Values.gateway.logging.requestLogging }}
+
+    tracing:
+      enabled: {{ .Values.gateway.tracing.enabled }}
+      sampling_rate: {{ .Values.gateway.tracing.samplingRate }}
+      {{- if .Values.gateway.tracing.otlpEndpoint }}
+      otlp_endpoint: {{ .Values.gateway.tracing.otlpEndpoint | quote }}
+      {{- end }}
+
+    rate_limiting:
+      enabled: {{ .Values.gateway.rateLimiting.enabled }}
+      default_rate_limit: {{ .Values.gateway.rateLimiting.defaultRateLimit }}
+      burst_size: {{ .Values.gateway.rateLimiting.burstSize }}
+
+    caching:
+      enabled: {{ .Values.gateway.caching.enabled }}
+      ttl: {{ .Values.gateway.caching.ttl }}
+      max_size_mb: {{ .Values.gateway.caching.maxSizeMb }}
+
+    circuit_breaker:
+      enabled: {{ .Values.gateway.circuitBreaker.enabled }}
+      failure_threshold: {{ .Values.gateway.circuitBreaker.failureThreshold }}
+      recovery_timeout: {{ .Values.gateway.circuitBreaker.recoveryTimeout }}
+      half_open_requests: {{ .Values.gateway.circuitBreaker.halfOpenRequests }}
+
+    cost_tracking:
+      enabled: {{ .Values.gateway.costTracking.enabled }}
+      default_input_cost_per_1k: {{ .Values.gateway.costTracking.defaultInputCostPer1k }}
+      default_output_cost_per_1k: {{ .Values.gateway.costTracking.defaultOutputCostPer1k }}
+
+    audit:
+      enabled: {{ .Values.gateway.audit.enabled }}
+      redact_sensitive: {{ .Values.gateway.audit.redactSensitive }}
+      destination: {{ .Values.gateway.audit.destination | quote }}
+
+    providers:
+      {{- if .Values.providers.openai.enabled }}
+      openai:
+        enabled: true
+        {{- if .Values.providers.openai.baseUrl }}
+        base_url: {{ .Values.providers.openai.baseUrl | quote }}
+        {{- end }}
+        default_model: {{ .Values.providers.openai.defaultModel | quote }}
+      {{- end }}
+      {{- if .Values.providers.anthropic.enabled }}
+      anthropic:
+        enabled: true
+        {{- if .Values.providers.anthropic.baseUrl }}
+        base_url: {{ .Values.providers.anthropic.baseUrl | quote }}
+        {{- end }}
+        default_model: {{ .Values.providers.anthropic.defaultModel | quote }}
+      {{- end }}
+      {{- if .Values.providers.azure.enabled }}
+      azure:
+        enabled: true
+        resource_name: {{ .Values.providers.azure.resourceName | quote }}
+        api_version: {{ .Values.providers.azure.apiVersion | quote }}
+      {{- end }}
+      {{- if .Values.providers.google.enabled }}
+      google:
+        enabled: true
+        api_type: {{ .Values.providers.google.apiType | quote }}
+        {{- if eq .Values.providers.google.apiType "vertex_ai" }}
+        project_id: {{ .Values.providers.google.projectId | quote }}
+        location: {{ .Values.providers.google.location | quote }}
+        {{- end }}
+        default_model: {{ .Values.providers.google.defaultModel | quote }}
+      {{- end }}

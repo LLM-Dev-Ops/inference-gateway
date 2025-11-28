@@ -1,0 +1,39 @@
+apiVersion: v2
+name: llm-gateway
+description: Enterprise-grade LLM Inference Gateway for routing requests to multiple AI providers
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+kubeVersion: ">=1.25.0-0"
+
+keywords:
+  - llm
+  - ai
+  - gateway
+  - inference
+  - openai
+  - anthropic
+  - azure
+  - machine-learning
+
+home: https://github.com/your-org/llm-inference-gateway
+
+sources:
+  - https://github.com/your-org/llm-inference-gateway
+
+maintainers:
+  - name: Platform Team
+    email: platform@example.com
+
+annotations:
+  artifacthub.io/license: Commercial
+  artifacthub.io/category: ai-machine-learning
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial release with multi-provider support
+    - kind: added
+      description: Rate limiting and circuit breaker support
+    - kind: added
+      description: Prometheus metrics and distributed tracing
+    - kind: added
+      description: Cost tracking and budget management

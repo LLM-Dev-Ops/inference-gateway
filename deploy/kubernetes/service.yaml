@@ -1,0 +1,89 @@
+# LLM Inference Gateway Services
+# Defines ClusterIP and optional LoadBalancer services
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-gateway
+  namespace: llm-gateway
+  labels:
+    app.kubernetes.io/name: llm-inference-gateway
+    app.kubernetes.io/component: gateway
+  annotations:
+    # Prometheus service discovery
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: llm-inference-gateway
+    app.kubernetes.io/component: gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
+  sessionAffinity: None
+
+---
+# Headless service for StatefulSet scenarios or direct pod access
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-gateway-headless
+  namespace: llm-gateway
+  labels:
+    app.kubernetes.io/name: llm-inference-gateway
+    app.kubernetes.io/component: gateway
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: llm-inference-gateway
+    app.kubernetes.io/component: gateway
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+
+---
+# External LoadBalancer service (optional - uncomment for cloud deployments)
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: llm-gateway-lb
+#   namespace: llm-gateway
+#   labels:
+#     app.kubernetes.io/name: llm-inference-gateway
+#     app.kubernetes.io/component: gateway
+#   annotations:
+#     # AWS ALB annotations (if using AWS)
+#     # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+#     # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+#     # service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+#
+#     # GCP annotations (if using GCP)
+#     # cloud.google.com/load-balancer-type: "External"
+#     # networking.gke.io/load-balancer-type: "External"
+#
+#     # Azure annotations (if using Azure)
+#     # service.beta.kubernetes.io/azure-load-balancer-internal: "false"
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app.kubernetes.io/name: llm-inference-gateway
+#     app.kubernetes.io/component: gateway
+#   ports:
+#     - name: http
+#       port: 80
+#       targetPort: http
+#       protocol: TCP
+#   # Preserve client IP
+#   externalTrafficPolicy: Local
+

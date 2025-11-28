@@ -1,0 +1,815 @@
+openapi: 3.0.3
+info:
+  title: LLM Inference Gateway API
+  description: |
+    Enterprise-grade LLM Inference Gateway providing a unified, OpenAI-compatible API
+    for multiple LLM providers including OpenAI, Anthropic, Google Vertex AI, Azure OpenAI,
+    and AWS Bedrock.
+
+    ## Features
+    - **Unified API**: Single OpenAI-compatible interface for all providers
+    - **Multi-Provider Support**: Route requests to multiple LLM providers
+    - **Load Balancing**: Intelligent request distribution across providers
+    - **Resilience**: Circuit breakers, retries, and failover
+    - **Authentication**: JWT/OIDC and API key support
+    - **Rate Limiting**: Per-tenant and global rate limits
+    - **Observability**: Prometheus metrics and structured logging
+
+    ## Authentication
+    The API supports two authentication methods:
+    - **Bearer Token**: JWT tokens for OIDC authentication
+    - **API Key**: Static API keys via `X-API-Key` header
+
+  version: 1.0.0
+  contact:
+    name: LLM DevOps Team
+    url: https://github.com/llm-devops/llm-inference-gateway
+  license:
+    name: LLM DevOps Commercial License
+    url: https://github.com/llm-devops/llm-inference-gateway/blob/main/LICENSE
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Chat
+    description: Chat completion endpoints (OpenAI-compatible)
+  - name: Models
+    description: Model listing and information
+  - name: Health
+    description: Health check and status endpoints
+  - name: Metrics
+    description: Observability and metrics
+
+paths:
+  /v1/chat/completions:
+    post:
+      summary: Create chat completion
+      description: |
+        Creates a model response for the given chat conversation.
+        This endpoint is compatible with the OpenAI Chat Completions API.
+
+        Supports both streaming and non-streaming responses.
+      operationId: createChatCompletion
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+            examples:
+              basic:
+                summary: Basic chat completion
+                value:
+                  model: gpt-4
+                  messages:
+                    - role: user
+                      content: Hello, how are you?
+              withSystem:
+                summary: With system message
+                value:
+                  model: gpt-4
+                  messages:
+                    - role: system
+                      content: You are a helpful assistant.
+                    - role: user
+                      content: What is the capital of France?
+                  max_tokens: 100
+                  temperature: 0.7
+              streaming:
+                summary: Streaming response
+                value:
+                  model: gpt-4
+                  messages:
+                    - role: user
+                      content: Write a short story.
+                  stream: true
+                  max_tokens: 500
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+              example:
+                id: chatcmpl-abc123
+                object: chat.completion
+                created: 1700000000
+                model: gpt-4
+                choices:
+                  - index: 0
+                    message:
+                      role: assistant
+                      content: Hello! I'm doing well, thank you for asking.
+                    finish_reason: stop
+                usage:
+                  prompt_tokens: 10
+                  completion_tokens: 12
+                  total_tokens: 22
+            text/event-stream:
+              schema:
+                type: string
+              example: |
+                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1700000000,"model":"gpt-4","choices":[{"index":0,"delta":{"role":"assistant"},"finish_reason":null}]}
+
+                data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","created":1700000000,"model":"gpt-4","choices":[{"index":0,"delta":{"content":"Hello"},"finish_reason":null}]}
+
+                data: [DONE]
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  type: invalid_request_error
+                  message: Messages array is required
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  type: authentication_required
+                  message: Authentication required
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Request limit per window
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Remaining requests in window
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+              description: Unix timestamp when limit resets
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds until retry is allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  type: rate_limit_exceeded
+                  message: Rate limit exceeded. Please retry after 60 seconds.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Service unavailable (all providers down)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  type: service_unavailable
+                  message: No healthy providers available
+
+  /v1/models:
+    get:
+      summary: List models
+      description: Lists the currently available models from all configured providers.
+      operationId: listModels
+      tags:
+        - Models
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelsResponse'
+              example:
+                object: list
+                data:
+                  - id: gpt-4
+                    object: model
+                    created: 1687882411
+                    owned_by: openai
+                  - id: gpt-3.5-turbo
+                    object: model
+                    created: 1677610602
+                    owned_by: openai
+                  - id: claude-3-opus-20240229
+                    object: model
+                    created: 1709164800
+                    owned_by: anthropic
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/models/{model_id}:
+    get:
+      summary: Retrieve model
+      description: Retrieves information about a specific model.
+      operationId: retrieveModel
+      tags:
+        - Models
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          description: The ID of the model to retrieve
+          schema:
+            type: string
+          example: gpt-4
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+              example:
+                id: gpt-4
+                object: model
+                created: 1687882411
+                owned_by: openai
+        '404':
+          description: Model not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  type: not_found
+                  message: Model 'unknown-model' not found
+
+  /health:
+    get:
+      summary: Health check
+      description: |
+        Returns the overall health status of the gateway and its components.
+        This endpoint is unauthenticated for use by load balancers and monitoring systems.
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Gateway is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                timestamp: '2024-01-15T10:30:00Z'
+                version: 1.0.0
+                components:
+                  providers:
+                    status: healthy
+                    healthy_count: 3
+                    total_count: 3
+        '503':
+          description: Gateway is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: unhealthy
+                timestamp: '2024-01-15T10:30:00Z'
+                version: 1.0.0
+                components:
+                  providers:
+                    status: unhealthy
+                    healthy_count: 0
+                    total_count: 3
+
+  /health/live:
+    get:
+      summary: Liveness probe
+      description: |
+        Kubernetes liveness probe endpoint. Returns 200 if the process is alive.
+      operationId: livenessProbe
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Gateway is alive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LivenessResponse'
+              example:
+                status: ok
+
+  /health/ready:
+    get:
+      summary: Readiness probe
+      description: |
+        Kubernetes readiness probe endpoint. Returns 200 if the gateway is ready
+        to accept traffic.
+      operationId: readinessProbe
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Gateway is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+              example:
+                ready: true
+                providers_ready: 3
+        '503':
+          description: Gateway is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+              example:
+                ready: false
+                providers_ready: 0
+                reason: No healthy providers
+
+  /health/startup:
+    get:
+      summary: Startup probe
+      description: |
+        Kubernetes startup probe endpoint. Returns 200 once the gateway has
+        completed initialization.
+      operationId: startupProbe
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Gateway has started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartupResponse'
+              example:
+                started: true
+        '503':
+          description: Gateway is still starting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartupResponse'
+              example:
+                started: false
+
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      description: |
+        Returns Prometheus-formatted metrics for monitoring and alerting.
+        This endpoint is typically unauthenticated for scraping by Prometheus.
+      operationId: getMetrics
+      tags:
+        - Metrics
+      responses:
+        '200':
+          description: Prometheus metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |
+                # HELP llm_gateway_llm_gateway_requests_total Total number of requests
+                # TYPE llm_gateway_llm_gateway_requests_total counter
+                llm_gateway_llm_gateway_requests_total{model="gpt-4",provider="openai",status="success",streaming="false"} 1234
+
+                # HELP llm_gateway_llm_gateway_request_duration_seconds Request latency in seconds
+                # TYPE llm_gateway_llm_gateway_request_duration_seconds histogram
+                llm_gateway_llm_gateway_request_duration_seconds_bucket{model="gpt-4",provider="openai",streaming="false",le="0.5"} 100
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OIDC provider
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Static API key
+
+  schemas:
+    ChatCompletionRequest:
+      type: object
+      required:
+        - model
+        - messages
+      properties:
+        model:
+          type: string
+          description: ID of the model to use
+          example: gpt-4
+        messages:
+          type: array
+          description: A list of messages comprising the conversation so far
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+          minItems: 1
+        temperature:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 2
+          default: 1
+          description: Sampling temperature (0-2)
+          example: 0.7
+        top_p:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          default: 1
+          description: Nucleus sampling parameter
+          example: 0.9
+        n:
+          type: integer
+          minimum: 1
+          maximum: 128
+          default: 1
+          description: Number of completions to generate
+        stream:
+          type: boolean
+          default: false
+          description: Whether to stream the response
+        stop:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+              maxItems: 4
+          description: Stop sequences
+        max_tokens:
+          type: integer
+          minimum: 1
+          description: Maximum number of tokens to generate
+          example: 1000
+        presence_penalty:
+          type: number
+          format: float
+          minimum: -2
+          maximum: 2
+          default: 0
+          description: Presence penalty (-2 to 2)
+        frequency_penalty:
+          type: number
+          format: float
+          minimum: -2
+          maximum: 2
+          default: 0
+          description: Frequency penalty (-2 to 2)
+        logit_bias:
+          type: object
+          additionalProperties:
+            type: number
+          description: Modify likelihood of specified tokens
+        user:
+          type: string
+          description: Unique identifier for the end-user
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tool'
+          description: List of tools the model may use
+        tool_choice:
+          oneOf:
+            - type: string
+              enum: [none, auto, required]
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum: [function]
+                function:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+          description: Controls tool usage
+
+    ChatMessage:
+      type: object
+      required:
+        - role
+        - content
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+          description: The role of the message author
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                $ref: '#/components/schemas/ContentPart'
+          description: The message content
+        name:
+          type: string
+          description: Optional name for the participant
+        tool_calls:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolCall'
+          description: Tool calls made by the assistant
+        tool_call_id:
+          type: string
+          description: ID of the tool call this message responds to
+
+    ContentPart:
+      oneOf:
+        - type: object
+          required:
+            - type
+            - text
+          properties:
+            type:
+              type: string
+              enum: [text]
+            text:
+              type: string
+        - type: object
+          required:
+            - type
+            - image_url
+          properties:
+            type:
+              type: string
+              enum: [image_url]
+            image_url:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                detail:
+                  type: string
+                  enum: [auto, low, high]
+                  default: auto
+
+    Tool:
+      type: object
+      required:
+        - type
+        - function
+      properties:
+        type:
+          type: string
+          enum: [function]
+        function:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Function name
+            description:
+              type: string
+              description: Function description
+            parameters:
+              type: object
+              description: JSON Schema for function parameters
+
+    ToolCall:
+      type: object
+      required:
+        - id
+        - type
+        - function
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the tool call
+        type:
+          type: string
+          enum: [function]
+        function:
+          type: object
+          properties:
+            name:
+              type: string
+            arguments:
+              type: string
+              description: JSON-encoded arguments
+
+    ChatCompletionResponse:
+      type: object
+      required:
+        - id
+        - object
+        - created
+        - model
+        - choices
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the completion
+          example: chatcmpl-abc123
+        object:
+          type: string
+          enum: [chat.completion]
+        created:
+          type: integer
+          format: int64
+          description: Unix timestamp of creation
+        model:
+          type: string
+          description: Model used for completion
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatCompletionChoice'
+        usage:
+          $ref: '#/components/schemas/Usage'
+        system_fingerprint:
+          type: string
+          description: System fingerprint for reproducibility
+
+    ChatCompletionChoice:
+      type: object
+      required:
+        - index
+        - message
+        - finish_reason
+      properties:
+        index:
+          type: integer
+          description: Index of the choice
+        message:
+          $ref: '#/components/schemas/ChatMessage'
+        finish_reason:
+          type: string
+          enum: [stop, length, tool_calls, content_filter, null]
+          description: Reason the model stopped generating
+        logprobs:
+          type: object
+          nullable: true
+          description: Log probabilities (if requested)
+
+    Usage:
+      type: object
+      required:
+        - prompt_tokens
+        - completion_tokens
+        - total_tokens
+      properties:
+        prompt_tokens:
+          type: integer
+          description: Number of tokens in the prompt
+        completion_tokens:
+          type: integer
+          description: Number of tokens in the completion
+        total_tokens:
+          type: integer
+          description: Total tokens used
+
+    ModelsResponse:
+      type: object
+      required:
+        - object
+        - data
+      properties:
+        object:
+          type: string
+          enum: [list]
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model'
+
+    Model:
+      type: object
+      required:
+        - id
+        - object
+        - created
+        - owned_by
+      properties:
+        id:
+          type: string
+          description: Model identifier
+        object:
+          type: string
+          enum: [model]
+        created:
+          type: integer
+          format: int64
+          description: Unix timestamp of model creation
+        owned_by:
+          type: string
+          description: Organization that owns the model
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        components:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+
+    LivenessResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [ok]
+
+    ReadinessResponse:
+      type: object
+      required:
+        - ready
+      properties:
+        ready:
+          type: boolean
+        providers_ready:
+          type: integer
+        reason:
+          type: string
+
+    StartupResponse:
+      type: object
+      required:
+        - started
+      properties:
+        started:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - type
+            - message
+          properties:
+            type:
+              type: string
+              description: Error type code
+              example: invalid_request_error
+            message:
+              type: string
+              description: Human-readable error message
+            param:
+              type: string
+              description: Parameter that caused the error
+            code:
+              type: string
+              description: Additional error code

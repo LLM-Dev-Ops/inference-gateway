@@ -1,0 +1,10 @@
+# LLM Inference Gateway Namespace
+# Creates an isolated namespace for the gateway components
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: llm-gateway
+  labels:
+    app.kubernetes.io/name: llm-inference-gateway
+    app.kubernetes.io/component: namespace
+    app.kubernetes.io/part-of: llm-platform

@@ -1,0 +1,286 @@
+# Default values for llm-gateway.
+# This is a YAML-formatted file.
+
+# -- Number of replicas for the deployment
+replicaCount: 3
+
+image:
+  # -- Image repository
+  repository: ghcr.io/your-org/llm-inference-gateway
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# -- Image pull secrets for private registries
+imagePullSecrets: []
+# -- Override the name of the chart
+nameOverride: ""
+# -- Override the full name of the chart
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use
+  name: ""
+  # -- Automatically mount service account token
+  automount: true
+
+# -- Annotations to add to the pod
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9090"
+  prometheus.io/path: "/metrics"
+
+# -- Labels to add to the pod
+podLabels: {}
+
+# -- Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port for HTTP traffic
+  port: 8080
+  # -- Service port for metrics
+  metricsPort: 9090
+  # -- Annotations for the service
+  annotations: {}
+
+ingress:
+  # -- Enable ingress controller resource
+  enabled: false
+  # -- Ingress class name
+  className: "nginx"
+  # -- Annotations for the ingress
+  annotations: {}
+  hosts:
+    - host: llm-gateway.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  # -- TLS configuration
+  tls: []
+
+# -- Resource limits and requests
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  # -- Enable horizontal pod autoscaler
+  enabled: true
+  # -- Minimum number of replicas
+  minReplicas: 3
+  # -- Maximum number of replicas
+  maxReplicas: 20
+  # -- Target CPU utilization percentage
+  targetCPUUtilizationPercentage: 70
+  # -- Target memory utilization percentage
+  targetMemoryUtilizationPercentage: 80
+
+# -- Volume mounts
+volumeMounts:
+  - name: config
+    mountPath: /etc/llm-gateway
+    readOnly: true
+  - name: tmp
+    mountPath: /tmp
+  - name: cache
+    mountPath: /app/cache
+
+# -- Volumes
+volumes:
+  - name: config
+    configMap:
+      name: llm-gateway-config
+  - name: tmp
+    emptyDir: {}
+  - name: cache
+    emptyDir:
+      sizeLimit: 512Mi
+
+# -- Node selector labels
+nodeSelector: {}
+
+# -- Tolerations for pod scheduling
+tolerations: []
+
+# -- Affinity rules for pod scheduling
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - llm-gateway
+          topologyKey: kubernetes.io/hostname
+
+# Liveness probe configuration
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Readiness probe configuration
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Gateway Configuration
+gateway:
+  # -- Server configuration
+  server:
+    host: "0.0.0.0"
+    port: 8080
+    metricsPort: 9090
+    requestTimeout: 300
+    shutdownTimeout: 30
+    maxConnections: 10000
+
+  # -- Logging configuration
+  logging:
+    level: info
+    format: json
+    requestLogging: true
+
+  # -- Tracing configuration
+  tracing:
+    enabled: true
+    samplingRate: 0.1
+    otlpEndpoint: ""
+
+  # -- Rate limiting configuration
+  rateLimiting:
+    enabled: true
+    defaultRateLimit: 100
+    burstSize: 200
+
+  # -- Caching configuration
+  caching:
+    enabled: true
+    ttl: 3600
+    maxSizeMb: 512
+
+  # -- Circuit breaker configuration
+  circuitBreaker:
+    enabled: true
+    failureThreshold: 5
+    recoveryTimeout: 30
+    halfOpenRequests: 3
+
+  # -- Cost tracking configuration
+  costTracking:
+    enabled: true
+    defaultInputCostPer1k: 0.01
+    defaultOutputCostPer1k: 0.03
+
+  # -- Audit logging configuration
+  audit:
+    enabled: true
+    redactSensitive: true
+    destination: stdout
+
+# LLM Provider Configuration
+providers:
+  # -- OpenAI provider configuration
+  openai:
+    enabled: true
+    apiKey: ""
+    baseUrl: ""
+    organizationId: ""
+    defaultModel: "gpt-4"
+    models:
+      - gpt-4
+      - gpt-4-turbo
+      - gpt-3.5-turbo
+
+  # -- Anthropic provider configuration
+  anthropic:
+    enabled: true
+    apiKey: ""
+    baseUrl: ""
+    defaultModel: "claude-3-opus-20240229"
+    models:
+      - claude-3-opus-20240229
+      - claude-3-sonnet-20240229
+      - claude-3-haiku-20240307
+
+  # -- Azure OpenAI provider configuration
+  azure:
+    enabled: false
+    apiKey: ""
+    resourceName: ""
+    apiVersion: "2024-02-15-preview"
+    deployments: {}
+
+  # -- Google AI / Vertex AI provider configuration
+  google:
+    enabled: false
+    # -- API type: "google_ai" for Google AI Studio, "vertex_ai" for Vertex AI
+    apiType: "google_ai"
+    # -- API key (required for google_ai, not used for vertex_ai)
+    apiKey: ""
+    # -- GCP project ID (required for vertex_ai)
+    projectId: ""
+    # -- GCP location/region (default: us-central1, for vertex_ai)
+    location: "us-central1"
+    # -- Default model to use
+    defaultModel: "gemini-1.5-pro"
+    # -- List of available models
+    models:
+      - gemini-1.5-pro
+      - gemini-1.5-flash
+      - gemini-1.0-pro
+
+# Secrets configuration
+secrets:
+  # -- Use existing secret for provider API keys
+  existingSecret: ""
+  # -- Secret key mappings
+  keys:
+    openaiApiKey: OPENAI_API_KEY
+    anthropicApiKey: ANTHROPIC_API_KEY
+    azureApiKey: AZURE_OPENAI_API_KEY
+    googleApiKey: GOOGLE_API_KEY
+
+# -- Extra environment variables
+extraEnv: []
+
+# -- Extra environment variables from secrets/configmaps
+extraEnvFrom: []

@@ -1,0 +1,94 @@
+# LLM Inference Gateway ConfigMap
+# Contains non-sensitive configuration for the gateway
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: llm-gateway-config
+  namespace: llm-gateway
+  labels:
+    app.kubernetes.io/name: llm-inference-gateway
+    app.kubernetes.io/component: config
+data:
+  # Server configuration
+  GATEWAY_HOST: "0.0.0.0"
+  GATEWAY_PORT: "8080"
+  GATEWAY_METRICS_PORT: "9090"
+
+  # Logging configuration
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  LOG_ENABLE_COLORS: "false"
+
+  # Telemetry configuration
+  OTEL_ENABLED: "true"
+  OTEL_SERVICE_NAME: "llm-inference-gateway"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+
+  # Cache configuration
+  CACHE_ENABLED: "true"
+  CACHE_DEFAULT_TTL: "3600"
+  CACHE_MAX_ENTRIES: "10000"
+  CACHE_STREAMING: "false"
+
+  # Redis configuration (distributed cache)
+  REDIS_ENABLED: "false"
+  REDIS_POOL_SIZE: "10"
+  REDIS_KEY_PREFIX: "llm-gateway"
+
+  # Rate limiting configuration
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_REQUESTS_PER_MINUTE: "1000"
+  RATE_LIMIT_TOKENS_PER_MINUTE: "100000"
+
+  # Circuit breaker configuration
+  CIRCUIT_BREAKER_FAILURE_THRESHOLD: "5"
+  CIRCUIT_BREAKER_SUCCESS_THRESHOLD: "3"
+  CIRCUIT_BREAKER_TIMEOUT_SECONDS: "30"
+
+  # Request configuration
+  REQUEST_TIMEOUT_SECONDS: "300"
+  MAX_CONCURRENT_REQUESTS: "1000"
+
+  # Health check configuration
+  HEALTH_CHECK_INTERVAL_SECONDS: "30"
+
+  # Routing configuration
+  ROUTING_DEFAULT_STRATEGY: "round_robin"
+
+  # gateway.yaml - Main configuration file
+  gateway.yaml: |
+    server:
+      host: "0.0.0.0"
+      port: 8080
+      metrics_port: 9090
+      request_timeout: 300s
+      max_concurrent_requests: 1000
+
+    logging:
+      level: info
+      format: json
+
+    telemetry:
+      enabled: true
+      service_name: llm-inference-gateway
+      otlp_endpoint: "http://otel-collector:4317"
+
+    cache:
+      enabled: true
+      default_ttl: 3600s
+      max_entries: 10000
+
+    rate_limiting:
+      enabled: true
+      default:
+        requests_per_minute: 1000
+        tokens_per_minute: 100000
+
+    circuit_breaker:
+      failure_threshold: 5
+      success_threshold: 3
+      timeout: 30s
+
+    routing:
+      default_strategy: round_robin
+      rules: []

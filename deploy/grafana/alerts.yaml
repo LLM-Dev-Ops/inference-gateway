@@ -1,0 +1,203 @@
+# LLM Inference Gateway Alerting Rules
+#
+# These rules can be imported into Prometheus or Grafana for alerting.
+# Adjust thresholds as needed for your environment.
+
+groups:
+  - name: llm-gateway-availability
+    interval: 30s
+    rules:
+      - alert: LLMGatewayProviderUnhealthy
+        expr: llm_gateway_llm_gateway_provider_health == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "LLM Provider {{ $labels.provider }} is unhealthy"
+          description: "Provider {{ $labels.provider }} has been unhealthy for more than 2 minutes."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/provider-unhealthy"
+
+      - alert: LLMGatewayAllProvidersUnhealthy
+        expr: count(llm_gateway_llm_gateway_provider_health == 1) == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "All LLM providers are unhealthy"
+          description: "No healthy LLM providers are available. Service is degraded."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/all-providers-unhealthy"
+
+      - alert: LLMGatewayCircuitBreakerOpen
+        expr: llm_gateway_llm_gateway_circuit_breaker_state == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Circuit breaker open for provider {{ $labels.provider }}"
+          description: "Circuit breaker for provider {{ $labels.provider }} has been open for more than 1 minute."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/circuit-breaker"
+
+  - name: llm-gateway-latency
+    interval: 30s
+    rules:
+      - alert: LLMGatewayHighLatencyP95
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(llm_gateway_llm_gateway_request_duration_seconds_bucket[5m])) by (le, provider)
+          ) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High P95 latency for provider {{ $labels.provider }}"
+          description: "P95 latency for provider {{ $labels.provider }} is {{ $value | humanizeDuration }} (threshold: 10s)."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/high-latency"
+
+      - alert: LLMGatewayHighLatencyP99
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(llm_gateway_llm_gateway_request_duration_seconds_bucket[5m])) by (le, provider)
+          ) > 30
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical P99 latency for provider {{ $labels.provider }}"
+          description: "P99 latency for provider {{ $labels.provider }} is {{ $value | humanizeDuration }} (threshold: 30s)."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/critical-latency"
+
+      - alert: LLMGatewayHighTTFT
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(llm_gateway_llm_gateway_ttft_seconds_bucket[5m])) by (le, provider)
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Time to First Token for provider {{ $labels.provider }}"
+          description: "P95 TTFT for provider {{ $labels.provider }} is {{ $value | humanizeDuration }}."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/high-ttft"
+
+  - name: llm-gateway-errors
+    interval: 30s
+    rules:
+      - alert: LLMGatewayHighErrorRate
+        expr: |
+          (
+            sum(rate(llm_gateway_llm_gateway_requests_total{status="error"}[5m])) by (provider)
+            /
+            sum(rate(llm_gateway_llm_gateway_requests_total[5m])) by (provider)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate for provider {{ $labels.provider }}"
+          description: "Error rate for provider {{ $labels.provider }} is {{ $value | humanizePercentage }} (threshold: 5%)."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/high-error-rate"
+
+      - alert: LLMGatewayCriticalErrorRate
+        expr: |
+          (
+            sum(rate(llm_gateway_llm_gateway_requests_total{status="error"}[5m])) by (provider)
+            /
+            sum(rate(llm_gateway_llm_gateway_requests_total[5m])) by (provider)
+          ) > 0.20
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical error rate for provider {{ $labels.provider }}"
+          description: "Error rate for provider {{ $labels.provider }} is {{ $value | humanizePercentage }} (threshold: 20%)."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/critical-error-rate"
+
+      - alert: LLMGatewayAuthenticationErrors
+        expr: |
+          sum(rate(llm_gateway_llm_gateway_errors_total{error_type="authentication"}[5m])) by (provider) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Authentication errors for provider {{ $labels.provider }}"
+          description: "Seeing {{ $value }} authentication errors per second for provider {{ $labels.provider }}."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/auth-errors"
+
+      - alert: LLMGatewayRateLimitErrors
+        expr: |
+          sum(rate(llm_gateway_llm_gateway_errors_total{error_type="rate_limited"}[5m])) by (provider) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limit errors for provider {{ $labels.provider }}"
+          description: "Provider {{ $labels.provider }} is being rate limited ({{ $value }} errors/s)."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/rate-limit"
+
+  - name: llm-gateway-capacity
+    interval: 30s
+    rules:
+      - alert: LLMGatewayHighActiveRequests
+        expr: |
+          sum(llm_gateway_llm_gateway_active_requests) by (provider) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of active requests for provider {{ $labels.provider }}"
+          description: "{{ $value }} active requests for provider {{ $labels.provider }}. Consider scaling."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/high-load"
+
+      - alert: LLMGatewayRateLimitHits
+        expr: |
+          sum(rate(llm_gateway_llm_gateway_rate_limit_hits_total[5m])) by (tenant) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit hits for tenant {{ $labels.tenant }}"
+          description: "Tenant {{ $labels.tenant }} is hitting rate limits frequently ({{ $value }} hits/s)."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/tenant-rate-limit"
+
+  - name: llm-gateway-tokens
+    interval: 60s
+    rules:
+      - alert: LLMGatewayHighTokenUsage
+        expr: |
+          sum(rate(llm_gateway_llm_gateway_tokens_total[1h])) by (provider) > 1000000
+        for: 15m
+        labels:
+          severity: info
+        annotations:
+          summary: "High token usage for provider {{ $labels.provider }}"
+          description: "Token consumption rate for {{ $labels.provider }} is {{ $value | humanize }} tokens/hour."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/token-usage"
+
+      - alert: LLMGatewayLowTokenThroughput
+        expr: |
+          llm_gateway_llm_gateway_tokens_per_second < 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low token throughput for {{ $labels.provider }} - {{ $labels.model }}"
+          description: "Token generation rate is only {{ $value }} tokens/s for {{ $labels.provider }} {{ $labels.model }}."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/low-throughput"
+
+  - name: llm-gateway-cache
+    interval: 30s
+    rules:
+      - alert: LLMGatewayLowCacheHitRate
+        expr: |
+          (
+            sum(rate(llm_gateway_llm_gateway_cache_operations_total{result="hit"}[5m]))
+            /
+            sum(rate(llm_gateway_llm_gateway_cache_operations_total[5m]))
+          ) < 0.3
+        for: 15m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}. Consider cache configuration."
+          runbook_url: "https://docs.example.com/runbooks/llm-gateway/cache-optimization"

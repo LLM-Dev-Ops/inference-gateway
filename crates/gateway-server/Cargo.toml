@@ -46,6 +46,14 @@ thiserror = { workspace = true }
 mime = { workspace = true }
 parking_lot = { workspace = true }
 arc-swap = { workspace = true }
+chrono = { workspace = true }
+
+# Authentication
+jsonwebtoken = { workspace = true }
+base64 = { workspace = true }
+reqwest = { workspace = true }
+dashmap = { workspace = true }
+sha2 = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }

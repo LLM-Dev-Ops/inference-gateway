@@ -1,0 +1,84 @@
+LLM Inference Gateway has been deployed successfully!
+
+{{- if .Values.ingress.enabled }}
+
+The gateway is accessible via the following URL(s):
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+
+{{- else if contains "NodePort" .Values.service.type }}
+
+Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "llm-gateway.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+
+{{- else if contains "LoadBalancer" .Values.service.type }}
+
+NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+You can watch the status by running:
+  kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "llm-gateway.fullname" . }}
+
+{{- else if contains "ClusterIP" .Values.service.type }}
+
+Get the application URL by running these commands:
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "llm-gateway.fullname" . }} 8080:{{ .Values.service.port }}
+  echo "Visit http://127.0.0.1:8080 to use the gateway"
+
+{{- end }}
+
+API Endpoints:
+  - POST /v1/chat/completions - Chat completions (OpenAI compatible)
+  - GET  /v1/models           - List available models
+  - GET  /health/live         - Liveness probe
+  - GET  /health/ready        - Readiness probe
+  - GET  /metrics             - Prometheus metrics (port {{ .Values.service.metricsPort }})
+
+{{- if .Values.providers.openai.enabled }}
+
+OpenAI Provider: ENABLED
+  Default model: {{ .Values.providers.openai.defaultModel }}
+{{- end }}
+
+{{- if .Values.providers.anthropic.enabled }}
+
+Anthropic Provider: ENABLED
+  Default model: {{ .Values.providers.anthropic.defaultModel }}
+{{- end }}
+
+{{- if .Values.providers.azure.enabled }}
+
+Azure OpenAI Provider: ENABLED
+  Resource: {{ .Values.providers.azure.resourceName }}
+{{- end }}
+
+{{- if .Values.providers.google.enabled }}
+
+Google AI Provider: ENABLED
+  API Type: {{ .Values.providers.google.apiType }}
+  Default model: {{ .Values.providers.google.defaultModel }}
+{{- if eq .Values.providers.google.apiType "vertex_ai" }}
+  Project: {{ .Values.providers.google.projectId }}
+  Location: {{ .Values.providers.google.location }}
+{{- end }}
+{{- end }}
+
+{{- if not (or .Values.providers.openai.apiKey .Values.providers.anthropic.apiKey .Values.secrets.existingSecret) }}
+
+WARNING: No API keys configured!
+Please provide API keys either:
+1. Set them in values.yaml (providers.<provider>.apiKey)
+2. Create a secret and set secrets.existingSecret
+
+Example:
+  kubectl create secret generic llm-gateway-secrets \
+    --namespace {{ .Release.Namespace }} \
+    --from-literal=OPENAI_API_KEY=sk-xxx \
+    --from-literal=ANTHROPIC_API_KEY=sk-ant-xxx
+
+{{- end }}
+
+For more information, visit: https://github.com/your-org/llm-inference-gateway

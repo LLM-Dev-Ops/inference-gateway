@@ -1,0 +1,64 @@
+[package]
+name = "gateway-security"
+version = "0.1.0"
+edition = "2021"
+description = "Security hardening for the LLM Inference Gateway"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/example/llm-inference-gateway"
+keywords = ["llm", "gateway", "security", "hardening"]
+categories = ["web-programming", "authentication"]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+
+# Web framework
+axum = { version = "0.7", features = ["macros"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["trace", "cors", "compression-gzip", "timeout", "request-id", "set-header"] }
+http = "1.1"
+hyper = "1.1"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Crypto
+sha2 = "0.10"
+hmac = "0.12"
+hex = "0.4"
+base64 = "0.22"
+argon2 = "0.5"
+aes-gcm = "0.10"
+rand = "0.8"
+
+# Secrets management
+secrecy = { version = "0.8", features = ["serde"] }
+zeroize = { version = "1.7", features = ["derive"] }
+
+# Validation
+validator = { version = "0.20", features = ["derive"] }
+regex = "1.10"
+once_cell = "1.19"
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+humantime-serde = "1.1"
+
+# IP handling
+ipnetwork = "0.20"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+tracing = "0.1"
+
+# URL parsing
+url = "2.5"
+
+[dev-dependencies]
+tokio-test = "0.4"
+tempfile = "3.9"

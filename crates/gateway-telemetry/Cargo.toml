@@ -36,6 +36,9 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 chrono = { workspace = true }
 parking_lot = { workspace = true }
+uuid = { workspace = true }
+once_cell = { workspace = true }
+regex = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }

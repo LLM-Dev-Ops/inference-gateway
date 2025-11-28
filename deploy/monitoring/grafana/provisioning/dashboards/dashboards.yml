@@ -1,0 +1,16 @@
+# Grafana Dashboard Provisioning
+# Automatically loads dashboards on startup
+
+apiVersion: 1
+
+providers:
+  - name: 'LLM Gateway Dashboards'
+    orgId: 1
+    folder: 'LLM Gateway'
+    folderUid: 'llm-gateway'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

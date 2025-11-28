@@ -1,0 +1,63 @@
+# Prometheus Configuration for LLM Gateway Monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'llm-gateway'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # - alertmanager:9093
+
+# Rule files to load
+rule_files:
+  # - "alerts/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scheme: http
+
+  # LLM Gateway metrics
+  - job_name: 'llm-gateway'
+    static_configs:
+      - targets: ['gateway:9090']
+    metrics_path: /metrics
+    scheme: http
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '(.+):\d+'
+        replacement: '${1}'
+
+  # Redis metrics (via redis-exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    metrics_path: /metrics
+    scheme: http
+
+  # OpenTelemetry Collector metrics
+  - job_name: 'otel-collector'
+    static_configs:
+      - targets: ['otel-collector:8888']
+    metrics_path: /metrics
+    scheme: http
+
+# Remote write configuration (optional - for long-term storage)
+# remote_write:
+#   - url: "http://remote-storage:9009/api/prom/push"
+#     queue_config:
+#       capacity: 10000
+#       max_shards: 10
+#       max_samples_per_send: 5000

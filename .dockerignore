@@ -1,0 +1,98 @@
+# Docker Build Ignore File
+# Excludes files from Docker build context
+
+# Build artifacts
+target/
+*.rlib
+*.rmeta
+*.d
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Test files
+tests/
+*_test.rs
+*.test.rs
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+secrets/
+
+# Logs
+*.log
+logs/
+
+# Docker files (we don't need to copy these into the image)
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Kubernetes manifests
+deploy/kubernetes/
+
+# Local configuration
+config/local/
+*.local.yaml
+*.local.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Rust specific
+Cargo.lock
+**/*.rs.bk
+*.orig
+
+# Development files
+.cargo/
+rustfmt.toml
+.rustfmt.toml
+clippy.toml
+.clippy.toml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Coverage
+*.gcov
+*.gcda
+*.gcno
+coverage/
+lcov.info
+tarpaulin-report.html
+
+# Benchmarks
+benches/
+criterion/

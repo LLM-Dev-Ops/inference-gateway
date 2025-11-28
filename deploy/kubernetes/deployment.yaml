@@ -1,0 +1,202 @@
+# LLM Inference Gateway Deployment
+# Production-ready deployment with:
+# - Resource limits and requests
+# - Health checks (liveness, readiness, startup)
+# - Security context
+# - Graceful shutdown
+# - Anti-affinity for high availability
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-gateway
+  namespace: llm-gateway
+  labels:
+    app.kubernetes.io/name: llm-inference-gateway
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/version: "0.1.0"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: llm-inference-gateway
+      app.kubernetes.io/component: gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: llm-inference-gateway
+        app.kubernetes.io/component: gateway
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: llm-gateway
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Pod anti-affinity for high availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: llm-inference-gateway
+                topologyKey: kubernetes.io/hostname
+
+      # Spread across zones
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: llm-inference-gateway
+
+      containers:
+        - name: gateway
+          image: llm-inference-gateway:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+
+          # Environment variables from ConfigMap and Secrets
+          envFrom:
+            - configMapRef:
+                name: llm-gateway-config
+            - secretRef:
+                name: llm-gateway-secrets
+
+          # Additional environment variables
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+
+          # Volume mounts
+          volumeMounts:
+            - name: config
+              mountPath: /etc/llm-gateway
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+
+          # Resource limits
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+
+          # Security context
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          # Startup probe (for slow-starting containers)
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+
+          # Liveness probe
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          # Readiness probe
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # Lifecycle hooks for graceful shutdown
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 10
+
+      # Volumes
+      volumes:
+        - name: config
+          configMap:
+            name: llm-gateway-config
+        - name: tmp
+          emptyDir: {}
+
+      # Graceful termination
+      terminationGracePeriodSeconds: 60
+
+      # Node selector (optional - uncomment to target specific nodes)
+      # nodeSelector:
+      #   node-type: compute
+
+      # Tolerations (optional - uncomment to tolerate specific taints)
+      # tolerations:
+      #   - key: "dedicated"
+      #     operator: "Equal"
+      #     value: "llm-gateway"
+      #     effect: "NoSchedule"
+
+---
+# Pod Disruption Budget for high availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: llm-gateway-pdb
+  namespace: llm-gateway
+  labels:
+    app.kubernetes.io/name: llm-inference-gateway
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: llm-inference-gateway
+      app.kubernetes.io/component: gateway

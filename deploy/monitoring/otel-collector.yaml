@@ -1,0 +1,110 @@
+# OpenTelemetry Collector Configuration
+# Receives traces from LLM Gateway and exports to Jaeger
+
+receivers:
+  # OTLP receiver for traces and metrics
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Prometheus receiver for scraping metrics
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 10s
+          static_configs:
+            - targets: ['localhost:8888']
+
+processors:
+  # Batch processor for efficiency
+  batch:
+    timeout: 10s
+    send_batch_size: 10000
+
+  # Memory limiter to prevent OOM
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 512
+    spike_limit_mib: 128
+
+  # Resource processor for adding attributes
+  resource:
+    attributes:
+      - key: service.namespace
+        value: llm-platform
+        action: upsert
+      - key: deployment.environment
+        value: production
+        action: upsert
+
+  # Filter out unwanted telemetry
+  filter:
+    traces:
+      span:
+        - 'attributes["http.target"] == "/health"'
+        - 'attributes["http.target"] == "/ready"'
+        - 'attributes["http.target"] == "/live"'
+
+exporters:
+  # Jaeger exporter for traces
+  otlp/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  # Prometheus exporter for metrics
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: llm_gateway
+
+  # Logging exporter for debugging
+  logging:
+    verbosity: normal
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+  # OTLP exporter (for remote backends)
+  # otlp/remote:
+  #   endpoint: remote-collector:4317
+  #   headers:
+  #     authorization: "Bearer ${OTEL_AUTH_TOKEN}"
+
+extensions:
+  # Health check extension
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+  # Performance profiling
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # zPages for debugging
+  zpages:
+    endpoint: 0.0.0.0:55679
+
+service:
+  extensions: [health_check, pprof, zpages]
+
+  pipelines:
+    # Traces pipeline
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, resource, filter]
+      exporters: [otlp/jaeger, logging]
+
+    # Metrics pipeline
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [memory_limiter, batch, resource]
+      exporters: [prometheus, logging]
+
+  # Telemetry configuration for the collector itself
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      address: 0.0.0.0:8888
