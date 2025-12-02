@@ -1,6 +1,7 @@
 //! CLI commands module.
 
 pub mod backend_health;
+pub mod benchmark;
 pub mod cache_status;
 pub mod chat;
 pub mod completions;

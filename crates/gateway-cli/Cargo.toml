@@ -19,6 +19,7 @@ gateway-config = { path = "../gateway-config" }
 gateway-server = { path = "../gateway-server" }
 gateway-sdk = { path = "../gateway-sdk" }
 gateway-migrations = { path = "../gateway-migrations" }
+gateway-benchmarks = { path = "../gateway-benchmarks" }
 
 # CLI framework
 clap = { version = "4.4", features = ["derive", "env", "cargo"] }

@@ -40,6 +40,7 @@ members = [
     "crates/gateway-cli",
     "crates/gateway-migrations",
     "crates/gateway-security",
+    "crates/gateway-benchmarks",
     "tests/integration",
 ]
 
@@ -133,6 +134,7 @@ gateway-sdk = { path = "crates/gateway-sdk" }
 gateway-cli = { path = "crates/gateway-cli" }
 gateway-migrations = { path = "crates/gateway-migrations" }
 gateway-security = { path = "crates/gateway-security" }
+gateway-benchmarks = { path = "crates/gateway-benchmarks" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

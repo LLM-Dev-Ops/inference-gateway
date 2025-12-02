@@ -82,6 +82,9 @@ pub enum Commands {
     /// View and manage cache status
     #[command(name = "cache-status")]
     CacheStatus(commands::cache_status::CacheStatusArgs),
+
+    /// Run performance benchmarks
+    Benchmark(commands::benchmark::BenchmarkArgs),
 }
 
 impl Cli {
@@ -103,6 +106,7 @@ impl Cli {
             Commands::BackendHealth(args) => commands::backend_health::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
             Commands::RoutingStrategy(args) => commands::routing_strategy::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
             Commands::CacheStatus(args) => commands::cache_status::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
+            Commands::Benchmark(args) => commands::benchmark::execute(args, self.json).await,
         }
     }
 }

@@ -1,0 +1,2 @@
+# This directory contains raw benchmark results in JSON format.
+# Files are generated when running: llm-gateway benchmark run

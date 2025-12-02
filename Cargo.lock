@@ -1115,6 +1115,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "gateway-benchmarks"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "futures",
+ "gateway-config",
+ "gateway-core",
+ "gateway-resilience",
+ "gateway-routing",
+ "gateway-server",
+ "gateway-telemetry",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-test",
+ "uuid",
+]
+
+[[package]]
 name = "gateway-cli"
 version = "0.1.0"
 dependencies = [
@@ -1128,6 +1151,7 @@ dependencies = [
  "directories",
  "dotenvy",
  "futures",
+ "gateway-benchmarks",
  "gateway-config",
  "gateway-core",
  "gateway-migrations",

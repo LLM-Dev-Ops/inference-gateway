@@ -1,0 +1,16 @@
+{
+  "target_id": "backend_routing",
+  "metrics": {
+    "description": "Measures backend routing decision latency including load balancer selection and routing rules",
+    "iterations": 10000,
+    "latency_ms": 0.0006469601999999758,
+    "max_ms": 0.041017,
+    "min_ms": 0.00061,
+    "p50_ms": 0.000631,
+    "p90_ms": 0.000641,
+    "p95_ms": 0.000642,
+    "p99_ms": 0.000691,
+    "throughput_rps": 1545690.1367348987
+  },
+  "timestamp": "2025-12-02T05:48:49.570273816Z"
+}
