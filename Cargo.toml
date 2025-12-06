@@ -41,6 +41,7 @@ members = [
     "crates/gateway-migrations",
     "crates/gateway-security",
     "crates/gateway-benchmarks",
+    "crates/gateway-integrations",
     "tests/integration",
 ]
 
@@ -135,6 +136,48 @@ gateway-cli = { path = "crates/gateway-cli" }
 gateway-migrations = { path = "crates/gateway-migrations" }
 gateway-security = { path = "crates/gateway-security" }
 gateway-benchmarks = { path = "crates/gateway-benchmarks" }
+gateway-integrations = { path = "crates/gateway-integrations" }
+
+# =============================================================================
+# Phase 2A/2B External Dependencies - LLM-Dev-Ops Ecosystem
+# =============================================================================
+# These are compile-time dependencies for the LLM-Dev-Ops platform integration.
+# Phase 2A: Dependencies declared in workspace
+# Phase 2B: Thin runtime adapters implemented in gateway-integrations crate
+# Note: Router (Layer 2 module) is already covered by gateway-routing above.
+#
+# The external git dependencies are commented out until the upstream repos
+# publish their crates. The gateway-integrations crate provides the adapter
+# interfaces that will consume from these services when available.
+# =============================================================================
+
+# LLM-Connector-Hub: Provider adapters, credential management, API normalization
+# https://github.com/LLM-Dev-Ops/connector-hub
+# llm-connector-hub-core = { git = "https://github.com/LLM-Dev-Ops/connector-hub.git", branch = "main" }
+
+# LLM-Shield: Security scanning, PII detection, content filtering
+# https://github.com/LLM-Dev-Ops/shield
+# llm-shield-core = { git = "https://github.com/LLM-Dev-Ops/shield.git", branch = "main" }
+
+# LLM-Sentinel: Real-time monitoring, anomaly detection, alerting
+# https://github.com/LLM-Dev-Ops/sentinel
+# llm-sentinel-core = { git = "https://github.com/LLM-Dev-Ops/sentinel.git", branch = "main" }
+
+# LLM-CostOps: Cost tracking, budget management, usage analytics
+# https://github.com/LLM-Dev-Ops/cost-ops
+# llm-cost-ops = { git = "https://github.com/LLM-Dev-Ops/cost-ops.git", branch = "main" }
+
+# LLM-Observatory: Telemetry collection, metrics aggregation, observability
+# https://github.com/LLM-Dev-Ops/observatory
+# llm-observatory-core = { git = "https://github.com/LLM-Dev-Ops/observatory.git", branch = "main" }
+
+# LLM-Auto-Optimizer: Dynamic routing, performance tuning, model selection
+# https://github.com/LLM-Dev-Ops/auto-optimizer
+# llm-auto-optimizer = { git = "https://github.com/LLM-Dev-Ops/auto-optimizer.git", branch = "main" }
+
+# LLM-Policy-Engine: Access control, routing rules, quota management
+# https://github.com/LLM-Dev-Ops/policy-engine
+# llm-policy-engine = { git = "https://github.com/LLM-Dev-Ops/policy-engine.git", branch = "main" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

@@ -1219,6 +1219,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "gateway-integrations"
+version = "0.1.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "chrono",
+ "dashmap",
+ "futures",
+ "gateway-core",
+ "gateway-routing",
+ "humantime-serde",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "gateway-migrations"
 version = "0.1.0"
 dependencies = [

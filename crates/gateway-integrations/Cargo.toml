@@ -1,0 +1,65 @@
+[package]
+name = "gateway-integrations"
+description = "Thin runtime adapters for LLM-Dev-Ops ecosystem integrations"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[features]
+default = []
+# Feature flags for when upstream LLM-Dev-Ops crates become available
+# These will enable direct integration with the upstream services
+# connector-hub = ["dep:llm-connector-hub-core"]
+# shield = ["dep:llm-shield-core"]
+# sentinel = ["dep:llm-sentinel-core"]
+# cost-ops = ["dep:llm-cost-ops"]
+# observatory = ["dep:llm-observatory-core"]
+# auto-optimizer = ["dep:llm-auto-optimizer"]
+# policy-engine = ["dep:llm-policy-engine"]
+
+[dependencies]
+# Internal crates
+gateway-core = { workspace = true }
+gateway-routing = { workspace = true }
+
+# =============================================================================
+# LLM-Dev-Ops ecosystem dependencies (to be enabled when repos are available)
+# =============================================================================
+# Phase 2B implements thin adapter interfaces. When the upstream crates are
+# published, uncomment these dependencies and enable the corresponding features
+# to get direct integration with the LLM-Dev-Ops services.
+# =============================================================================
+# llm-connector-hub-core = { workspace = true, optional = true }
+# llm-shield-core = { workspace = true, optional = true }
+# llm-sentinel-core = { workspace = true, optional = true }
+# llm-cost-ops = { workspace = true, optional = true }
+# llm-observatory-core = { workspace = true, optional = true }
+# llm-auto-optimizer = { workspace = true, optional = true }
+# llm-policy-engine = { workspace = true, optional = true }
+
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Utilities
+tracing = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+dashmap = { workspace = true }
+arc-swap = { workspace = true }
+secrecy = { workspace = true }
+humantime-serde = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true
