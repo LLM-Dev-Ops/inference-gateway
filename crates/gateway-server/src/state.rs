@@ -1,6 +1,7 @@
 //! Application state shared across handlers.
 
 use arc_swap::ArcSwap;
+use gateway_agents::InferenceRoutingAgent;
 use gateway_config::GatewayConfig;
 use gateway_providers::ProviderRegistry;
 use gateway_resilience::{CircuitBreaker, RetryPolicy};
@@ -28,6 +29,8 @@ pub struct AppState {
     pub metrics: Arc<Metrics>,
     /// Request tracker
     pub tracker: Arc<RequestTracker>,
+    /// Inference routing agent
+    pub inference_routing_agent: Arc<InferenceRoutingAgent>,
 }
 
 impl AppState {
@@ -56,6 +59,7 @@ pub struct AppStateBuilder {
     router: Option<Router>,
     retry_policy: Option<RetryPolicy>,
     metrics: Option<Metrics>,
+    inference_routing_agent: Option<Arc<InferenceRoutingAgent>>,
 }
 
 impl AppStateBuilder {
@@ -68,6 +72,7 @@ impl AppStateBuilder {
             router: None,
             retry_policy: None,
             metrics: None,
+            inference_routing_agent: None,
         }
     }
 
@@ -106,6 +111,13 @@ impl AppStateBuilder {
         self
     }
 
+    /// Set the inference routing agent
+    #[must_use]
+    pub fn inference_routing_agent(mut self, agent: Arc<InferenceRoutingAgent>) -> Self {
+        self.inference_routing_agent = Some(agent);
+        self
+    }
+
     /// Build the application state
     ///
     /// # Panics
@@ -115,12 +127,24 @@ impl AppStateBuilder {
     pub fn build(self) -> AppState {
         let config = self.config.expect("config is required");
 
+        let router = Arc::new(self.router.unwrap_or_else(|| {
+            Router::new(gateway_routing::RouterConfig::default())
+        }));
+
+        // Create inference routing agent, wrapping the router
+        let inference_routing_agent = self.inference_routing_agent.unwrap_or_else(|| {
+            Arc::new(
+                InferenceRoutingAgent::builder()
+                    .id("inference-routing-agent")
+                    .router(Arc::clone(&router))
+                    .build(),
+            )
+        });
+
         AppState {
             config: Arc::new(ArcSwap::new(Arc::new(config))),
             providers: Arc::new(self.providers.unwrap_or_default()),
-            router: Arc::new(self.router.unwrap_or_else(|| {
-                Router::new(gateway_routing::RouterConfig::default())
-            })),
+            router,
             circuit_breakers: Arc::new(CircuitBreakerManager::new()),
             retry_policy: Arc::new(self.retry_policy.unwrap_or_else(RetryPolicy::with_defaults)),
             metrics: Arc::new(
@@ -128,6 +152,7 @@ impl AppStateBuilder {
                     .unwrap_or_else(|| Metrics::new(&Default::default()).expect("metrics")),
             ),
             tracker: Arc::new(RequestTracker::new(10000)),
+            inference_routing_agent,
         }
     }
 }

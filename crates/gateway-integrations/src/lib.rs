@@ -11,6 +11,7 @@
 //! - **Router**: Consume routing rules and decision graphs
 //! - **LLM-Auto-Optimizer**: Consume optimization hints and recommendations
 //! - **LLM-Policy-Engine**: Consume policy enforcement decisions
+//! - **RuVector-Service**: Persist DecisionEvents (never direct DB access)
 //!
 //! All adapters are designed as thin wrappers that:
 //! - Do not modify existing gateway APIs
@@ -27,7 +28,8 @@ pub mod traits;
 
 // Re-export commonly used types
 pub use adapters::IntegrationManager;
-pub use config::IntegrationsConfig;
+pub use adapters::{DecisionEvent, EventQuery, RuVectorClient, RuVectorPersistence};
+pub use config::{IntegrationsConfig, RuVectorConfig};
 pub use error::{IntegrationError, IntegrationResult};
 pub use traits::{
     CostConsumer, ObservabilityEmitter, OptimizationConsumer, PolicyConsumer, ProviderRouter,

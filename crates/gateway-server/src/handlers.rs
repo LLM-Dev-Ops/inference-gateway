@@ -10,9 +10,13 @@ use axum::{
     Json,
 };
 use futures::stream::StreamExt;
-use gateway_core::{GatewayRequest, ModelsResponse, ModelObject};
+use gateway_agents::{
+    AgentMetadata, AgentStatus, InferenceRoutingInput, InferenceRoutingOutput, RoutingInspection,
+    AGENT_ID, AGENT_VERSION,
+};
+use gateway_core::{GatewayRequest, ModelObject, ModelsResponse};
 use gateway_telemetry::RequestInfo;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::{convert::Infallible, time::Instant};
 use tracing::{debug, error, info, instrument};
 
@@ -368,6 +372,156 @@ pub async fn gateway_stats(State(state): State<AppState>) -> Json<GatewayStats> 
         avg_latency_ms: tracker_stats.avg_duration.as_millis() as f64,
         providers: state.providers.len(),
     })
+}
+
+// =============================================================================
+// Agent Endpoints
+// =============================================================================
+
+/// Response for the agent route endpoint
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RouteResponse {
+    /// Routing output with selected provider and model
+    pub output: InferenceRoutingOutput,
+    /// Decision ID for audit trail
+    pub decision_id: String,
+    /// Confidence score (0.0-1.0)
+    pub confidence: f64,
+}
+
+/// Agent health response
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AgentHealthResponse {
+    /// Health status
+    pub status: String,
+    /// Agent ID
+    pub agent_id: String,
+    /// Agent version
+    pub version: String,
+}
+
+/// POST /agents/route - Route an inference request via the agent
+///
+/// This endpoint routes an inference request using the `InferenceRoutingAgent`.
+/// It returns the routing decision along with telemetry information.
+#[instrument(skip(state, input), fields(model = %input.request.model))]
+pub async fn agent_route(
+    State(state): State<AppState>,
+    Json(input): Json<InferenceRoutingInput>,
+) -> Result<Json<RouteResponse>, ApiError> {
+    debug!(
+        model = %input.request.model,
+        tenant_id = ?input.tenant_id,
+        "Agent routing inference request"
+    );
+
+    let (output, event) = state
+        .inference_routing_agent
+        .route(input)
+        .await
+        .map_err(|e| {
+            error!(error = %e, "Agent routing failed");
+            ApiError::service_unavailable(format!("Routing failed: {e}"))
+        })?;
+
+    info!(
+        decision_id = %event.execution_ref,
+        provider = %output.provider_id,
+        model = %output.model,
+        latency_us = %event.latency_us,
+        "Agent routing decision made"
+    );
+
+    Ok(Json(RouteResponse {
+        output,
+        decision_id: event.execution_ref,
+        confidence: event.confidence,
+    }))
+}
+
+/// GET /agents/inspect - Inspect routing configuration
+///
+/// Returns the current state of the routing agent including:
+/// - Agent metadata and version
+/// - Registered providers
+/// - Active rules
+/// - Configuration summary
+#[instrument(skip(state))]
+pub async fn agent_inspect(State(state): State<AppState>) -> Json<RoutingInspection> {
+    debug!("Agent inspection requested");
+    Json(state.inference_routing_agent.inspect())
+}
+
+/// GET /agents/status - Get agent status
+///
+/// Returns the current operational status of the agent including:
+/// - Health status
+/// - Request counts and error rates
+/// - Average latency
+/// - Uptime information
+#[instrument(skip(state))]
+pub async fn agent_status(State(state): State<AppState>) -> Json<AgentStatus> {
+    debug!("Agent status requested");
+    Json(state.inference_routing_agent.status())
+}
+
+/// GET /agents - List available agents
+///
+/// Returns metadata for all available agents in the system.
+#[instrument(skip(_state))]
+pub async fn list_agents(State(_state): State<AppState>) -> Json<Vec<AgentMetadata>> {
+    debug!("Listing available agents");
+
+    // Currently we only have the inference routing agent
+    let agents = vec![AgentMetadata::new(
+        AGENT_ID,
+        "InferenceRoutingAgent",
+        "Routes inference requests to optimal LLM providers based on rules, load balancing, and health status",
+    )
+    .with_version(gateway_agents::AgentVersion::new(0, 1, 0))
+    .with_capabilities(vec![
+        "routing".to_string(),
+        "load_balancing".to_string(),
+        "rule_evaluation".to_string(),
+        "health_awareness".to_string(),
+        "tenant_routing".to_string(),
+    ])
+    .with_endpoint(gateway_agents::types::AgentEndpoint::new(
+        "POST",
+        "/agents/route",
+        "Route an inference request",
+    ))
+    .with_endpoint(gateway_agents::types::AgentEndpoint::new(
+        "GET",
+        "/agents/inspect",
+        "Inspect agent state",
+    ))
+    .with_endpoint(gateway_agents::types::AgentEndpoint::new(
+        "GET",
+        "/agents/status",
+        "Get agent status",
+    ))];
+
+    Json(agents)
+}
+
+/// GET /agents/health - Agent health check
+///
+/// Simple health check for the routing agent.
+/// Returns 200 OK if the agent is healthy, or an appropriate error status.
+#[instrument(skip(state))]
+pub async fn agent_health(State(state): State<AppState>) -> Result<Json<AgentHealthResponse>, ApiError> {
+    let status = state.inference_routing_agent.status();
+
+    if status.health == gateway_agents::AgentHealth::Unhealthy {
+        return Err(ApiError::service_unavailable("Agent is unhealthy"));
+    }
+
+    Ok(Json(AgentHealthResponse {
+        status: status.health.to_string(),
+        agent_id: AGENT_ID.to_string(),
+        version: AGENT_VERSION.to_string(),
+    }))
 }
 
 #[cfg(test)]

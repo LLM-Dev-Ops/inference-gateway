@@ -42,6 +42,8 @@ members = [
     "crates/gateway-security",
     "crates/gateway-benchmarks",
     "crates/gateway-integrations",
+    "crates/agentics-contracts",
+    "crates/gateway-agents",
     "tests/integration",
 ]
 
@@ -137,6 +139,8 @@ gateway-migrations = { path = "crates/gateway-migrations" }
 gateway-security = { path = "crates/gateway-security" }
 gateway-benchmarks = { path = "crates/gateway-benchmarks" }
 gateway-integrations = { path = "crates/gateway-integrations" }
+gateway-agents = { path = "crates/gateway-agents" }
+agentics-contracts = { path = "crates/agentics-contracts" }
 
 # =============================================================================
 # Phase 2A/2B External Dependencies - LLM-Dev-Ops Ecosystem

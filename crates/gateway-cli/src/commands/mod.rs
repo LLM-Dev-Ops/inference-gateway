@@ -1,5 +1,6 @@
 //! CLI commands module.
 
+pub mod agent;
 pub mod backend_health;
 pub mod benchmark;
 pub mod cache_status;

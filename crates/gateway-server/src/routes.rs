@@ -23,6 +23,8 @@ pub fn create_router(state: AppState) -> Router {
         .nest("/v1", openai_routes())
         // Admin endpoints
         .nest("/admin", admin_routes())
+        // Agent endpoints
+        .nest("/", agent_routes())
         // Apply middleware
         .layer(axum::middleware::from_fn(middleware::request_id_middleware))
         .layer(axum::middleware::from_fn(middleware::response_time_middleware))
@@ -48,6 +50,23 @@ fn admin_routes() -> Router<AppState> {
     Router::new()
         .route("/providers", get(handlers::list_providers))
         .route("/stats", get(handlers::gateway_stats))
+}
+
+/// Agent routes for the Inference Routing Agent
+///
+/// Provides endpoints for:
+/// - `POST /agents/route` - Route an inference request
+/// - `GET /agents/inspect` - Inspect agent configuration
+/// - `GET /agents/status` - Get agent operational status
+/// - `GET /agents` - List available agents
+/// - `GET /agents/health` - Agent health check
+pub fn agent_routes() -> Router<AppState> {
+    Router::new()
+        .route("/agents/route", post(handlers::agent_route))
+        .route("/agents/inspect", get(handlers::agent_inspect))
+        .route("/agents/status", get(handlers::agent_status))
+        .route("/agents", get(handlers::list_agents))
+        .route("/agents/health", get(handlers::agent_health))
 }
 
 #[cfg(test)]

@@ -27,8 +27,8 @@ target/
 !README.md
 docs/
 
-# Test files
-tests/
+# Test files (keep tests/ for workspace build)
+# tests/
 *_test.rs
 *.test.rs
 

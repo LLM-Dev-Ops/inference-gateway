@@ -41,6 +41,10 @@ pub struct IntegrationsConfig {
     /// Router configuration
     #[serde(default)]
     pub router: RouterConfig,
+
+    /// RuVector service configuration
+    #[serde(default)]
+    pub ruvector: RuVectorConfig,
 }
 
 impl Default for IntegrationsConfig {
@@ -55,6 +59,7 @@ impl Default for IntegrationsConfig {
             auto_optimizer: AutoOptimizerConfig::default(),
             policy_engine: PolicyEngineConfig::default(),
             router: RouterConfig::default(),
+            ruvector: RuVectorConfig::default(),
         }
     }
 }
@@ -438,4 +443,72 @@ fn default_budget_threshold() -> f32 {
 
 fn default_true() -> bool {
     true
+}
+
+fn default_pool_size() -> u32 {
+    10
+}
+
+fn default_retry_count() -> u32 {
+    3
+}
+
+/// RuVector service configuration
+///
+/// Configuration for the RuVector service client adapter.
+/// RuVector-service is backed by Google SQL (Postgres) and is the
+/// ONLY persistence layer for DecisionEvents.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RuVectorConfig {
+    /// Enable RuVector integration
+    #[serde(default)]
+    pub enabled: bool,
+
+    /// Endpoint URL for ruvector-service
+    #[serde(default)]
+    pub endpoint: Option<String>,
+
+    /// API key for authentication
+    #[serde(default)]
+    pub api_key: Option<String>,
+
+    /// Connection timeout
+    #[serde(default = "default_timeout", with = "humantime_serde")]
+    pub timeout: Duration,
+
+    /// Number of retry attempts for failed requests
+    #[serde(default = "default_retry_count")]
+    pub retry_count: u32,
+
+    /// Connection pool size
+    #[serde(default = "default_pool_size")]
+    pub pool_size: u32,
+
+    /// Enable batch persistence mode
+    #[serde(default = "default_true")]
+    pub batch_enabled: bool,
+
+    /// Maximum batch size for event persistence
+    #[serde(default = "default_batch_size")]
+    pub batch_size: usize,
+
+    /// Flush interval for batched events
+    #[serde(default = "default_flush_interval", with = "humantime_serde")]
+    pub flush_interval: Duration,
+}
+
+impl Default for RuVectorConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            endpoint: None,
+            api_key: None,
+            timeout: default_timeout(),
+            retry_count: default_retry_count(),
+            pool_size: default_pool_size(),
+            batch_enabled: true,
+            batch_size: default_batch_size(),
+            flush_interval: default_flush_interval(),
+        }
+    }
 }

@@ -1,0 +1,148 @@
+# Cloud Run Service Configuration
+# LLM-Inference-Gateway - Unified Agent Service
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: llm-inference-gateway
+  labels:
+    service: llm-inference-gateway
+    team: agentics
+    component: routing
+  annotations:
+    run.googleapis.com/description: "LLM Inference Gateway - Request routing and execution entry layer"
+    run.googleapis.com/ingress: all
+    run.googleapis.com/launch-stage: GA
+spec:
+  template:
+    metadata:
+      annotations:
+        # Scaling
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "100"
+
+        # Resources
+        run.googleapis.com/cpu-throttling: "false"
+        run.googleapis.com/startup-cpu-boost: "true"
+
+        # Execution environment
+        run.googleapis.com/execution-environment: gen2
+
+        # Network
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: inference-gateway@PROJECT_ID.iam.gserviceaccount.com
+
+      containers:
+        - name: gateway
+          image: gcr.io/PROJECT_ID/llm-inference-gateway:latest
+
+          ports:
+            - name: http1
+              containerPort: 8080
+
+          resources:
+            limits:
+              cpu: "2"
+              memory: 2Gi
+            requests:
+              cpu: "1"
+              memory: 1Gi
+
+          env:
+            # Service Identity
+            - name: SERVICE_NAME
+              value: llm-inference-gateway
+            - name: SERVICE_VERSION
+              value: "1.0.0"
+            - name: PLATFORM_ENV
+              value: production
+
+            # Server Configuration
+            - name: GATEWAY_HOST
+              value: "0.0.0.0"
+            - name: GATEWAY_PORT
+              value: "8080"
+            - name: RUST_LOG
+              value: "info,tower_http=debug"
+
+            # RuVector Service (Persistence Layer)
+            - name: RUVECTOR_SERVICE_URL
+              value: "https://ruvector-service-PROJECT_ID.run.app"
+            - name: RUVECTOR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ruvector-api-key
+                  key: latest
+
+            # Telemetry (LLM-Observatory)
+            - name: TELEMETRY_ENDPOINT
+              value: "https://llm-observatory-PROJECT_ID.run.app/v1/telemetry"
+            - name: OTEL_ENABLED
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: llm-inference-gateway
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "https://otel-collector-PROJECT_ID.run.app"
+
+            # Provider API Keys (from Secret Manager)
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-key
+                  key: latest
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: anthropic-api-key
+                  key: latest
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: google-api-key
+                  key: latest
+
+            # Resilience Configuration
+            - name: CIRCUIT_BREAKER_FAILURE_THRESHOLD
+              value: "5"
+            - name: CIRCUIT_BREAKER_TIMEOUT_SECONDS
+              value: "30"
+            - name: RATE_LIMIT_ENABLED
+              value: "true"
+            - name: RATE_LIMIT_REQUESTS_PER_MINUTE
+              value: "1000"
+
+          # Probes
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+            timeoutSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+            timeoutSeconds: 5
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+
+  traffic:
+    - percent: 100
+      latestRevision: true

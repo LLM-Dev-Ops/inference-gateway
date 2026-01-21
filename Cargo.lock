@@ -44,6 +44,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "agentics-contracts"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "uuid",
+ "validator",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "1.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1115,6 +1128,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "gateway-agents"
+version = "0.1.0"
+dependencies = [
+ "agentics-contracts",
+ "async-trait",
+ "axum",
+ "chrono",
+ "futures",
+ "gateway-core",
+ "gateway-integrations",
+ "gateway-routing",
+ "gateway-telemetry",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror 1.0.69",
+ "tokio",
+ "tower 0.4.13",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "gateway-benchmarks"
 version = "0.1.0"
 dependencies = [
@@ -1231,6 +1268,7 @@ dependencies = [
  "gateway-core",
  "gateway-routing",
  "humantime-serde",
+ "reqwest",
  "secrecy",
  "serde",
  "serde_json",
@@ -1396,6 +1434,7 @@ dependencies = [
  "dashmap",
  "futures",
  "futures-util",
+ "gateway-agents",
  "gateway-config",
  "gateway-core",
  "gateway-providers",

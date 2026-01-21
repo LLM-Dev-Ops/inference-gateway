@@ -1,3 +1,6 @@
 node_modules
 target/
 .claude-flow/
+.claude/
+.mcp.json
+CLAUDE.md

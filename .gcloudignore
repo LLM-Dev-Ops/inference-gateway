@@ -1,0 +1,9 @@
+# Minimal gcloudignore - only exclude what's definitely not needed
+.git/
+target/
+.idea/
+.vscode/
+.claude/
+.claude-flow/
+node_modules/
+*.profraw

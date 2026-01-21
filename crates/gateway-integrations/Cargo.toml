@@ -58,6 +58,9 @@ arc-swap = { workspace = true }
 secrecy = { workspace = true }
 humantime-serde = { workspace = true }
 
+# HTTP client for ruvector-service
+reqwest = { workspace = true }
+
 [dev-dependencies]
 tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }
 

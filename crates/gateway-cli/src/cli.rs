@@ -85,6 +85,9 @@ pub enum Commands {
 
     /// Run performance benchmarks
     Benchmark(commands::benchmark::BenchmarkArgs),
+
+    /// Inference Routing Agent operations (route, inspect, status, list)
+    Agent(commands::agent::AgentCommand),
 }
 
 impl Cli {
@@ -107,6 +110,7 @@ impl Cli {
             Commands::RoutingStrategy(args) => commands::routing_strategy::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
             Commands::CacheStatus(args) => commands::cache_status::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
             Commands::Benchmark(args) => commands::benchmark::execute(args, self.json).await,
+            Commands::Agent(args) => commands::agent::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
         }
     }
 }

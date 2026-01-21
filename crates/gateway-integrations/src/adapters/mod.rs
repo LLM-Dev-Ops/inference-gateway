@@ -9,6 +9,7 @@ pub mod auto_optimizer;
 pub mod observatory;
 pub mod policy_engine;
 pub mod router;
+pub mod ruvector;
 pub mod sentinel;
 pub mod shield;
 
@@ -23,5 +24,6 @@ pub use auto_optimizer::AutoOptimizerAdapter;
 pub use observatory::ObservatoryAdapter;
 pub use policy_engine::PolicyEngineAdapter;
 pub use router::RouterAdapter;
+pub use ruvector::{DecisionEvent, EventQuery, RuVectorClient, RuVectorPersistence};
 pub use sentinel::SentinelAdapter;
 pub use shield::ShieldAdapter;

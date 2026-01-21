@@ -7,11 +7,11 @@ use crate::config::IntegrationsConfig;
 use crate::error::IntegrationResult;
 use crate::traits::*;
 use std::sync::Arc;
-use tracing::{debug, instrument};
+use tracing::{debug, instrument, warn};
 
 use super::{
     AutoOptimizerAdapter, ConnectorHubAdapter, CostOpsAdapter, ObservatoryAdapter,
-    PolicyEngineAdapter, RouterAdapter, SentinelAdapter, ShieldAdapter,
+    PolicyEngineAdapter, RouterAdapter, RuVectorClient, SentinelAdapter, ShieldAdapter,
 };
 
 /// Manager for all integration adapters.
@@ -35,6 +35,8 @@ pub struct IntegrationManager {
     auto_optimizer: Arc<AutoOptimizerAdapter>,
     /// Policy engine adapter for policy enforcement
     policy_engine: Arc<PolicyEngineAdapter>,
+    /// RuVector client for persistence (DecisionEvents)
+    ruvector: Option<Arc<RuVectorClient>>,
     /// Overall enabled state
     enabled: bool,
 }
@@ -42,6 +44,19 @@ pub struct IntegrationManager {
 impl IntegrationManager {
     /// Create a new integration manager from configuration.
     pub fn new(config: IntegrationsConfig) -> Self {
+        // Create RuVector client if configured
+        let ruvector = if config.ruvector.enabled {
+            match RuVectorClient::new(config.ruvector.clone()) {
+                Ok(client) => Some(Arc::new(client)),
+                Err(e) => {
+                    warn!(error = %e, "Failed to create RuVector client, persistence disabled");
+                    None
+                }
+            }
+        } else {
+            None
+        };
+
         Self {
             connector_hub: Arc::new(ConnectorHubAdapter::new(config.connector_hub)),
             shield: Arc::new(ShieldAdapter::new(config.shield)),
@@ -51,6 +66,7 @@ impl IntegrationManager {
             router: Arc::new(RouterAdapter::new(config.router)),
             auto_optimizer: Arc::new(AutoOptimizerAdapter::new(config.auto_optimizer)),
             policy_engine: Arc::new(PolicyEngineAdapter::new(config.policy_engine)),
+            ruvector,
             enabled: config.enabled,
         }
     }
@@ -107,6 +123,18 @@ impl IntegrationManager {
     /// Get the policy engine adapter.
     pub fn policy_engine(&self) -> &Arc<PolicyEngineAdapter> {
         &self.policy_engine
+    }
+
+    /// Get the RuVector client for persistence operations.
+    ///
+    /// Returns None if RuVector is not configured or failed to initialize.
+    pub fn ruvector(&self) -> Option<&Arc<RuVectorClient>> {
+        self.ruvector.as_ref()
+    }
+
+    /// Check if RuVector persistence is available.
+    pub fn has_ruvector(&self) -> bool {
+        self.ruvector.is_some()
     }
 
     // =========================================================================
@@ -331,6 +359,7 @@ impl IntegrationManager {
             router_enabled: self.router.is_enabled(),
             auto_optimizer_enabled: self.auto_optimizer.is_enabled(),
             policy_engine_enabled: self.policy_engine.is_enabled(),
+            ruvector_enabled: self.ruvector.as_ref().map(|r| r.is_enabled()).unwrap_or(false),
         }
     }
 }
@@ -347,6 +376,7 @@ impl std::fmt::Debug for IntegrationManager {
             .field("router", &self.router)
             .field("auto_optimizer", &self.auto_optimizer)
             .field("policy_engine", &self.policy_engine)
+            .field("ruvector", &self.ruvector)
             .finish()
     }
 }
@@ -430,6 +460,8 @@ pub struct IntegrationStatus {
     pub auto_optimizer_enabled: bool,
     /// Policy engine enabled
     pub policy_engine_enabled: bool,
+    /// RuVector persistence enabled
+    pub ruvector_enabled: bool,
 }
 
 /// Builder for `IntegrationManager`

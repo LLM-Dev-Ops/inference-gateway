@@ -75,6 +75,15 @@ pub enum IntegrationError {
         message: String,
     },
 
+    /// Error from RuVector service integration
+    #[error("RuVector error: {message}")]
+    RuVector {
+        /// Error message
+        message: String,
+        /// Whether the error is retryable
+        retryable: bool,
+    },
+
     /// Configuration error
     #[error("Configuration error: {0}")]
     Configuration(String),
@@ -151,6 +160,22 @@ impl IntegrationError {
     pub fn router(message: impl Into<String>) -> Self {
         Self::Router {
             message: message.into(),
+        }
+    }
+
+    /// Create a new RuVector error
+    pub fn ruvector(message: impl Into<String>) -> Self {
+        Self::RuVector {
+            message: message.into(),
+            retryable: false,
+        }
+    }
+
+    /// Create a new retryable RuVector error
+    pub fn ruvector_retryable(message: impl Into<String>) -> Self {
+        Self::RuVector {
+            message: message.into(),
+            retryable: true,
         }
     }
 
