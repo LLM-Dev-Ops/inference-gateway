@@ -464,6 +464,12 @@ pub struct RuVectorConfig {
     #[serde(default)]
     pub enabled: bool,
 
+    /// Whether RuVector is REQUIRED (Phase 7+ repos must set this to true)
+    /// If true and health check fails at startup, the service will CRASH.
+    /// NO degraded mode, NO fallback logic, NO silent success.
+    #[serde(default)]
+    pub required: bool,
+
     /// Endpoint URL for ruvector-service
     #[serde(default)]
     pub endpoint: Option<String>,
@@ -501,6 +507,7 @@ impl Default for RuVectorConfig {
     fn default() -> Self {
         Self {
             enabled: false,
+            required: false,
             endpoint: None,
             api_key: None,
             timeout: default_timeout(),

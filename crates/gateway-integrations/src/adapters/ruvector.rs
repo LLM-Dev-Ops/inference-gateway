@@ -12,7 +12,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Duration;
-use tracing::{debug, instrument, warn};
+use tracing::{debug, error, info, instrument, warn};
 
 /// DecisionEvent represents a decision made by the inference gateway.
 ///
@@ -383,6 +383,107 @@ impl RuVectorClient {
 
         Ok(response.status().is_success())
     }
+
+    /// Phase 7 startup check - CRASHES if RuVector is unavailable.
+    ///
+    /// This method is called at service startup BEFORE any agent logic runs.
+    /// For Phase 7+ repositories, RuVector is REQUIRED infrastructure.
+    ///
+    /// # Behavior
+    /// - If `config.required` is false: returns Ok(()) immediately (non-Phase 7 mode)
+    /// - If `config.required` is true and health check passes: returns Ok(())
+    /// - If `config.required` is true and health check fails: PANICS (service crash)
+    ///
+    /// # Panics
+    /// Panics with a fatal error message if RuVector is required but unavailable.
+    /// There is NO degraded mode, NO fallback logic, NO silent success.
+    #[instrument(skip(self), name = "phase7_startup_check")]
+    pub async fn phase7_startup_check(&self) -> Result<(), IntegrationError> {
+        // If not required, just return Ok - non-Phase 7 mode
+        if !self.config.required {
+            debug!(
+                target: "phase7",
+                ruvector_required = false,
+                "RuVector not marked as required, skipping Phase 7 check"
+            );
+            return Ok(());
+        }
+
+        // Assert required flag for contract clarity
+        assert!(
+            self.config.required,
+            "ruvector.required must be true for Phase 7"
+        );
+
+        info!(
+            target: "phase7",
+            endpoint = ?self.config.endpoint,
+            "Performing Phase 7 RuVector startup check (REQUIRED mode)"
+        );
+
+        // Perform health check
+        match self.health_check().await {
+            Ok(true) => {
+                info!(
+                    target: "phase7",
+                    ruvector = true,
+                    endpoint = ?self.config.endpoint,
+                    "RuVector health check PASSED - service may proceed"
+                );
+                Ok(())
+            }
+            Ok(false) => {
+                error!(
+                    target: "phase7",
+                    endpoint = ?self.config.endpoint,
+                    "RuVector health check returned false - ABORTING SERVICE"
+                );
+                // CRASH - no degraded mode
+                panic!("FATAL: RuVector is REQUIRED but health check returned false. Service cannot start.");
+            }
+            Err(e) => {
+                error!(
+                    target: "phase7",
+                    endpoint = ?self.config.endpoint,
+                    error = %e,
+                    "RuVector health check FAILED - ABORTING SERVICE"
+                );
+                // CRASH - no degraded mode
+                panic!(
+                    "FATAL: RuVector is REQUIRED but unavailable ({}). Service cannot start.",
+                    e
+                );
+            }
+        }
+    }
+
+    /// Runtime contract assertion for Phase 7.
+    ///
+    /// This method validates that the Phase 7 contract is being honored
+    /// at runtime. Call this at critical points to ensure no code path
+    /// bypasses the required RuVector integration.
+    ///
+    /// # Panics
+    /// Panics if the Phase 7 contract is violated:
+    /// - `config.required` must be true
+    /// - `config.enabled` must be true
+    #[inline]
+    pub fn assert_phase7_contract(&self) {
+        assert!(
+            self.config.required,
+            "Phase 7 contract violation: ruvector.required must be true"
+        );
+        assert!(
+            self.is_enabled(),
+            "Phase 7 contract violation: ruvector must be enabled"
+        );
+    }
+
+    /// Check if this client is configured for Phase 7 required mode.
+    #[inline]
+    pub fn is_required(&self) -> bool {
+        self.config.required
+    }
 }
 
 #[async_trait]
@@ -605,6 +706,7 @@ impl std::fmt::Debug for RuVectorClient {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("RuVectorClient")
             .field("enabled", &self.config.enabled)
+            .field("required", &self.config.required)
             .field("endpoint", &self.config.endpoint)
             .field("timeout", &self.config.timeout)
             .field("retry_count", &self.config.retry_count)
@@ -658,6 +760,15 @@ impl RuVectorClientBuilder {
     /// Set the retry count.
     pub fn retry_count(mut self, retry_count: u32) -> Self {
         self.config.retry_count = retry_count;
+        self
+    }
+
+    /// Set whether RuVector is required (Phase 7 enforcement).
+    ///
+    /// When set to true, the service will CRASH at startup if RuVector
+    /// is unavailable. There is NO degraded mode.
+    pub fn required(mut self, required: bool) -> Self {
+        self.config.required = required;
         self
     }
 
@@ -781,5 +892,69 @@ mod tests {
 
         let result = client.persist_decision_event(&event).await;
         assert!(matches!(result, Err(IntegrationError::NotEnabled(_))));
+    }
+
+    #[test]
+    fn test_required_defaults_to_false() {
+        let config = RuVectorConfig::default();
+        assert!(!config.required);
+    }
+
+    #[test]
+    fn test_is_required() {
+        let mut config = RuVectorConfig::default();
+        config.required = true;
+        let client = RuVectorClient::new(config).unwrap();
+        assert!(client.is_required());
+    }
+
+    #[test]
+    fn test_builder_required() {
+        let client = RuVectorClientBuilder::new()
+            .enabled(true)
+            .required(true)
+            .endpoint("http://localhost:8080")
+            .build()
+            .expect("should build client");
+
+        assert!(client.is_required());
+    }
+
+    #[tokio::test]
+    async fn test_phase7_startup_check_not_required_skips() {
+        // When required=false, phase7_startup_check should return Ok immediately
+        let client = RuVectorClient::new(RuVectorConfig::default()).unwrap();
+        assert!(!client.is_required());
+
+        let result = client.phase7_startup_check().await;
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    #[should_panic(expected = "Phase 7 contract violation: ruvector.required must be true")]
+    fn test_assert_phase7_contract_fails_when_not_required() {
+        let client = RuVectorClient::new(RuVectorConfig::default()).unwrap();
+        client.assert_phase7_contract();
+    }
+
+    #[test]
+    #[should_panic(expected = "Phase 7 contract violation: ruvector must be enabled")]
+    fn test_assert_phase7_contract_fails_when_not_enabled() {
+        let mut config = RuVectorConfig::default();
+        config.required = true;
+        config.enabled = false;
+        let client = RuVectorClient::new(config).unwrap();
+        client.assert_phase7_contract();
+    }
+
+    #[test]
+    fn test_assert_phase7_contract_passes_when_required_and_enabled() {
+        let mut config = RuVectorConfig::default();
+        config.required = true;
+        config.enabled = true;
+        config.endpoint = Some("http://localhost:8080".to_string());
+        let client = RuVectorClient::new(config).unwrap();
+        // This should not panic
+        client.assert_phase7_contract();
     }
 }

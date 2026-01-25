@@ -48,6 +48,7 @@
 
 pub mod handler;
 pub mod inference_routing;
+pub mod phase7;
 pub mod telemetry;
 pub mod types;
 

@@ -1,0 +1,119 @@
+# Phase 7 Environment Variables for Cloud Run
+# These are REQUIRED - service will CRASH without them
+#
+# Usage:
+#   This file documents the required environment variables for Phase 7 deployment.
+#   Variables are set via the deploy.sh script or Cloud Run console.
+
+# =============================================================================
+# Agent Identity (REQUIRED)
+# =============================================================================
+# These variables identify this agent within the inference gateway system
+
+AGENT_NAME: "inference-routing-agent"
+AGENT_DOMAIN: "inference-gateway"
+AGENT_PHASE: "phase7"
+AGENT_LAYER: "layer2"
+AGENT_VERSION: "1.0.0"
+
+# =============================================================================
+# RuVector Configuration (REQUIRED)
+# =============================================================================
+# RuVector provides persistent vector storage and semantic search capabilities.
+# The service WILL NOT START without valid RuVector configuration.
+
+# API Key - MUST be provided via Secret Manager, never inline
+# Injected at deploy time via: --set-secrets=RUVECTOR_API_KEY=ruvector-api-key:latest
+# RUVECTOR_API_KEY: <from-secret-manager>
+
+# Service URL - Set per environment
+# RUVECTOR_SERVICE_URL: <set-via-deploy-script>
+
+# Validation flag - When true, startup will fail if RuVector is unreachable
+RUVECTOR_REQUIRED: "true"
+
+# Connection settings
+RUVECTOR_TIMEOUT_MS: "5000"
+RUVECTOR_RETRY_COUNT: "3"
+RUVECTOR_RETRY_DELAY_MS: "1000"
+
+# =============================================================================
+# Performance Budgets (REQUIRED)
+# =============================================================================
+# These limits prevent runaway costs and ensure responsive behavior
+
+# Maximum tokens per request (prevents excessive API costs)
+MAX_TOKENS: "2500"
+
+# Maximum latency before timeout (5 seconds)
+MAX_LATENCY_MS: "5000"
+
+# Maximum LLM API calls per single run (prevents infinite loops)
+MAX_CALLS_PER_RUN: "5"
+
+# Request timeout for individual operations
+REQUEST_TIMEOUT_MS: "30000"
+
+# =============================================================================
+# Observability (REQUIRED)
+# =============================================================================
+# Logging and tracing configuration
+
+# Rust log levels: error, warn, info, debug, trace
+# Format: "default_level,crate1=level,crate2=level"
+RUST_LOG: "info,phase7=debug,gateway=info,tower_http=info"
+
+# OpenTelemetry configuration (optional but recommended)
+OTEL_ENABLED: "true"
+OTEL_SERVICE_NAME: "inference-gateway-phase7"
+
+# =============================================================================
+# Phase 7 Specific Features
+# =============================================================================
+
+# Enable Phase 7 agent routing
+PHASE7_ROUTING_ENABLED: "true"
+
+# Enable intelligent model selection
+PHASE7_MODEL_SELECTION: "true"
+
+# Enable cost optimization
+PHASE7_COST_OPTIMIZATION: "true"
+
+# Enable semantic caching via RuVector
+PHASE7_SEMANTIC_CACHE: "true"
+
+# =============================================================================
+# Environment-Specific Overrides
+# =============================================================================
+
+dev:
+  RUST_LOG: "debug,phase7=trace,gateway=debug,tower_http=debug"
+  MAX_INSTANCES: "3"
+  MIN_INSTANCES: "0"
+  RUVECTOR_SERVICE_URL: "https://ruvector-service-agentics-dev.run.app"
+
+staging:
+  RUST_LOG: "info,phase7=debug,gateway=info"
+  MAX_INSTANCES: "10"
+  MIN_INSTANCES: "1"
+  RUVECTOR_SERVICE_URL: "https://ruvector-service-agentics-staging.run.app"
+
+prod:
+  RUST_LOG: "info,phase7=info,gateway=info,tower_http=warn"
+  MAX_INSTANCES: "100"
+  MIN_INSTANCES: "2"
+  RUVECTOR_SERVICE_URL: "https://ruvector-service-agentics-prod.run.app"
+
+# =============================================================================
+# Secrets Reference (NEVER inline values here)
+# =============================================================================
+# These secrets MUST be stored in Google Secret Manager
+
+secrets:
+  required:
+    - ruvector-api-key       # RuVector service authentication (CRITICAL)
+  optional:
+    - openai-api-key         # OpenAI provider (for LLM calls)
+    - anthropic-api-key      # Anthropic provider (for LLM calls)
+    - google-api-key         # Google/Gemini provider (for LLM calls)

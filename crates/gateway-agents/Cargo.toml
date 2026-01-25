@@ -26,6 +26,9 @@ futures = { workspace = true }
 # HTTP server (for handler)
 axum = { workspace = true }
 
+# HTTP client (for Ruvector health checks)
+reqwest = { workspace = true }
+
 # Serialization
 serde = { workspace = true }
 serde_json = { workspace = true }
