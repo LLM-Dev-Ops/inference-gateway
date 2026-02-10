@@ -1,5 +1,6 @@
 //! Custom Axum extractors for the gateway.
 
+use agentics_contracts::ExecutionContext;
 use axum::{
     async_trait,
     extract::{FromRequestParts, Request},
@@ -157,6 +158,48 @@ where
     }
 }
 
+/// Extract execution context from the Agentics execution system headers.
+///
+/// Reads `X-Parent-Span-Id` (required) and `X-Execution-Id` (optional).
+/// Returns 400 Bad Request if `X-Parent-Span-Id` is missing or not a valid UUID.
+/// If `X-Execution-Id` is missing, a new UUID is generated.
+#[derive(Debug, Clone)]
+pub struct ExecutionCtx(pub ExecutionContext);
+
+#[async_trait]
+impl<S> FromRequestParts<S> for ExecutionCtx
+where
+    S: Send + Sync,
+{
+    type Rejection = ApiError;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let parent_span_id = parts
+            .headers
+            .get("x-parent-span-id")
+            .and_then(|v| v.to_str().ok())
+            .and_then(|v| uuid::Uuid::parse_str(v).ok())
+            .ok_or_else(|| {
+                ApiError::bad_request(
+                    "Missing or invalid X-Parent-Span-Id header. \
+                     All execution requests must include a valid parent span UUID.",
+                )
+            })?;
+
+        let execution_id = parts
+            .headers
+            .get("x-execution-id")
+            .and_then(|v| v.to_str().ok())
+            .and_then(|v| uuid::Uuid::parse_str(v).ok())
+            .unwrap_or_else(uuid::Uuid::new_v4);
+
+        Ok(Self(ExecutionContext {
+            execution_id,
+            parent_span_id,
+        }))
+    }
+}
+
 /// JSON body extractor with better error handling
 #[derive(Debug)]
 pub struct JsonBody<T>(pub T);
@@ -201,6 +244,7 @@ fn extract_tenant_from_key(key: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use axum::http::Request;
 
     #[test]
     fn test_extract_tenant_from_key() {
@@ -215,5 +259,72 @@ mod tests {
         assert_eq!(extract_tenant_from_key("sk-abc123"), None);
         assert_eq!(extract_tenant_from_key("invalid"), None);
         assert_eq!(extract_tenant_from_key("sk-_key"), None);
+    }
+
+    #[tokio::test]
+    async fn test_execution_ctx_rejects_missing_parent_span_id() {
+        let req = Request::builder()
+            .uri("/test")
+            .body(())
+            .expect("valid request");
+        let (mut parts, _body) = req.into_parts();
+
+        let result = ExecutionCtx::from_request_parts(&mut parts, &()).await;
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert_eq!(err.status, axum::http::StatusCode::BAD_REQUEST);
+        assert!(err.message.contains("X-Parent-Span-Id"));
+    }
+
+    #[tokio::test]
+    async fn test_execution_ctx_rejects_invalid_uuid() {
+        let req = Request::builder()
+            .uri("/test")
+            .header("x-parent-span-id", "not-a-uuid")
+            .body(())
+            .expect("valid request");
+        let (mut parts, _body) = req.into_parts();
+
+        let result = ExecutionCtx::from_request_parts(&mut parts, &()).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_execution_ctx_extracts_both_headers() {
+        let exec_id = uuid::Uuid::new_v4();
+        let parent_id = uuid::Uuid::new_v4();
+
+        let req = Request::builder()
+            .uri("/test")
+            .header("x-execution-id", exec_id.to_string())
+            .header("x-parent-span-id", parent_id.to_string())
+            .body(())
+            .expect("valid request");
+        let (mut parts, _body) = req.into_parts();
+
+        let result = ExecutionCtx::from_request_parts(&mut parts, &()).await;
+        assert!(result.is_ok());
+        let ctx = result.unwrap().0;
+        assert_eq!(ctx.execution_id, exec_id);
+        assert_eq!(ctx.parent_span_id, parent_id);
+    }
+
+    #[tokio::test]
+    async fn test_execution_ctx_generates_execution_id_if_missing() {
+        let parent_id = uuid::Uuid::new_v4();
+
+        let req = Request::builder()
+            .uri("/test")
+            .header("x-parent-span-id", parent_id.to_string())
+            .body(())
+            .expect("valid request");
+        let (mut parts, _body) = req.into_parts();
+
+        let result = ExecutionCtx::from_request_parts(&mut parts, &()).await;
+        assert!(result.is_ok());
+        let ctx = result.unwrap().0;
+        assert_eq!(ctx.parent_span_id, parent_id);
+        // execution_id should be a valid UUID (auto-generated)
+        assert_ne!(ctx.execution_id, uuid::Uuid::nil());
     }
 }

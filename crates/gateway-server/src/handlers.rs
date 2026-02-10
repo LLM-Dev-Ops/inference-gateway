@@ -1,5 +1,8 @@
 //! HTTP request handlers for the gateway API.
 
+use agentics_contracts::{
+    ExecutionCollector, ExecutionOutput, SpanArtifact, SpanStatus,
+};
 use axum::{
     extract::{Path, State},
     http::{header, StatusCode},
@@ -9,12 +12,13 @@ use axum::{
     },
     Json,
 };
+use chrono::Utc;
 use futures::stream::StreamExt;
 use gateway_agents::{
     AgentMetadata, AgentStatus, InferenceRoutingInput, InferenceRoutingOutput, RoutingInspection,
     AGENT_ID, AGENT_VERSION,
 };
-use gateway_core::{GatewayRequest, ModelObject, ModelsResponse};
+use gateway_core::{GatewayRequest, GatewayResponse, ModelObject, ModelsResponse};
 use gateway_telemetry::RequestInfo;
 use serde::{Deserialize, Serialize};
 use std::{convert::Infallible, time::Instant};
@@ -22,9 +26,12 @@ use tracing::{debug, error, info, instrument};
 
 use crate::{
     error::ApiError,
-    extractors::{JsonBody, RequestId, TenantId},
+    extractors::{ExecutionCtx, JsonBody, RequestId, TenantId},
     state::AppState,
 };
+
+/// Repo name used in all execution spans for this gateway.
+const REPO_NAME: &str = "llm-inference-gateway";
 
 /// Health check response
 #[derive(Debug, Serialize)]
@@ -103,9 +110,14 @@ pub async fn get_model(
 }
 
 /// Chat completion request (OpenAI compatible)
-#[instrument(skip(state, body), fields(model = %body.model))]
+///
+/// Requires `X-Parent-Span-Id` header for execution context.
+/// Non-streaming responses are wrapped in [`ExecutionOutput`].
+/// Streaming responses emit an `execution_output` SSE event after `[DONE]`.
+#[instrument(skip(state, exec_ctx, body), fields(model = %body.model))]
 pub async fn chat_completion(
     State(state): State<AppState>,
+    ExecutionCtx(exec_ctx): ExecutionCtx,
     RequestId(request_id): RequestId,
     TenantId(tenant_id): TenantId,
     JsonBody(body): JsonBody<GatewayRequest>,
@@ -115,6 +127,7 @@ pub async fn chat_completion(
 
     debug!(
         request_id = %request_id,
+        execution_id = %exec_ctx.execution_id,
         model = %request.model,
         streaming = streaming,
         tenant = ?tenant_id,
@@ -126,12 +139,28 @@ pub async fn chat_completion(
         .with_streaming(streaming);
     state.tracker.start(request_info);
 
+    // Create execution collector
+    let mut collector = ExecutionCollector::new(&exec_ctx, REPO_NAME);
+
+    // --- Agent span: routing ---
+    let routing_span_id = collector.start_agent_span("inference-routing-agent");
+
     // Route the request
     let (provider, _decision) = match state.router.route(&request, tenant_id.as_deref()) {
-        Ok(result) => result,
+        Ok(result) => {
+            collector.end_agent_span(routing_span_id, SpanStatus::Succeeded, None);
+            result
+        }
         Err(e) => {
+            collector.end_agent_span(
+                routing_span_id,
+                SpanStatus::Failed,
+                Some(e.to_string()),
+            );
             state.tracker.complete_error(&request_id, 503, e.to_string());
-            return Err(e.into());
+            let output: ExecutionOutput<GatewayResponse> =
+                collector.finalize_failure(&e.to_string());
+            return Ok(Json(output).into_response());
         }
     };
 
@@ -143,16 +172,36 @@ pub async fn chat_completion(
     // Check circuit breaker
     if let Err(err) = circuit_breaker.check() {
         state.tracker.complete_error(&request_id, 503, err.to_string());
-        return Err(err.into());
+        let output: ExecutionOutput<GatewayResponse> =
+            collector.finalize_failure(&err.to_string());
+        return Ok(Json(output).into_response());
     }
 
     let start = Instant::now();
 
     // Handle streaming vs non-streaming
     if streaming {
-        handle_streaming_request(state, request, request_id, provider, circuit_breaker, start).await
+        handle_streaming_request(
+            state,
+            request,
+            request_id,
+            provider,
+            circuit_breaker,
+            start,
+            collector,
+        )
+        .await
     } else {
-        handle_non_streaming_request(state, request, request_id, provider, circuit_breaker, start).await
+        handle_non_streaming_request(
+            state,
+            request,
+            request_id,
+            provider,
+            circuit_breaker,
+            start,
+            collector,
+        )
+        .await
     }
 }
 
@@ -163,7 +212,11 @@ async fn handle_non_streaming_request(
     provider: std::sync::Arc<dyn gateway_core::LLMProvider>,
     circuit_breaker: std::sync::Arc<gateway_resilience::CircuitBreaker>,
     start: Instant,
+    mut collector: ExecutionCollector,
 ) -> Result<Response, ApiError> {
+    // --- Agent span: provider call ---
+    let provider_span_id = collector.start_agent_span(&format!("provider-{}", provider.id()));
+
     // Execute with retry
     let result = state
         .retry_policy
@@ -177,6 +230,26 @@ async fn handle_non_streaming_request(
     match result {
         Ok(response) => {
             circuit_breaker.record_success();
+
+            // Attach usage metrics as artifact on the provider span
+            collector.attach_artifact(
+                provider_span_id,
+                SpanArtifact {
+                    artifact_type: "usage_metrics".to_string(),
+                    reference: format!("request:{request_id}"),
+                    data: serde_json::json!({
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens,
+                        "provider": provider.id(),
+                        "model": request.model,
+                        "latency_ms": duration.as_millis(),
+                    }),
+                    timestamp: Utc::now(),
+                },
+            );
+
+            collector.end_agent_span(provider_span_id, SpanStatus::Succeeded, None);
 
             // Record metrics
             let usage = &response.usage;
@@ -208,10 +281,17 @@ async fn handle_non_streaming_request(
                 "Chat completion successful"
             );
 
-            Ok(Json(response).into_response())
+            let output = collector.finalize_success(response);
+            Ok(Json(output).into_response())
         }
         Err(e) => {
             circuit_breaker.record_failure();
+
+            collector.end_agent_span(
+                provider_span_id,
+                SpanStatus::Failed,
+                Some(e.to_string()),
+            );
 
             state.tracker.complete_error(&request_id, 500, e.to_string());
             state.metrics.record_error(provider.id(), &e.to_string());
@@ -224,7 +304,9 @@ async fn handle_non_streaming_request(
                 "Chat completion failed"
             );
 
-            Err(e.into())
+            let output: ExecutionOutput<GatewayResponse> =
+                collector.finalize_failure(&e.to_string());
+            Ok(Json(output).into_response())
         }
     }
 }
@@ -236,12 +318,21 @@ async fn handle_streaming_request(
     provider: std::sync::Arc<dyn gateway_core::LLMProvider>,
     circuit_breaker: std::sync::Arc<gateway_resilience::CircuitBreaker>,
     _start: Instant,
+    mut collector: ExecutionCollector,
 ) -> Result<Response, ApiError> {
+    // --- Agent span: streaming provider call ---
+    let provider_span_id = collector.start_agent_span(&format!("provider-{}-stream", provider.id()));
+
     // Get streaming response
     let stream_result = provider.chat_completion_stream(&request).await;
 
     match stream_result {
         Ok(chunk_stream) => {
+            // End the agent span and finalize for the metadata event
+            collector.end_agent_span(provider_span_id, SpanStatus::Succeeded, None);
+            let exec_output: ExecutionOutput<()> = collector.finalize_success(());
+            let exec_json = serde_json::to_string(&exec_output).unwrap_or_default();
+
             // Record first chunk time
             let first_chunk_received = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
             let first_chunk_flag = first_chunk_received;
@@ -281,18 +372,20 @@ async fn handle_streaming_request(
                 }
             });
 
-            // Add [DONE] event at the end
-            let done_stream = futures::stream::once(async {
-                Ok::<_, Infallible>(Event::default().data("[DONE]"))
-            });
+            // Add [DONE] event followed by execution_output event
+            let done_stream = futures::stream::iter(vec![
+                Ok::<_, Infallible>(Event::default().data("[DONE]")),
+                Ok::<_, Infallible>(
+                    Event::default()
+                        .event("execution_output")
+                        .data(exec_json),
+                ),
+            ]);
 
             let full_stream = sse_stream.chain(done_stream);
 
             // Record success after stream setup
             circuit_breaker.record_success();
-
-            // Note: actual completion tracking happens in stream events
-            // This is tracked when the stream ends
 
             Ok(Sse::new(full_stream)
                 .keep_alive(axum::response::sse::KeepAlive::default())
@@ -300,6 +393,13 @@ async fn handle_streaming_request(
         }
         Err(e) => {
             circuit_breaker.record_failure();
+
+            collector.end_agent_span(
+                provider_span_id,
+                SpanStatus::Failed,
+                Some(e.to_string()),
+            );
+
             state.tracker.complete_error(&request_id, 500, e.to_string());
 
             error!(
@@ -309,7 +409,8 @@ async fn handle_streaming_request(
                 "Streaming request failed"
             );
 
-            Err(e.into())
+            let output: ExecutionOutput<()> = collector.finalize_failure(&e.to_string());
+            Ok(Json(output).into_response())
         }
     }
 }
@@ -402,75 +503,126 @@ pub struct AgentHealthResponse {
 
 /// POST /agents/route - Route an inference request via the agent
 ///
-/// This endpoint routes an inference request using the `InferenceRoutingAgent`.
-/// It returns the routing decision along with telemetry information.
-#[instrument(skip(state, input), fields(model = %input.request.model))]
+/// Requires `X-Parent-Span-Id` header for execution context.
+/// Returns an [`ExecutionOutput`] containing the repo span, agent spans,
+/// and the routing result.
+#[instrument(skip(state, exec_ctx, input), fields(model = %input.request.model))]
 pub async fn agent_route(
     State(state): State<AppState>,
+    ExecutionCtx(exec_ctx): ExecutionCtx,
     Json(input): Json<InferenceRoutingInput>,
-) -> Result<Json<RouteResponse>, ApiError> {
+) -> Result<Json<ExecutionOutput<RouteResponse>>, ApiError> {
     debug!(
+        execution_id = %exec_ctx.execution_id,
         model = %input.request.model,
         tenant_id = ?input.tenant_id,
         "Agent routing inference request"
     );
 
-    let (output, event) = state
-        .inference_routing_agent
-        .route(input)
-        .await
-        .map_err(|e| {
+    let mut collector = ExecutionCollector::new(&exec_ctx, REPO_NAME);
+    let agent_span_id = collector.start_agent_span(AGENT_ID);
+
+    match state.inference_routing_agent.route(input).await {
+        Ok((output, event)) => {
+            // Attach routing decision as artifact
+            collector.attach_artifact(
+                agent_span_id,
+                SpanArtifact {
+                    artifact_type: "routing_decision".to_string(),
+                    reference: event.execution_ref.clone(),
+                    data: serde_json::to_value(&event).unwrap_or_default(),
+                    timestamp: Utc::now(),
+                },
+            );
+
+            collector.end_agent_span(agent_span_id, SpanStatus::Succeeded, None);
+
+            info!(
+                decision_id = %event.execution_ref,
+                provider = %output.provider_id,
+                model = %output.model,
+                latency_us = %event.latency_us,
+                "Agent routing decision made"
+            );
+
+            let route_response = RouteResponse {
+                output,
+                decision_id: event.execution_ref,
+                confidence: event.confidence,
+            };
+
+            Ok(Json(collector.finalize_success(route_response)))
+        }
+        Err(e) => {
             error!(error = %e, "Agent routing failed");
-            ApiError::service_unavailable(format!("Routing failed: {e}"))
-        })?;
-
-    info!(
-        decision_id = %event.execution_ref,
-        provider = %output.provider_id,
-        model = %output.model,
-        latency_us = %event.latency_us,
-        "Agent routing decision made"
-    );
-
-    Ok(Json(RouteResponse {
-        output,
-        decision_id: event.execution_ref,
-        confidence: event.confidence,
-    }))
+            collector.end_agent_span(
+                agent_span_id,
+                SpanStatus::Failed,
+                Some(e.to_string()),
+            );
+            let output = collector.finalize_failure(&e.to_string());
+            Ok(Json(output))
+        }
+    }
 }
 
 /// GET /agents/inspect - Inspect routing configuration
 ///
+/// Requires `X-Parent-Span-Id` header for execution context.
 /// Returns the current state of the routing agent including:
 /// - Agent metadata and version
 /// - Registered providers
 /// - Active rules
 /// - Configuration summary
-#[instrument(skip(state))]
-pub async fn agent_inspect(State(state): State<AppState>) -> Json<RoutingInspection> {
+#[instrument(skip(state, exec_ctx))]
+pub async fn agent_inspect(
+    State(state): State<AppState>,
+    ExecutionCtx(exec_ctx): ExecutionCtx,
+) -> Json<ExecutionOutput<RoutingInspection>> {
     debug!("Agent inspection requested");
-    Json(state.inference_routing_agent.inspect())
+
+    let mut collector = ExecutionCollector::new(&exec_ctx, REPO_NAME);
+    let agent_span_id = collector.start_agent_span(AGENT_ID);
+
+    let inspection = state.inference_routing_agent.inspect();
+
+    collector.end_agent_span(agent_span_id, SpanStatus::Succeeded, None);
+    Json(collector.finalize_success(inspection))
 }
 
 /// GET /agents/status - Get agent status
 ///
-/// Returns the current operational status of the agent including:
-/// - Health status
-/// - Request counts and error rates
-/// - Average latency
-/// - Uptime information
-#[instrument(skip(state))]
-pub async fn agent_status(State(state): State<AppState>) -> Json<AgentStatus> {
+/// Requires `X-Parent-Span-Id` header for execution context.
+/// Returns the current operational status of the agent.
+#[instrument(skip(state, exec_ctx))]
+pub async fn agent_status(
+    State(state): State<AppState>,
+    ExecutionCtx(exec_ctx): ExecutionCtx,
+) -> Json<ExecutionOutput<AgentStatus>> {
     debug!("Agent status requested");
-    Json(state.inference_routing_agent.status())
+
+    let mut collector = ExecutionCollector::new(&exec_ctx, REPO_NAME);
+    let agent_span_id = collector.start_agent_span(AGENT_ID);
+
+    let status = state.inference_routing_agent.status();
+
+    collector.end_agent_span(agent_span_id, SpanStatus::Succeeded, None);
+    Json(collector.finalize_success(status))
 }
 
 /// GET /agents - List available agents
 ///
+/// Requires `X-Parent-Span-Id` header for execution context.
 /// Returns metadata for all available agents in the system.
-#[instrument(skip(_state))]
-pub async fn list_agents(State(_state): State<AppState>) -> Json<Vec<AgentMetadata>> {
+#[instrument(skip(_state, exec_ctx))]
+pub async fn list_agents(
+    State(_state): State<AppState>,
+    ExecutionCtx(exec_ctx): ExecutionCtx,
+) -> Json<ExecutionOutput<Vec<AgentMetadata>>> {
     debug!("Listing available agents");
+
+    let mut collector = ExecutionCollector::new(&exec_ctx, REPO_NAME);
+    let agent_span_id = collector.start_agent_span(AGENT_ID);
 
     // Currently we only have the inference routing agent
     let agents = vec![AgentMetadata::new(
@@ -502,26 +654,41 @@ pub async fn list_agents(State(_state): State<AppState>) -> Json<Vec<AgentMetada
         "Get agent status",
     ))];
 
-    Json(agents)
+    collector.end_agent_span(agent_span_id, SpanStatus::Succeeded, None);
+    Json(collector.finalize_success(agents))
 }
 
 /// GET /agents/health - Agent health check
 ///
-/// Simple health check for the routing agent.
+/// Requires `X-Parent-Span-Id` header for execution context.
 /// Returns 200 OK if the agent is healthy, or an appropriate error status.
-#[instrument(skip(state))]
-pub async fn agent_health(State(state): State<AppState>) -> Result<Json<AgentHealthResponse>, ApiError> {
+#[instrument(skip(state, exec_ctx))]
+pub async fn agent_health(
+    State(state): State<AppState>,
+    ExecutionCtx(exec_ctx): ExecutionCtx,
+) -> Result<Json<ExecutionOutput<AgentHealthResponse>>, ApiError> {
+    let mut collector = ExecutionCollector::new(&exec_ctx, REPO_NAME);
+    let agent_span_id = collector.start_agent_span(AGENT_ID);
+
     let status = state.inference_routing_agent.status();
 
     if status.health == gateway_agents::AgentHealth::Unhealthy {
+        collector.end_agent_span(
+            agent_span_id,
+            SpanStatus::Failed,
+            Some("Agent is unhealthy".to_string()),
+        );
         return Err(ApiError::service_unavailable("Agent is unhealthy"));
     }
 
-    Ok(Json(AgentHealthResponse {
+    let health_response = AgentHealthResponse {
         status: status.health.to_string(),
         agent_id: AGENT_ID.to_string(),
         version: AGENT_VERSION.to_string(),
-    }))
+    };
+
+    collector.end_agent_span(agent_span_id, SpanStatus::Succeeded, None);
+    Ok(Json(collector.finalize_success(health_response)))
 }
 
 #[cfg(test)]

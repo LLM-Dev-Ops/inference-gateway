@@ -18,6 +18,7 @@ gateway-routing = { workspace = true }
 gateway-resilience = { workspace = true }
 gateway-telemetry = { workspace = true }
 gateway-agents = { workspace = true }
+agentics-contracts = { workspace = true }
 
 # Async
 tokio = { workspace = true }

@@ -22,6 +22,7 @@
 pub mod agent;
 pub mod decision_event;
 pub mod error;
+pub mod execution_span;
 pub mod routing;
 
 // Re-export commonly used types
@@ -30,4 +31,8 @@ pub use decision_event::{
     Confidence, Constraint, ConstraintEffect, DecisionEvent, DecisionOutput, DecisionType,
 };
 pub use error::AgentError;
+pub use execution_span::{
+    ExecutionCollector, ExecutionContext, ExecutionOutput, ExecutionSpan, SpanArtifact, SpanStatus,
+    SpanType,
+};
 pub use routing::{InferenceRoutingInput, InferenceRoutingOutput, RoutingStep};

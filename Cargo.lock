@@ -1425,6 +1425,7 @@ dependencies = [
 name = "gateway-server"
 version = "0.1.0"
 dependencies = [
+ "agentics-contracts",
  "arc-swap",
  "async-trait",
  "axum",
