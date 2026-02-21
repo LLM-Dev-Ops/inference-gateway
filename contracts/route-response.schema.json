@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "inference-gateway-agents/route-response",
+  "title": "Inference Routing Response",
+  "description": "Response body for POST /v1/inference-gateway/route — wraps the Rust RouteResponse with execution_metadata and layers_executed.",
+  "type": "object",
+  "required": ["output", "decision_id", "execution_metadata", "layers_executed"],
+  "properties": {
+    "output": {
+      "type": "object",
+      "description": "Routing output from InferenceRoutingAgent",
+      "required": ["provider_id", "model", "headers", "decision"],
+      "properties": {
+        "provider_id": {
+          "type": "string",
+          "description": "Selected provider identifier"
+        },
+        "model": {
+          "type": "string",
+          "description": "Target model (may differ from requested model after transformation)"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Additional headers to forward to the provider"
+        },
+        "decision": {
+          "type": "object",
+          "required": ["matched_rules", "strategy", "confidence", "latency_us"],
+          "properties": {
+            "matched_rules": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "strategy": { "type": "string" },
+            "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+            "latency_us": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "decision_id": {
+      "type": "string",
+      "description": "Unique decision reference for audit trail"
+    },
+    "execution_metadata": {
+      "$ref": "#/$defs/execution_metadata"
+    },
+    "layers_executed": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/layer_result" }
+    }
+  },
+  "$defs": {
+    "execution_metadata": {
+      "type": "object",
+      "required": ["trace_id", "timestamp", "service", "execution_id"],
+      "properties": {
+        "trace_id": {
+          "type": "string",
+          "description": "Correlation/trace ID from X-Correlation-Id header or auto-generated UUID"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "service": {
+          "type": "string",
+          "const": "inference-gateway-agents"
+        },
+        "execution_id": {
+          "type": "string",
+          "description": "Unique execution identifier for this request"
+        }
+      }
+    },
+    "layer_result": {
+      "type": "object",
+      "required": ["layer", "status"],
+      "properties": {
+        "layer": {
+          "type": "string",
+          "enum": ["AGENT_ROUTING", "INFERENCE_GATEWAY_ROUTE"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["completed", "failed"]
+        },
+        "duration_ms": {
+          "type": "number",
+          "description": "Layer execution duration in milliseconds"
+        }
+      }
+    }
+  }
+}

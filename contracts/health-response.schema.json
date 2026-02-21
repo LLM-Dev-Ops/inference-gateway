@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "inference-gateway-agents/health-response",
+  "title": "Health Check Response",
+  "description": "Response body for GET /health",
+  "type": "object",
+  "required": ["status", "service", "agents", "execution_metadata", "layers_executed"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["healthy", "degraded", "unhealthy"]
+    },
+    "service": {
+      "type": "string",
+      "const": "inference-gateway-agents"
+    },
+    "agents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of agent identifiers served by this function"
+    },
+    "execution_metadata": {
+      "type": "object",
+      "required": ["trace_id", "timestamp", "service", "execution_id"],
+      "properties": {
+        "trace_id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "service": { "type": "string", "const": "inference-gateway-agents" },
+        "execution_id": { "type": "string" }
+      }
+    },
+    "layers_executed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["layer", "status"],
+        "properties": {
+          "layer": { "type": "string" },
+          "status": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,19 @@
 {
+  "name": "inference-gateway-agents",
+  "version": "1.0.0",
+  "description": "Cloud Function entry point for the Inference Gateway Agents service",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "npx @google-cloud/functions-framework --target=handler",
+    "test": "node --test test/index.test.js"
+  },
   "dependencies": {
     "claude-flow": "^2.7.41"
+  },
+  "devDependencies": {
+    "@google-cloud/functions-framework": "^3.4.0"
   }
 }

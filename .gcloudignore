@@ -1,9 +1,42 @@
-# Minimal gcloudignore - only exclude what's definitely not needed
+# Git
 .git/
+.gitignore
+
+# Rust build artifacts
 target/
+crates/
+src/
+Cargo.toml
+Cargo.lock
+rust-toolchain.toml
+*.rs
+
+# Deployment configs (not needed in CF bundle)
+deployment/
+deploy/
+docs/
+tests/
+benchmarks/
+
+# Docker
+Dockerfile
+docker-compose.yaml
+.dockerignore
+
+# IDE / editor
 .idea/
 .vscode/
+*.swp
+*.swo
+
+# CI / tooling
 .claude/
 .claude-flow/
-node_modules/
+.github/
 *.profraw
+
+# Node dev artifacts (installed on server)
+node_modules/
+
+# Test files (not needed in production)
+test/

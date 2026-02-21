@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "inference-gateway-agents/route-request",
+  "title": "Inference Routing Request",
+  "description": "Request body for POST /v1/inference-gateway/route — mirrors the Rust InferenceRoutingInput struct.",
+  "type": "object",
+  "required": ["request"],
+  "properties": {
+    "request": {
+      "type": "object",
+      "description": "The GatewayRequest to route",
+      "required": ["model", "messages"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "description": "Model identifier to route (e.g. gpt-4, claude-3-opus-20240229)"
+        },
+        "messages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["role", "content"],
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": ["system", "user", "assistant", "tool"]
+              },
+              "content": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "array", "items": { "type": "object" } }
+                ]
+              }
+            }
+          }
+        },
+        "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+        "max_tokens": { "type": "integer", "minimum": 1 },
+        "stream": { "type": "boolean" }
+      }
+    },
+    "tenant_id": {
+      "type": "string",
+      "description": "Optional tenant identifier for multi-tenant routing"
+    },
+    "hints": {
+      "type": "object",
+      "description": "Optional routing hints",
+      "properties": {
+        "preferred_providers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Preferred providers in order of preference"
+        },
+        "excluded_providers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Providers to exclude from routing"
+        },
+        "max_latency_tier": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum latency tier (lower is better)"
+        },
+        "optimize_cost": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to prefer cost optimization"
+        }
+      }
+    }
+  }
+}
