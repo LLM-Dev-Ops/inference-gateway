@@ -84,11 +84,7 @@ impl BenchTarget for BackendRoutingBenchmark {
         let p95_ms = latencies.get(p95_idx).copied().unwrap_or(0.0);
         let p99_ms = latencies.get(p99_idx).copied().unwrap_or(0.0);
 
-        let throughput_rps = if avg_ms > 0.0 {
-            1000.0 / avg_ms
-        } else {
-            0.0
-        };
+        let throughput_rps = if avg_ms > 0.0 { 1000.0 / avg_ms } else { 0.0 };
 
         Ok(BenchmarkResult::new(
             self.id(),

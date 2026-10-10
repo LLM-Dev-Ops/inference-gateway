@@ -291,9 +291,7 @@ mod tests {
 
         // Second request should queue
         let bulkhead_clone = Arc::clone(&bulkhead);
-        let handle = tokio::spawn(async move {
-            bulkhead_clone.acquire().await
-        });
+        let handle = tokio::spawn(async move { bulkhead_clone.acquire().await });
 
         // Give it time to queue
         sleep(Duration::from_millis(50)).await;

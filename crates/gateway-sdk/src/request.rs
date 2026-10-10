@@ -239,9 +239,7 @@ impl ChatRequestBuilder {
 
     /// Add a stop sequence.
     pub fn add_stop(mut self, sequence: impl Into<String>) -> Self {
-        self.stop
-            .get_or_insert_with(Vec::new)
-            .push(sequence.into());
+        self.stop.get_or_insert_with(Vec::new).push(sequence.into());
         self
     }
 
@@ -283,9 +281,9 @@ impl ChatRequestBuilder {
     ///
     /// Returns an error if required fields are missing.
     pub fn build(self) -> Result<ChatRequest, crate::Error> {
-        let model = self.model.ok_or_else(|| {
-            crate::Error::invalid_request("model is required")
-        })?;
+        let model = self
+            .model
+            .ok_or_else(|| crate::Error::invalid_request("model is required"))?;
 
         if self.messages.is_empty() && self.system_message.is_none() {
             return Err(crate::Error::invalid_request(
@@ -382,17 +380,13 @@ mod tests {
 
     #[test]
     fn test_builder_missing_model() {
-        let result = ChatRequest::builder()
-            .user_message("Hello")
-            .build();
+        let result = ChatRequest::builder().user_message("Hello").build();
         assert!(result.is_err());
     }
 
     #[test]
     fn test_builder_missing_messages() {
-        let result = ChatRequest::builder()
-            .model("gpt-4o")
-            .build();
+        let result = ChatRequest::builder().model("gpt-4o").build();
         assert!(result.is_err());
     }
 

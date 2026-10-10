@@ -87,8 +87,10 @@ impl MockOpenAI {
         Mock::given(method("POST"))
             .and(path("/v1/chat/completions"))
             .respond_with(
-                ResponseTemplate::new(500)
-                    .set_body_json(openai_error_response("server_error", "Internal server error")),
+                ResponseTemplate::new(500).set_body_json(openai_error_response(
+                    "server_error",
+                    "Internal server error",
+                )),
             )
             .mount(&self.server)
             .await;
@@ -99,11 +101,10 @@ impl MockOpenAI {
         Mock::given(method("POST"))
             .and(path("/v1/chat/completions"))
             .respond_with(
-                ResponseTemplate::new(401)
-                    .set_body_json(openai_error_response(
-                        "invalid_api_key",
-                        "Incorrect API key provided",
-                    )),
+                ResponseTemplate::new(401).set_body_json(openai_error_response(
+                    "invalid_api_key",
+                    "Incorrect API key provided",
+                )),
             )
             .mount(&self.server)
             .await;
@@ -113,10 +114,7 @@ impl MockOpenAI {
     pub async fn mock_models_list(&self) {
         Mock::given(method("GET"))
             .and(path("/v1/models"))
-            .respond_with(
-                ResponseTemplate::new(200)
-                    .set_body_json(openai_models_response()),
-            )
+            .respond_with(ResponseTemplate::new(200).set_body_json(openai_models_response()))
             .mount(&self.server)
             .await;
     }
@@ -215,11 +213,10 @@ impl MockAnthropic {
         Mock::given(method("POST"))
             .and(path("/v1/messages"))
             .respond_with(
-                ResponseTemplate::new(429)
-                    .set_body_json(anthropic_error_response(
-                        "rate_limit_error",
-                        "Rate limit exceeded",
-                    )),
+                ResponseTemplate::new(429).set_body_json(anthropic_error_response(
+                    "rate_limit_error",
+                    "Rate limit exceeded",
+                )),
             )
             .mount(&self.server)
             .await;
@@ -494,7 +491,8 @@ mod tests {
     #[tokio::test]
     async fn test_mock_anthropic_messages() {
         let mock = MockAnthropic::new().await;
-        mock.mock_messages("claude-3-5-sonnet-latest", "Hi there!").await;
+        mock.mock_messages("claude-3-5-sonnet-latest", "Hi there!")
+            .await;
 
         let client = reqwest::Client::new();
         let response = client

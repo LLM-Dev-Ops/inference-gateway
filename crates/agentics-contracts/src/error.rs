@@ -241,11 +241,7 @@ pub struct ProviderFailure {
 impl ProviderFailure {
     /// Creates a new provider failure.
     #[must_use]
-    pub fn new(
-        provider_id: impl Into<String>,
-        error: impl Into<String>,
-        retryable: bool,
-    ) -> Self {
+    pub fn new(provider_id: impl Into<String>, error: impl Into<String>, retryable: bool) -> Self {
         Self {
             provider_id: provider_id.into(),
             error: error.into(),

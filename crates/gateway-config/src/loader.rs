@@ -162,7 +162,11 @@ impl ConfigLoader {
             .unwrap_or("")
             .to_lowercase();
 
-        debug!("Loading configuration from {} (format: {})", path.display(), extension);
+        debug!(
+            "Loading configuration from {} (format: {})",
+            path.display(),
+            extension
+        );
 
         match extension.as_str() {
             "yaml" | "yml" => Self::parse_yaml(&content),

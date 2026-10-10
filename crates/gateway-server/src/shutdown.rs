@@ -257,8 +257,7 @@ impl ShutdownCoordinator {
         self.set_phase(ShutdownPhase::Draining).await;
 
         // Wait for in-flight requests with timeout
-        let drain_result =
-            timeout(self.config.graceful_timeout, self.wait_for_drain()).await;
+        let drain_result = timeout(self.config.graceful_timeout, self.wait_for_drain()).await;
 
         match drain_result {
             Ok(()) => {
@@ -294,9 +293,7 @@ impl ShutdownCoordinator {
     async fn set_phase(&self, phase: ShutdownPhase) {
         info!(phase = %phase, "Shutdown phase changed");
         let _ = self.phase.send(phase);
-        let _ = self
-            .shutdown_tx
-            .send(ShutdownEvent::PhaseChanged { phase });
+        let _ = self.shutdown_tx.send(ShutdownEvent::PhaseChanged { phase });
     }
 
     /// Wait for all in-flight requests to complete
@@ -582,9 +579,7 @@ mod tests {
         assert!(coordinator.should_accept_requests());
 
         // Start shutdown
-        coordinator
-            .shutdown_triggered
-            .store(true, Ordering::SeqCst);
+        coordinator.shutdown_triggered.store(true, Ordering::SeqCst);
 
         assert!(!coordinator.should_accept_requests());
 

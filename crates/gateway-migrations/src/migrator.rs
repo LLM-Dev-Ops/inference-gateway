@@ -365,10 +365,7 @@ impl Migrator {
             let record_status = if let Some(record) = applied_map.get(&migration.version) {
                 // Check checksum
                 if self.config.verify_checksums && record.checksum != migration.checksum {
-                    warn!(
-                        version = migration.version,
-                        "Checksum mismatch detected"
-                    );
+                    warn!(version = migration.version, "Checksum mismatch detected");
                 }
                 record.status
             } else {
@@ -390,7 +387,9 @@ impl Migrator {
     }
 
     /// Get detailed status for all migrations.
-    pub async fn detailed_status(&self) -> Result<Vec<(Migration, MigrationStatus, Option<MigrationRecord>)>> {
+    pub async fn detailed_status(
+        &self,
+    ) -> Result<Vec<(Migration, MigrationStatus, Option<MigrationRecord>)>> {
         self.init().await?;
 
         let applied = self.get_applied().await?;

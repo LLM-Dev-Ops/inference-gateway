@@ -7,7 +7,7 @@
 - Require zero production `npm audit` findings from the locked dependency graph.
 - Reject unsafe correlation IDs, non-JSON or malformed upstream responses, responses over the configured byte limit, and upstream calls beyond the configured timeout.
 - Preserve the upstream HTTP status for bounded non-JSON responses.
-- Require Rust 1.83.0 formatting, all-target/all-feature clippy with warnings denied, and locked all-feature workspace tests before merge.
+- Require Rust 1.88.0 formatting, all-target/all-feature clippy with warnings denied, and locked all-feature workspace tests before merge. The initial checks exposed that Cargo 1.83 cannot parse the locked 2024-edition graph and that locked `home@0.5.12` requires Rust 1.88; the declared MSRV and build images are corrected to the reproducible minimum.
 - Do not change persistence, provider routing, or the Rust/TypeScript architecture.
 
 ## Pinned tools and real invocations
@@ -25,13 +25,14 @@
 | Production dependencies reported by audit | 416 | 1 (the root package; zero direct runtime dependencies) |
 | Production audit findings | 36 (2 critical, 25 high) | 0 |
 | Frozen boundary checks passed | 1/6 | 6/6 |
+| Rustfmt 1.88.0 workspace check | failed (125 files) | passed |
 | Flywheel primary score | 0.1667 | 1.0000 |
 | Flywheel cost-per-win proxy | 6.0 | 1.0 |
 | Flywheel regression flag | false | false |
 
-The removed `claude-flow` package was not imported by repository source. The candidate adds bounded response streaming (default 1 MiB, configurable from 1 KiB through 10 MiB), a bounded gateway timeout (default 30 seconds, configurable from 100 ms through 120 seconds), safe upstream error envelopes, and correlation-ID validation.
+The removed `claude-flow` package was not imported by repository source. The candidate adds bounded response streaming (default 1 MiB, configurable from 1 KiB through 10 MiB), a bounded gateway timeout (default 30 seconds, configurable from 100 ms through 120 seconds), safe upstream error envelopes, and correlation-ID validation. It also applies the pinned formatter to the existing Rust workspace; those 125 files are mechanical rustfmt output only.
 
-Rust was not available in the local execution image (`cargo: command not found`). The pinned Linux CI workflow is therefore a mandatory promotion gate rather than inferred evidence.
+Rust 1.88.0 was bootstrapped in an isolated local toolchain after the initial precheck, and the same pinned Linux CI workflow remains a mandatory promotion gate.
 
 ## Rollback
 

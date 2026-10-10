@@ -58,9 +58,7 @@ impl TokenBucket {
             1.0
         };
         let request_tokens = f64::from(config.requests_per_window) * burst_mult;
-        let token_tokens = config
-            .tokens_per_window
-            .map(|t| f64::from(t) * burst_mult);
+        let token_tokens = config.tokens_per_window.map(|t| f64::from(t) * burst_mult);
         Self {
             request_tokens,
             token_tokens,
@@ -85,9 +83,9 @@ impl TokenBucket {
                 } else {
                     1.0
                 };
-            self.request_tokens =
-                (self.request_tokens + f64::from(self.config.requests_per_window) * refill_rate)
-                    .min(max_requests);
+            self.request_tokens = (self.request_tokens
+                + f64::from(self.config.requests_per_window) * refill_rate)
+                .min(max_requests);
 
             // Refill token tokens if configured
             if let (Some(tokens), Some(max_tokens)) =
@@ -127,8 +125,7 @@ impl TokenBucket {
                     limit_type: RateLimitType::Tokens,
                     limit: self.config.tokens_per_window.unwrap_or(0),
                     window: self.config.window,
-                    retry_after: self
-                        .estimate_retry_after(f64::from(count), RateLimitType::Tokens),
+                    retry_after: self.estimate_retry_after(f64::from(count), RateLimitType::Tokens),
                 });
             }
         }
@@ -354,7 +351,10 @@ impl RateLimiter {
     /// Get all keys with their statistics
     pub async fn all_stats(&self) -> HashMap<String, BucketStats> {
         let buckets = self.buckets.read().await;
-        buckets.iter().map(|(k, v)| (k.clone(), v.stats())).collect()
+        buckets
+            .iter()
+            .map(|(k, v)| (k.clone(), v.stats()))
+            .collect()
     }
 
     /// Clear expired buckets (buckets that haven't been used recently)

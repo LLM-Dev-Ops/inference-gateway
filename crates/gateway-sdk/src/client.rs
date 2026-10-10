@@ -5,7 +5,9 @@ use crate::error::{ApiErrorResponse, Error, Result};
 use crate::request::{ChatRequest, ChatRequestBuilder, Message};
 use crate::response::{ChatResponse, HealthResponse, ModelsListResponse};
 use crate::streaming::ChatStream;
-use reqwest::header::{HeaderMap, HeaderName, HeaderValue, AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
+use reqwest::header::{
+    HeaderMap, HeaderName, HeaderValue, AUTHORIZATION, CONTENT_TYPE, USER_AGENT,
+};
 use secrecy::Secret;
 use std::sync::Arc;
 use std::time::Duration;
@@ -72,10 +74,12 @@ impl Client {
 
         // Add custom headers
         for (name, value) in &config.custom_headers {
-            let header_name = HeaderName::try_from(name.as_str())
-                .map_err(|e| Error::configuration(format!("Invalid header name '{}': {}", name, e)))?;
-            let header_value = HeaderValue::from_str(value)
-                .map_err(|e| Error::configuration(format!("Invalid header value for '{}': {}", name, e)))?;
+            let header_name = HeaderName::try_from(name.as_str()).map_err(|e| {
+                Error::configuration(format!("Invalid header name '{}': {}", name, e))
+            })?;
+            let header_value = HeaderValue::from_str(value).map_err(|e| {
+                Error::configuration(format!("Invalid header value for '{}': {}", name, e))
+            })?;
             headers.insert(header_name, header_value);
         }
 
@@ -135,14 +139,9 @@ impl Client {
 
         debug!("Sending chat completion request to {}", url);
 
-        let response = self.execute_with_retry(|| async {
-            self.http
-                .post(url.clone())
-                .json(request)
-                .send()
-                .await
-        })
-        .await?;
+        let response = self
+            .execute_with_retry(|| async { self.http.post(url.clone()).json(request).send().await })
+            .await?;
 
         self.handle_response(response).await
     }
@@ -158,7 +157,8 @@ impl Client {
 
         debug!("Sending streaming chat completion request to {}", url);
 
-        let response = self.http
+        let response = self
+            .http
             .post(url)
             .json(&request)
             .send()
@@ -179,10 +179,9 @@ impl Client {
 
         debug!("Listing models from {}", url);
 
-        let response = self.execute_with_retry(|| async {
-            self.http.get(url.clone()).send().await
-        })
-        .await?;
+        let response = self
+            .execute_with_retry(|| async { self.http.get(url.clone()).send().await })
+            .await?;
 
         self.handle_response(response).await
     }
@@ -194,7 +193,8 @@ impl Client {
 
         debug!("Checking health at {}", url);
 
-        let response = self.http
+        let response = self
+            .http
             .get(url)
             .send()
             .await
@@ -215,7 +215,8 @@ impl Client {
 
         debug!("Checking readiness at {}", url);
 
-        let response = self.http
+        let response = self
+            .http
             .get(url)
             .send()
             .await
@@ -493,19 +494,29 @@ impl ClientBuilder {
 
     /// Build the client.
     pub fn build(self) -> Result<Client> {
-        let base_url = self.base_url.unwrap_or_else(|| {
-            Url::parse("http://localhost:8080").expect("valid default URL")
-        });
+        let base_url = self
+            .base_url
+            .unwrap_or_else(|| Url::parse("http://localhost:8080").expect("valid default URL"));
 
         let config = ClientConfig {
             base_url,
             api_key: self.api_key,
             timeout: self.timeout.unwrap_or(ClientConfig::DEFAULT_TIMEOUT),
-            connect_timeout: self.connect_timeout.unwrap_or(ClientConfig::DEFAULT_CONNECT_TIMEOUT),
-            max_retries: self.max_retries.unwrap_or(ClientConfig::DEFAULT_MAX_RETRIES),
-            retry_initial_delay: self.retry_initial_delay.unwrap_or(ClientConfig::DEFAULT_RETRY_INITIAL_DELAY),
-            retry_max_delay: self.retry_max_delay.unwrap_or(ClientConfig::DEFAULT_RETRY_MAX_DELAY),
-            user_agent: self.user_agent.unwrap_or_else(|| ClientConfig::DEFAULT_USER_AGENT.to_string()),
+            connect_timeout: self
+                .connect_timeout
+                .unwrap_or(ClientConfig::DEFAULT_CONNECT_TIMEOUT),
+            max_retries: self
+                .max_retries
+                .unwrap_or(ClientConfig::DEFAULT_MAX_RETRIES),
+            retry_initial_delay: self
+                .retry_initial_delay
+                .unwrap_or(ClientConfig::DEFAULT_RETRY_INITIAL_DELAY),
+            retry_max_delay: self
+                .retry_max_delay
+                .unwrap_or(ClientConfig::DEFAULT_RETRY_MAX_DELAY),
+            user_agent: self
+                .user_agent
+                .unwrap_or_else(|| ClientConfig::DEFAULT_USER_AGENT.to_string()),
             default_model: self.default_model,
             custom_headers: self.custom_headers,
             enable_tracing: self.enable_tracing,
@@ -645,9 +656,7 @@ mod tests {
 
     #[test]
     fn test_client_default_url() {
-        let client = Client::builder()
-            .build()
-            .unwrap();
+        let client = Client::builder().build().unwrap();
 
         assert_eq!(client.config.base_url.as_str(), "http://localhost:8080/");
     }

@@ -167,13 +167,7 @@ async fn test_e2e_concurrent_users() {
             "user": format!("user-{}", i)
         });
 
-        futures.push(async move {
-            client
-                .post(&url)
-                .json(&request)
-                .send()
-                .await
-        });
+        futures.push(async move { client.post(&url).json(&request).send().await });
     }
 
     let results = futures::future::join_all(futures).await;
@@ -386,8 +380,8 @@ mod live_provider_tests {
     #[tokio::test]
     #[ignore] // Requires API key
     async fn test_e2e_live_openai() {
-        let api_key = std::env::var("OPENAI_API_KEY")
-            .expect("OPENAI_API_KEY required for this test");
+        let api_key =
+            std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY required for this test");
 
         let client = reqwest::Client::new();
         let response = client
@@ -412,8 +406,8 @@ mod live_provider_tests {
     #[tokio::test]
     #[ignore] // Requires API key
     async fn test_e2e_live_anthropic() {
-        let api_key = std::env::var("ANTHROPIC_API_KEY")
-            .expect("ANTHROPIC_API_KEY required for this test");
+        let api_key =
+            std::env::var("ANTHROPIC_API_KEY").expect("ANTHROPIC_API_KEY required for this test");
 
         let client = reqwest::Client::new();
         let response = client

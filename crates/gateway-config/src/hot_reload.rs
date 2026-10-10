@@ -69,8 +69,8 @@ impl ConfigWatcher {
         let tx_clone = tx;
         let path_clone = path.clone();
 
-        let mut watcher = notify::recommended_watcher(move |res: Result<Event, notify::Error>| {
-            match res {
+        let mut watcher =
+            notify::recommended_watcher(move |res: Result<Event, notify::Error>| match res {
                 Ok(event) => {
                     if event.kind.is_modify() || event.kind.is_create() {
                         debug!("Configuration file changed: {:?}", event.paths);
@@ -82,9 +82,8 @@ impl ConfigWatcher {
                 Err(e) => {
                     error!("File watch error: {}", e);
                 }
-            }
-        })
-        .map_err(|e| ConfigError::Io(std::io::Error::other(e)))?;
+            })
+            .map_err(|e| ConfigError::Io(std::io::Error::other(e)))?;
 
         // Watch the config file's parent directory
         let watch_path = path.parent().unwrap_or(&path);

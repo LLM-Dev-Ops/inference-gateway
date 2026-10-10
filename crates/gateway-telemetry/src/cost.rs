@@ -247,7 +247,8 @@ impl UsageStats {
             let total = self.total_requests as f64;
             let prev_weight = (self.total_requests - other.total_requests) as f64 / total;
             let other_weight = other.total_requests as f64 / total;
-            self.avg_latency_ms = self.avg_latency_ms * prev_weight + other.avg_latency_ms * other_weight;
+            self.avg_latency_ms =
+                self.avg_latency_ms * prev_weight + other.avg_latency_ms * other_weight;
         }
 
         if let Some(other_start) = other.period_start {
@@ -519,7 +520,9 @@ impl CostTracker {
     ) {
         let model = model.into();
         let provider = provider.into();
-        let cost = self.calculate_cost(&model, &provider, input_tokens, output_tokens).await;
+        let cost = self
+            .calculate_cost(&model, &provider, input_tokens, output_tokens)
+            .await;
 
         let mut event = UsageEvent::new(
             request_id,
@@ -717,7 +720,11 @@ pub struct CostReport {
 
 impl CostReport {
     /// Generate a cost report from the tracker
-    pub async fn generate(tracker: &CostTracker, title: impl Into<String>, period: impl Into<String>) -> Self {
+    pub async fn generate(
+        tracker: &CostTracker,
+        title: impl Into<String>,
+        period: impl Into<String>,
+    ) -> Self {
         Self {
             title: title.into(),
             period: period.into(),
@@ -837,7 +844,9 @@ mod tests {
         assert!((cost - 0.06).abs() < 0.001);
 
         // Unknown model uses default pricing
-        let default_cost = tracker.calculate_cost("unknown", "unknown", 1000, 1000).await;
+        let default_cost = tracker
+            .calculate_cost("unknown", "unknown", 1000, 1000)
+            .await;
         assert!(default_cost > 0.0);
     }
 
@@ -851,8 +860,8 @@ mod tests {
         tracker.set_budget(budget).await;
 
         // Record some usage
-        let event = UsageEvent::new("req-1", "gpt-4", "openai", 1000, 500, 50.0)
-            .with_tenant("tenant-1");
+        let event =
+            UsageEvent::new("req-1", "gpt-4", "openai", 1000, 500, 50.0).with_tenant("tenant-1");
         tracker.record_usage(event).await;
 
         let status = tracker.check_budget("tenant-1").await;
@@ -866,8 +875,8 @@ mod tests {
         assert!(!tracker.is_over_budget("tenant-1").await);
 
         // Record more to exceed budget
-        let event = UsageEvent::new("req-2", "gpt-4", "openai", 1000, 500, 60.0)
-            .with_tenant("tenant-1");
+        let event =
+            UsageEvent::new("req-2", "gpt-4", "openai", 1000, 500, 60.0).with_tenant("tenant-1");
         tracker.record_usage(event).await;
 
         assert!(tracker.is_over_budget("tenant-1").await);
@@ -915,8 +924,8 @@ mod tests {
     async fn test_cost_report_generation() {
         let tracker = CostTracker::with_defaults();
 
-        let event = UsageEvent::new("req-1", "gpt-4", "openai", 100, 50, 0.005)
-            .with_tenant("tenant-1");
+        let event =
+            UsageEvent::new("req-1", "gpt-4", "openai", 100, 50, 0.005).with_tenant("tenant-1");
         tracker.record_usage(event).await;
 
         let report = CostReport::generate(&tracker, "Monthly Report", "November 2024").await;

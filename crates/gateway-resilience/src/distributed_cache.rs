@@ -284,10 +284,7 @@ impl DistributedCacheKey {
         }
         let messages_hash = hasher.finish();
 
-        let temperature_bucket = request
-            .temperature
-            .map(|t| (t * 10.0) as u32)
-            .unwrap_or(7);
+        let temperature_bucket = request.temperature.map(|t| (t * 10.0) as u32).unwrap_or(7);
 
         Self {
             model: request.model.clone(),
@@ -421,10 +418,8 @@ impl MemoryCacheBackend {
         // If still over capacity, remove lowest-hit entries
         if entries.len() >= self.max_entries {
             let to_remove = entries.len() - self.max_entries + 1;
-            let mut hit_counts: Vec<(String, u64)> = entries
-                .iter()
-                .map(|(k, v)| (k.clone(), v.hits))
-                .collect();
+            let mut hit_counts: Vec<(String, u64)> =
+                entries.iter().map(|(k, v)| (k.clone(), v.hits)).collect();
             hit_counts.sort_by_key(|(_, hits)| *hits);
 
             for (key, _) in hit_counts.into_iter().take(to_remove) {
@@ -778,9 +773,7 @@ impl DistributedCache {
     /// Check if distributed caching is available
     #[must_use]
     pub fn is_distributed(&self) -> bool {
-        self.l2_backend
-            .as_ref()
-            .is_some_and(|b| b.is_distributed())
+        self.l2_backend.as_ref().is_some_and(|b| b.is_distributed())
     }
 
     /// Check if a request is cacheable
@@ -856,9 +849,7 @@ impl DistributedCache {
 
                             // Populate L1 cache
                             if let Some(ref l1) = self.l1_backend {
-                                let _ = l1
-                                    .set(&key_str, data, self.config.local_cache_ttl)
-                                    .await;
+                                let _ = l1.set(&key_str, data, self.config.local_cache_ttl).await;
                             }
 
                             return Some(entry.response);
@@ -919,7 +910,10 @@ impl DistributedCache {
 
         // Store in L1
         if let Some(ref l1) = self.l1_backend {
-            if let Err(e) = l1.set(&key_str, data.clone(), self.config.local_cache_ttl).await {
+            if let Err(e) = l1
+                .set(&key_str, data.clone(), self.config.local_cache_ttl)
+                .await
+            {
                 warn!(error = %e, "Failed to store in L1 cache");
             }
         }
@@ -1051,7 +1045,10 @@ mod tests {
         assert_eq!(result, Some(b"test-value".to_vec()));
 
         // Delete
-        backend.delete("test-key").await.expect("delete should succeed");
+        backend
+            .delete("test-key")
+            .await
+            .expect("delete should succeed");
         let result = backend.get("test-key").await.expect("get should succeed");
         assert!(result.is_none());
     }
@@ -1061,7 +1058,11 @@ mod tests {
         let backend = MemoryCacheBackend::new(100, Duration::from_millis(50));
 
         backend
-            .set("test-key", b"test-value".to_vec(), Duration::from_millis(50))
+            .set(
+                "test-key",
+                b"test-value".to_vec(),
+                Duration::from_millis(50),
+            )
             .await
             .expect("set should succeed");
 
@@ -1242,11 +1243,23 @@ mod tests {
             .expect("set should succeed");
 
         // key1 should be evicted
-        assert!(backend.get("key1").await.expect("get should succeed").is_none());
+        assert!(backend
+            .get("key1")
+            .await
+            .expect("get should succeed")
+            .is_none());
 
         // key2 and key3 should exist
-        assert!(backend.get("key2").await.expect("get should succeed").is_some());
-        assert!(backend.get("key3").await.expect("get should succeed").is_some());
+        assert!(backend
+            .get("key2")
+            .await
+            .expect("get should succeed")
+            .is_some());
+        assert!(backend
+            .get("key3")
+            .await
+            .expect("get should succeed")
+            .is_some());
     }
 
     #[tokio::test]
@@ -1277,8 +1290,20 @@ mod tests {
         assert_eq!(deleted, 2);
 
         // Verify
-        assert!(backend.get("prefix:key1").await.expect("get should succeed").is_none());
-        assert!(backend.get("prefix:key2").await.expect("get should succeed").is_none());
-        assert!(backend.get("other:key3").await.expect("get should succeed").is_some());
+        assert!(backend
+            .get("prefix:key1")
+            .await
+            .expect("get should succeed")
+            .is_none());
+        assert!(backend
+            .get("prefix:key2")
+            .await
+            .expect("get should succeed")
+            .is_none());
+        assert!(backend
+            .get("other:key3")
+            .await
+            .expect("get should succeed")
+            .is_some());
     }
 }

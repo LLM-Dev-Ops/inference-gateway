@@ -65,7 +65,10 @@ impl AutoOptimizerAdapter {
         format!(
             "{}:{}",
             request.model,
-            request.temperature.map(|t| t.to_string()).unwrap_or_default()
+            request
+                .temperature
+                .map(|t| t.to_string())
+                .unwrap_or_default()
         )
     }
 

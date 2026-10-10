@@ -355,11 +355,7 @@ pub fn is_multicast(ip: IpAddr) -> bool {
 #[must_use]
 pub fn get_real_ip(xff_header: Option<&str>, remote_addr: IpAddr) -> IpAddr {
     xff_header
-        .and_then(|xff| {
-            xff.split(',')
-                .next()
-                .and_then(|ip| ip.trim().parse().ok())
-        })
+        .and_then(|xff| xff.split(',').next().and_then(|ip| ip.trim().parse().ok()))
         .unwrap_or(remote_addr)
 }
 

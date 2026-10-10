@@ -366,11 +366,7 @@ impl ApiKeyConfig {
     }
 
     /// Add an API key
-    pub fn with_key(
-        mut self,
-        key: impl Into<String>,
-        metadata: ApiKeyMetadata,
-    ) -> Self {
+    pub fn with_key(mut self, key: impl Into<String>, metadata: ApiKeyMetadata) -> Self {
         let key_str = key.into();
         let storage_key = if self.hash_keys {
             hash_api_key(&key_str)
@@ -460,11 +456,7 @@ fn hash_api_key(key: &str) -> String {
 /// Hex encoding for API key hashing
 mod hex {
     pub fn encode(bytes: impl AsRef<[u8]>) -> String {
-        bytes
-            .as_ref()
-            .iter()
-            .map(|b| format!("{b:02x}"))
-            .collect()
+        bytes.as_ref().iter().map(|b| format!("{b:02x}")).collect()
     }
 }
 
@@ -614,9 +606,7 @@ impl AuthState {
         // Pre-compute static decoding key if applicable
         let static_key = if let Some(jwt_config) = &config.jwt {
             match &jwt_config.mode {
-                JwtMode::Secret { secret } => {
-                    Some(DecodingKey::from_secret(secret.as_bytes()))
-                }
+                JwtMode::Secret { secret } => Some(DecodingKey::from_secret(secret.as_bytes())),
                 JwtMode::PublicKey { pem } => {
                     Some(DecodingKey::from_rsa_pem(pem.as_bytes()).map_err(|e| {
                         AuthError::Configuration(format!("Invalid RSA public key: {e}"))
@@ -691,9 +681,10 @@ impl AuthState {
             )));
         }
 
-        let discovery: OidcDiscovery = response.json().await.map_err(|e| {
-            AuthError::Configuration(format!("Failed to parse OIDC config: {e}"))
-        })?;
+        let discovery: OidcDiscovery = response
+            .json()
+            .await
+            .map_err(|e| AuthError::Configuration(format!("Failed to parse OIDC config: {e}")))?;
 
         info!(issuer = %discovery.issuer, "Loaded OIDC configuration");
 
@@ -754,10 +745,7 @@ impl AuthState {
     }
 
     /// Get decoding key for a JWT
-    async fn get_decoding_key(
-        &self,
-        token: &str,
-    ) -> Result<(DecodingKey, Algorithm), AuthError> {
+    async fn get_decoding_key(&self, token: &str) -> Result<(DecodingKey, Algorithm), AuthError> {
         let jwt_config = self
             .config
             .jwt
@@ -766,11 +754,14 @@ impl AuthState {
 
         match &jwt_config.mode {
             JwtMode::Secret { .. } | JwtMode::PublicKey { .. } => {
-                let key = self
-                    .static_key
-                    .clone()
-                    .ok_or(AuthError::Configuration("Static key not initialized".to_string()))?;
-                let algo = jwt_config.algorithms.first().copied().unwrap_or(Algorithm::RS256);
+                let key = self.static_key.clone().ok_or(AuthError::Configuration(
+                    "Static key not initialized".to_string(),
+                ))?;
+                let algo = jwt_config
+                    .algorithms
+                    .first()
+                    .copied()
+                    .unwrap_or(Algorithm::RS256);
                 Ok((key, algo))
             }
             JwtMode::Oidc { discovery_url } => {
@@ -787,9 +778,8 @@ impl AuthState {
         jwks_url: &str,
         token: &str,
     ) -> Result<(DecodingKey, Algorithm), AuthError> {
-        let header = decode_header(token).map_err(|e| {
-            AuthError::InvalidToken(format!("Failed to decode token header: {e}"))
-        })?;
+        let header = decode_header(token)
+            .map_err(|e| AuthError::InvalidToken(format!("Failed to decode token header: {e}")))?;
 
         let jwks = self.fetch_jwks(jwks_url).await?;
 
@@ -875,9 +865,9 @@ impl AuthState {
             name: claims.name.clone(),
             auth_method: AuthMethod::Jwt,
             scopes,
-            expires_at: claims.exp.map(|e| {
-                DateTime::from_timestamp(e, 0).unwrap_or_else(Utc::now)
-            }),
+            expires_at: claims
+                .exp
+                .map(|e| DateTime::from_timestamp(e, 0).unwrap_or_else(Utc::now)),
             claims: claims.additional.clone(),
         };
 
@@ -941,10 +931,7 @@ impl AuthState {
         }
 
         // Fall back to tenant_id or org_id
-        claims
-            .tenant_id
-            .clone()
-            .or_else(|| claims.org_id.clone())
+        claims.tenant_id.clone().or_else(|| claims.org_id.clone())
     }
 
     /// Validate an API key
@@ -953,7 +940,9 @@ impl AuthState {
             .config
             .api_keys
             .as_ref()
-            .ok_or(AuthError::Configuration("API keys not configured".to_string()))?;
+            .ok_or(AuthError::Configuration(
+                "API keys not configured".to_string(),
+            ))?;
 
         let lookup_key = if api_config.hash_keys {
             hash_api_key(key)
@@ -1283,14 +1272,12 @@ mod tests {
 
     #[test]
     fn test_api_key_config() {
-        let config = ApiKeyConfig::new()
-            .with_header("X-Custom-Key")
-            .with_key(
-                "test-key-123",
-                ApiKeyMetadata::new()
-                    .with_tenant("tenant-1")
-                    .with_scopes(vec!["read".to_string(), "write".to_string()]),
-            );
+        let config = ApiKeyConfig::new().with_header("X-Custom-Key").with_key(
+            "test-key-123",
+            ApiKeyMetadata::new()
+                .with_tenant("tenant-1")
+                .with_scopes(vec!["read".to_string(), "write".to_string()]),
+        );
 
         assert_eq!(config.header_name, "X-Custom-Key");
         assert!(config.keys.contains_key("test-key-123"));
@@ -1302,10 +1289,9 @@ mod tests {
 
     #[test]
     fn test_api_key_hashing() {
-        let config = ApiKeyConfig::new().with_hashing(true).with_key(
-            "secret-key",
-            ApiKeyMetadata::new(),
-        );
+        let config = ApiKeyConfig::new()
+            .with_hashing(true)
+            .with_key("secret-key", ApiKeyMetadata::new());
 
         // Key should be hashed, not stored in plain text
         assert!(!config.keys.contains_key("secret-key"));
@@ -1356,7 +1342,10 @@ mod tests {
             AuthError::InvalidToken("test".to_string()).status_code(),
             StatusCode::UNAUTHORIZED
         );
-        assert_eq!(AuthError::InvalidApiKey.status_code(), StatusCode::UNAUTHORIZED);
+        assert_eq!(
+            AuthError::InvalidApiKey.status_code(),
+            StatusCode::UNAUTHORIZED
+        );
         assert_eq!(
             AuthError::ExpiredCredential.status_code(),
             StatusCode::UNAUTHORIZED
@@ -1377,13 +1366,19 @@ mod tests {
 
     #[test]
     fn test_auth_error_codes() {
-        assert_eq!(AuthError::MissingCredentials.error_code(), "authentication_required");
+        assert_eq!(
+            AuthError::MissingCredentials.error_code(),
+            "authentication_required"
+        );
         assert_eq!(
             AuthError::InvalidToken("test".to_string()).error_code(),
             "invalid_token"
         );
         assert_eq!(AuthError::InvalidApiKey.error_code(), "invalid_api_key");
-        assert_eq!(AuthError::ExpiredCredential.error_code(), "expired_credentials");
+        assert_eq!(
+            AuthError::ExpiredCredential.error_code(),
+            "expired_credentials"
+        );
         assert_eq!(
             AuthError::MissingClaim("sub".to_string()).error_code(),
             "missing_claim"
@@ -1470,12 +1465,10 @@ mod tests {
     #[tokio::test]
     async fn test_authenticate_with_invalid_api_key() {
         let config = AuthConfig::builder()
-            .api_keys(
-                ApiKeyConfig::new().with_key(
-                    "valid-api-key",
-                    ApiKeyMetadata::new().with_tenant("tenant-1"),
-                ),
-            )
+            .api_keys(ApiKeyConfig::new().with_key(
+                "valid-api-key",
+                ApiKeyMetadata::new().with_tenant("tenant-1"),
+            ))
             .required(true)
             .build();
 
@@ -1518,9 +1511,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_authenticate_anonymous_when_not_required() {
-        let config = AuthConfig::builder()
-            .required(false)
-            .build();
+        let config = AuthConfig::builder().required(false).build();
 
         let state = AuthState {
             config: Arc::new(config),
@@ -1543,12 +1534,10 @@ mod tests {
     async fn test_authenticate_expired_api_key() {
         let expired = Utc::now() - chrono::Duration::days(1);
         let config = AuthConfig::builder()
-            .api_keys(
-                ApiKeyConfig::new().with_key(
-                    "expired-key",
-                    ApiKeyMetadata::new().with_expiration(expired),
-                ),
-            )
+            .api_keys(ApiKeyConfig::new().with_key(
+                "expired-key",
+                ApiKeyMetadata::new().with_expiration(expired),
+            ))
             .required(true)
             .build();
 
@@ -1573,9 +1562,7 @@ mod tests {
         metadata.enabled = false;
 
         let config = AuthConfig::builder()
-            .api_keys(
-                ApiKeyConfig::new().with_key("disabled-key", metadata),
-            )
+            .api_keys(ApiKeyConfig::new().with_key("disabled-key", metadata))
             .required(true)
             .build();
 
@@ -1597,12 +1584,10 @@ mod tests {
     #[tokio::test]
     async fn test_api_key_scope_validation() {
         let config = AuthConfig::builder()
-            .api_keys(
-                ApiKeyConfig::new().with_key(
-                    "limited-key",
-                    ApiKeyMetadata::new().with_scopes(vec!["read".to_string()]),
-                ),
-            )
+            .api_keys(ApiKeyConfig::new().with_key(
+                "limited-key",
+                ApiKeyMetadata::new().with_scopes(vec!["read".to_string()]),
+            ))
             .required_scopes(vec!["write".to_string()])
             .required(true)
             .build();
@@ -1619,17 +1604,19 @@ mod tests {
         let result = state.authenticate(&request).await;
 
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), AuthError::InsufficientScope(_)));
+        assert!(matches!(
+            result.unwrap_err(),
+            AuthError::InsufficientScope(_)
+        ));
     }
 
     #[tokio::test]
     async fn test_api_key_hashed_validation() {
         let config = AuthConfig::builder()
-            .api_keys(
-                ApiKeyConfig::new()
-                    .with_hashing(true)
-                    .with_key("my-secret-key", ApiKeyMetadata::new().with_tenant("tenant-1")),
-            )
+            .api_keys(ApiKeyConfig::new().with_hashing(true).with_key(
+                "my-secret-key",
+                ApiKeyMetadata::new().with_tenant("tenant-1"),
+            ))
             .required(true)
             .build();
 
@@ -1666,10 +1653,7 @@ mod tests {
 
     #[test]
     fn test_auth_method_serialization() {
-        assert_eq!(
-            serde_json::to_string(&AuthMethod::Jwt).unwrap(),
-            "\"jwt\""
-        );
+        assert_eq!(serde_json::to_string(&AuthMethod::Jwt).unwrap(), "\"jwt\"");
         assert_eq!(
             serde_json::to_string(&AuthMethod::ApiKey).unwrap(),
             "\"api_key\""
@@ -1710,14 +1694,10 @@ mod tests {
         let config = AuthConfig::builder().build();
         assert!(config.is_disabled());
 
-        let config_with_jwt = AuthConfig::builder()
-            .jwt(JwtConfig::secret("test"))
-            .build();
+        let config_with_jwt = AuthConfig::builder().jwt(JwtConfig::secret("test")).build();
         assert!(!config_with_jwt.is_disabled());
 
-        let config_with_api_keys = AuthConfig::builder()
-            .api_keys(ApiKeyConfig::new())
-            .build();
+        let config_with_api_keys = AuthConfig::builder().api_keys(ApiKeyConfig::new()).build();
         assert!(!config_with_api_keys.is_disabled());
     }
 }

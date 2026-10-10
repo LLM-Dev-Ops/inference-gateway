@@ -52,13 +52,7 @@ async fn test_concurrent_requests_rate_limiting() {
             let client = server.client.clone();
             let url = server.url("/v1/chat/completions");
             let req = request.clone();
-            async move {
-                client
-                    .post(&url)
-                    .json(&req)
-                    .send()
-                    .await
-            }
+            async move { client.post(&url).json(&req).send().await }
         })
         .collect();
 
@@ -205,13 +199,7 @@ async fn test_burst_rate_limit() {
             let client = server.client.clone();
             let url = server.url("/v1/chat/completions");
             let req = request.clone();
-            async move {
-                client
-                    .post(&url)
-                    .json(&req)
-                    .send()
-                    .await
-            }
+            async move { client.post(&url).json(&req).send().await }
         })
         .collect();
 
@@ -305,7 +293,9 @@ async fn test_endpoint_rate_limit_isolation() {
     let chat_request = openai_json_request("gpt-4o-mini", "Hello");
 
     // Chat completions
-    let response1 = server.post_json("/v1/chat/completions", &chat_request).await;
+    let response1 = server
+        .post_json("/v1/chat/completions", &chat_request)
+        .await;
     assert_status(&response1, 200);
 
     // Models list
@@ -349,12 +339,16 @@ async fn test_errors_not_counted_for_rate_limit() {
 
     // Send invalid requests
     for _ in 0..5 {
-        let _response = server.post_json("/v1/chat/completions", &invalid_request).await;
+        let _response = server
+            .post_json("/v1/chat/completions", &invalid_request)
+            .await;
     }
 
     // Valid request should still work
     let valid_request = openai_json_request("gpt-4o-mini", "Hello");
-    let response = server.post_json("/v1/chat/completions", &valid_request).await;
+    let response = server
+        .post_json("/v1/chat/completions", &valid_request)
+        .await;
 
     // Should not be rate limited due to errors
     let status = response.status().as_u16();

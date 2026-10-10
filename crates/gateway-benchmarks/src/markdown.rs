@@ -48,7 +48,11 @@ pub fn generate_summary(results: &[BenchmarkResult]) -> String {
     md.push_str("|--------|--------|--------------|------------------|-------|\n");
 
     for result in results {
-        let status = if result.is_error() { "❌ Failed" } else { "✅ Passed" };
+        let status = if result.is_error() {
+            "❌ Failed"
+        } else {
+            "✅ Passed"
+        };
         let latency = result
             .latency_ms()
             .map(|v| format!("{:.2}", v))
@@ -144,7 +148,10 @@ pub fn generate_detailed_report(result: &BenchmarkResult) -> String {
         md.push_str(&format!("- **Latency:** {:.2} ms\n", latency));
     }
     if let Some(throughput) = result.throughput_rps() {
-        md.push_str(&format!("- **Throughput:** {:.0} requests/sec\n", throughput));
+        md.push_str(&format!(
+            "- **Throughput:** {:.0} requests/sec\n",
+            throughput
+        ));
     }
     if let Some(iterations) = result.metrics.get("iterations").and_then(|v| v.as_u64()) {
         md.push_str(&format!("- **Iterations:** {}\n", iterations));

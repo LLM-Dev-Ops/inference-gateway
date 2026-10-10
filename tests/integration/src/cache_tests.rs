@@ -161,13 +161,7 @@ async fn test_cache_concurrent_requests() {
             let client = server.client.clone();
             let url = server.url("/v1/chat/completions");
             let req = request.clone();
-            async move {
-                client
-                    .post(&url)
-                    .json(&req)
-                    .send()
-                    .await
-            }
+            async move { client.post(&url).json(&req).send().await }
         })
         .collect();
 
@@ -320,8 +314,8 @@ mod redis_cache_tests {
     #[ignore] // Requires Redis
     async fn test_redis_cache_integration() {
         // This test requires a running Redis instance
-        let redis_url = std::env::var("REDIS_URL")
-            .unwrap_or_else(|_| "redis://localhost:6379".to_string());
+        let redis_url =
+            std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".to_string());
 
         let client = redis::Client::open(redis_url).expect("Failed to create Redis client");
         let mut conn = client
@@ -357,8 +351,8 @@ mod redis_cache_tests {
     #[tokio::test]
     #[ignore] // Requires Redis
     async fn test_redis_cache_persistence() {
-        let redis_url = std::env::var("REDIS_URL")
-            .unwrap_or_else(|_| "redis://localhost:6379".to_string());
+        let redis_url =
+            std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".to_string());
 
         let client = redis::Client::open(redis_url).expect("Failed to create Redis client");
         let mut conn = client
@@ -403,8 +397,8 @@ mod redis_cache_tests {
     #[tokio::test]
     #[ignore] // Requires Redis
     async fn test_redis_cache_ttl() {
-        let redis_url = std::env::var("REDIS_URL")
-            .unwrap_or_else(|_| "redis://localhost:6379".to_string());
+        let redis_url =
+            std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".to_string());
 
         let client = redis::Client::open(redis_url).expect("Failed to create Redis client");
         let mut conn = client

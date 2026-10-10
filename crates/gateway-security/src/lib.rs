@@ -36,11 +36,11 @@ pub mod validation;
 
 pub use config::{SecurityConfig, SecurityConfigBuilder};
 pub use crypto::{Encryption, HashingService, KeyDerivation};
-pub use error::{SecurityError, Result};
+pub use error::{Result, SecurityError};
 pub use headers::{SecurityHeaders, SecurityHeadersLayer};
 pub use ip_filter::{IpFilter, IpFilterConfig};
 pub use middleware::SecurityLayer;
-pub use sanitize::{Sanitizer, SanitizeConfig};
+pub use sanitize::{SanitizeConfig, Sanitizer};
 pub use secrets::{SecretStore, SecretValue};
 pub use signing::{RequestSigner, SignatureVerifier};
 pub use validation::{InputValidator, ValidationResult};

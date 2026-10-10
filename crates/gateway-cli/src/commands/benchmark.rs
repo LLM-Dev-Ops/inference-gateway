@@ -3,9 +3,7 @@
 use anyhow::Result;
 use clap::Args;
 use colored::Colorize;
-use gateway_benchmarks::{
-    all_targets, io, markdown, run_all_benchmarks, BenchmarkResult,
-};
+use gateway_benchmarks::{all_targets, io, markdown, run_all_benchmarks, BenchmarkResult};
 use std::path::PathBuf;
 use tabled::{Table, Tabled};
 

@@ -475,7 +475,9 @@ impl TenantId {
             .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
         {
             return Err(ValidationError::InvalidTenantId {
-                reason: "tenant_id must contain only alphanumeric characters, hyphens, or underscores".to_string(),
+                reason:
+                    "tenant_id must contain only alphanumeric characters, hyphens, or underscores"
+                        .to_string(),
             });
         }
         Ok(Self(value))

@@ -253,7 +253,11 @@ pub struct AgentEndpoint {
 impl AgentEndpoint {
     /// Create a new endpoint
     #[must_use]
-    pub fn new(method: impl Into<String>, path: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn new(
+        method: impl Into<String>,
+        path: impl Into<String>,
+        description: impl Into<String>,
+    ) -> Self {
         Self {
             method: method.into(),
             path: path.into(),
@@ -297,7 +301,11 @@ mod tests {
         .with_version(AgentVersion::new(0, 1, 0))
         .with_capability("routing".to_string())
         .with_capability("inspection".to_string())
-        .with_endpoint(AgentEndpoint::new("POST", "/agents/route", "Route a request"));
+        .with_endpoint(AgentEndpoint::new(
+            "POST",
+            "/agents/route",
+            "Route a request",
+        ));
 
         assert_eq!(metadata.capabilities.len(), 2);
         assert_eq!(metadata.endpoints.len(), 1);

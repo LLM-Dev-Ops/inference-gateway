@@ -293,7 +293,9 @@ impl RuVectorClient {
             .connect_timeout(Duration::from_secs(10))
             .pool_max_idle_per_host(config.pool_size as usize)
             .build()
-            .map_err(|e| IntegrationError::ruvector(format!("Failed to create HTTP client: {}", e)))?;
+            .map_err(|e| {
+                IntegrationError::ruvector(format!("Failed to create HTTP client: {}", e))
+            })?;
 
         Ok(Self {
             config,
@@ -341,7 +343,11 @@ impl RuVectorClient {
 
         for attempt in 0..=self.config.retry_count {
             if attempt > 0 {
-                debug!(attempt = attempt, delay_ms = delay.as_millis(), "Retrying request");
+                debug!(
+                    attempt = attempt,
+                    delay_ms = delay.as_millis(),
+                    "Retrying request"
+                );
                 tokio::time::sleep(delay).await;
                 // Exponential backoff with jitter
                 delay = std::cmp::min(
@@ -362,9 +368,8 @@ impl RuVectorClient {
             }
         }
 
-        Err(last_error.unwrap_or_else(|| {
-            IntegrationError::ruvector("All retry attempts exhausted")
-        }))
+        Err(last_error
+            .unwrap_or_else(|| IntegrationError::ruvector("All retry attempts exhausted")))
     }
 
     /// Check service health.
@@ -520,10 +525,9 @@ impl RuVectorPersistence for RuVectorClient {
                 )));
             }
 
-            let persist_response: PersistResponse = response
-                .json()
-                .await
-                .map_err(|e| IntegrationError::ruvector(format!("Failed to parse response: {}", e)))?;
+            let persist_response: PersistResponse = response.json().await.map_err(|e| {
+                IntegrationError::ruvector(format!("Failed to parse response: {}", e))
+            })?;
 
             debug!(
                 event_id = %persist_response.id,
@@ -567,10 +571,9 @@ impl RuVectorPersistence for RuVectorClient {
                 )));
             }
 
-            let events: Vec<DecisionEvent> = response
-                .json()
-                .await
-                .map_err(|e| IntegrationError::ruvector(format!("Failed to parse response: {}", e)))?;
+            let events: Vec<DecisionEvent> = response.json().await.map_err(|e| {
+                IntegrationError::ruvector(format!("Failed to parse response: {}", e))
+            })?;
 
             debug!(count = events.len(), "Retrieved events by execution");
 
@@ -606,10 +609,9 @@ impl RuVectorPersistence for RuVectorClient {
                 )));
             }
 
-            let events_response: EventsResponse = response
-                .json()
-                .await
-                .map_err(|e| IntegrationError::ruvector(format!("Failed to parse response: {}", e)))?;
+            let events_response: EventsResponse = response.json().await.map_err(|e| {
+                IntegrationError::ruvector(format!("Failed to parse response: {}", e))
+            })?;
 
             debug!(
                 count = events_response.events.len(),
@@ -689,10 +691,9 @@ impl RuVectorPersistence for RuVectorClient {
                 )));
             }
 
-            let ids: Vec<String> = response
-                .json()
-                .await
-                .map_err(|e| IntegrationError::ruvector(format!("Failed to parse response: {}", e)))?;
+            let ids: Vec<String> = response.json().await.map_err(|e| {
+                IntegrationError::ruvector(format!("Failed to parse response: {}", e))
+            })?;
 
             debug!(count = ids.len(), "Successfully batch persisted events");
 
@@ -789,7 +790,13 @@ fn is_retryable(error: &IntegrationError) -> bool {
     matches!(
         error,
         IntegrationError::Connection(_) | IntegrationError::Timeout(_)
-    ) || matches!(error, IntegrationError::RuVector { retryable: true, .. })
+    ) || matches!(
+        error,
+        IntegrationError::RuVector {
+            retryable: true,
+            ..
+        }
+    )
 }
 
 /// Generate a random jitter value for exponential backoff.
@@ -798,10 +805,12 @@ fn rand_jitter() -> u64 {
     use std::hash::{BuildHasher, Hasher};
 
     let mut hasher = RandomState::new().build_hasher();
-    hasher.write_u64(std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_nanos() as u64)
-        .unwrap_or(0));
+    hasher.write_u64(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos() as u64)
+            .unwrap_or(0),
+    );
     hasher.finish() % 100
 }
 

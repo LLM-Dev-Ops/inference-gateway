@@ -207,9 +207,10 @@ impl RuleMatcher {
         // Check model patterns
         if !self.models.is_empty() {
             if let Some(model) = &context.model {
-                let matched = self.models.iter().any(|pattern| {
-                    matches_pattern(pattern, model)
-                });
+                let matched = self
+                    .models
+                    .iter()
+                    .any(|pattern| matches_pattern(pattern, model));
                 conditions.push(matched);
             } else {
                 conditions.push(false);
@@ -247,9 +248,10 @@ impl RuleMatcher {
         // Check source IPs
         if !self.source_ips.is_empty() {
             if let Some(ip) = &context.source_ip {
-                let matched = self.source_ips.iter().any(|pattern| {
-                    matches_ip_pattern(pattern, ip)
-                });
+                let matched = self
+                    .source_ips
+                    .iter()
+                    .any(|pattern| matches_ip_pattern(pattern, ip));
                 conditions.push(matched);
             } else {
                 conditions.push(false);
@@ -385,22 +387,28 @@ impl ModelTransform {
     pub fn apply(&self, model: &str) -> String {
         match self {
             Self::Replace { value } => value.clone(),
-            Self::Map { mappings } => {
-                mappings.get(model).cloned().unwrap_or_else(|| model.to_string())
-            }
-            Self::Regex { pattern, replacement } => {
+            Self::Map { mappings } => mappings
+                .get(model)
+                .cloned()
+                .unwrap_or_else(|| model.to_string()),
+            Self::Regex {
+                pattern,
+                replacement,
+            } => {
                 if let Ok(re) = Regex::new(pattern) {
                     re.replace_all(model, replacement.as_str()).to_string()
                 } else {
                     model.to_string()
                 }
             }
-            Self::StripPrefix { prefix } => {
-                model.strip_prefix(prefix.as_str()).unwrap_or(model).to_string()
-            }
-            Self::StripSuffix { suffix } => {
-                model.strip_suffix(suffix.as_str()).unwrap_or(model).to_string()
-            }
+            Self::StripPrefix { prefix } => model
+                .strip_prefix(prefix.as_str())
+                .unwrap_or(model)
+                .to_string(),
+            Self::StripSuffix { suffix } => model
+                .strip_suffix(suffix.as_str())
+                .unwrap_or(model)
+                .to_string(),
         }
     }
 }
@@ -530,7 +538,8 @@ fn matches_ip_pattern(pattern: &str, ip: &str) -> bool {
         let parts: Vec<&str> = pattern.split('/').collect();
         if parts.len() == 2 {
             let network = parts[0];
-            return ip.starts_with(network.trim_end_matches(|c: char| c.is_ascii_digit() || c == '.'));
+            return ip
+                .starts_with(network.trim_end_matches(|c: char| c.is_ascii_digit() || c == '.'));
         }
     }
 
@@ -602,15 +611,12 @@ mod tests {
 
     #[test]
     fn test_header_matching() {
-        let matcher = RuleMatcher::new()
-            .with_header("x-priority", "high");
+        let matcher = RuleMatcher::new().with_header("x-priority", "high");
 
-        let context = MatchContext::new()
-            .with_header("x-priority", "high");
+        let context = MatchContext::new().with_header("x-priority", "high");
         assert!(matcher.matches(&context));
 
-        let context = MatchContext::new()
-            .with_header("x-priority", "low");
+        let context = MatchContext::new().with_header("x-priority", "low");
         assert!(!matcher.matches(&context));
     }
 
@@ -671,8 +677,7 @@ mod tests {
             RoutingRule::new("rule-1", "Terminal")
                 .with_priority(10)
                 .with_action(RuleAction::new().terminal()),
-            RoutingRule::new("rule-2", "Should not match")
-                .with_priority(20),
+            RoutingRule::new("rule-2", "Should not match").with_priority(20),
         ];
 
         let engine = RulesEngine::with_rules(rules);

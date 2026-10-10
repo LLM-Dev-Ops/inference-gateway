@@ -40,7 +40,7 @@ pub use budget::{
     create_abort_event, create_detailed_abort_event, BudgetExceededReason, BudgetTracker,
     BudgetUsageSummary,
 };
-pub use config::{Phase7Config, PerformanceBudget, MAX_CALLS_PER_RUN, MAX_LATENCY_MS, MAX_TOKENS};
+pub use config::{PerformanceBudget, Phase7Config, MAX_CALLS_PER_RUN, MAX_LATENCY_MS, MAX_TOKENS};
 pub use identity::AgentIdentity;
 
 use agentics_contracts::{Confidence, DecisionEvent, DecisionType};
@@ -108,14 +108,20 @@ impl Phase7Bootstrap {
                     reason = format!("Failed to create HTTP client: {}", e),
                     "agent_abort"
                 );
-                panic!("Phase 7 startup aborted: Failed to create HTTP client: {}", e);
+                panic!(
+                    "Phase 7 startup aborted: Failed to create HTTP client: {}",
+                    e
+                );
             });
 
         let health_url = format!("{}/health", config.ruvector_service_url);
 
         let result = client
             .get(&health_url)
-            .header("Authorization", format!("Bearer {}", config.ruvector_api_key))
+            .header(
+                "Authorization",
+                format!("Bearer {}", config.ruvector_api_key),
+            )
             .send()
             .await;
 

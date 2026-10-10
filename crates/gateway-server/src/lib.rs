@@ -27,13 +27,13 @@ pub mod state;
 
 // Re-export main types
 pub use auth::{
-    ApiKeyConfig, ApiKeyMetadata, AuthConfig, AuthConfigBuilder, AuthError, AuthMethod,
-    AuthState, AuthenticatedEntity, JwtConfig, JwtMode, auth_middleware,
+    auth_middleware, ApiKeyConfig, ApiKeyMetadata, AuthConfig, AuthConfigBuilder, AuthError,
+    AuthMethod, AuthState, AuthenticatedEntity, JwtConfig, JwtMode,
 };
 pub use error::ApiError;
 pub use health::{
-    ComponentHealth, HealthChecker, HealthConfig, HealthResponse, HealthStatus,
-    LivenessResponse, ProviderHealthResult, ReadinessResponse, StartupResponse,
+    ComponentHealth, HealthChecker, HealthConfig, HealthResponse, HealthStatus, LivenessResponse,
+    ProviderHealthResult, ReadinessResponse, StartupResponse,
 };
 pub use server::{Server, ServerConfig};
 pub use shutdown::{

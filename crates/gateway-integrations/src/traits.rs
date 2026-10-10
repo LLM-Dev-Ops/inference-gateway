@@ -115,8 +115,7 @@ pub trait SafetyFilter: Send + Sync {
     async fn validate_input(&self, request: &GatewayRequest) -> IntegrationResult<SafetyResult>;
 
     /// Validate output response for safety.
-    async fn validate_output(&self, response: &GatewayResponse)
-        -> IntegrationResult<SafetyResult>;
+    async fn validate_output(&self, response: &GatewayResponse) -> IntegrationResult<SafetyResult>;
 
     /// Check for PII in content.
     async fn check_pii(&self, content: &str) -> IntegrationResult<PiiCheckResult>;
@@ -233,7 +232,8 @@ pub trait SentinelConsumer: Send + Sync {
     async fn consume_anomalies(&self) -> IntegrationResult<Vec<AnomalyAlert>>;
 
     /// Check if a provider is experiencing anomalies.
-    async fn check_provider_anomalies(&self, provider_id: &str) -> IntegrationResult<AnomalyStatus>;
+    async fn check_provider_anomalies(&self, provider_id: &str)
+        -> IntegrationResult<AnomalyStatus>;
 
     /// Get recommended fallback action for an anomaly.
     async fn get_fallback_recommendation(
@@ -337,8 +337,10 @@ pub struct AnomalyReport {
 #[async_trait]
 pub trait CostConsumer: Send + Sync {
     /// Get cost projection for a request.
-    async fn get_cost_projection(&self, request: &GatewayRequest)
-        -> IntegrationResult<CostProjection>;
+    async fn get_cost_projection(
+        &self,
+        request: &GatewayRequest,
+    ) -> IntegrationResult<CostProjection>;
 
     /// Consume cost-efficient provider ranking.
     async fn get_cost_efficient_providers(
@@ -452,8 +454,7 @@ pub trait ObservabilityEmitter: Send + Sync {
     async fn emit_latency_profile(&self, profile: LatencyProfile) -> IntegrationResult<()>;
 
     /// Consume performance feedback.
-    async fn consume_performance_feedback(&self)
-        -> IntegrationResult<Vec<PerformanceFeedback>>;
+    async fn consume_performance_feedback(&self) -> IntegrationResult<Vec<PerformanceFeedback>>;
 
     /// Flush pending telemetry.
     async fn flush(&self) -> IntegrationResult<()>;

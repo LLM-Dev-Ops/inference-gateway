@@ -84,9 +84,7 @@ pub async fn execute(args: StartArgs) -> Result<()> {
         .with_request_timeout(Duration::from_secs(args.request_timeout));
 
     // Create application state
-    let state = gateway_server::AppState::builder()
-        .config(config)
-        .build();
+    let state = gateway_server::AppState::builder().config(config).build();
 
     // Create and run the server
     let server = gateway_server::Server::new(server_config, state);

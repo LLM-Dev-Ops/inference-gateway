@@ -210,6 +210,9 @@ describe('handler', () => {
         options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true });
       });
 
+      // AbortSignal.timeout() uses an unreferenced timer in Node 20. Keep the
+      // event loop alive long enough to observe it in this isolated unit test.
+      const keepAlive = setTimeout(() => {}, 500);
       try {
         const res = mockRes();
         await handler(mockReq({
@@ -221,6 +224,7 @@ describe('handler', () => {
         assert.equal(res._status, 502);
         assert.equal(res._json.error.type, 'gateway_error');
       } finally {
+        clearTimeout(keepAlive);
         global.fetch = originalFetch;
         if (originalTimeout === undefined) delete process.env.GATEWAY_REQUEST_TIMEOUT_MS;
         else process.env.GATEWAY_REQUEST_TIMEOUT_MS = originalTimeout;

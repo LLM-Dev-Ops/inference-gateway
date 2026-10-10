@@ -101,10 +101,7 @@ impl CacheKey {
         let messages_hash = hasher.finish();
 
         // Discretize temperature into buckets (0.0-0.1, 0.1-0.2, etc.)
-        let temperature_bucket = request
-            .temperature
-            .map(|t| (t * 10.0) as u32)
-            .unwrap_or(7); // Default temperature ~0.7
+        let temperature_bucket = request.temperature.map(|t| (t * 10.0) as u32).unwrap_or(7); // Default temperature ~0.7
 
         Self {
             model: request.model.clone(),
@@ -303,10 +300,8 @@ impl ResponseCache {
             let to_remove = entries.len() - self.config.max_entries + 1;
 
             // Find entries with lowest hits
-            let mut hit_counts: Vec<(CacheKey, u64)> = entries
-                .iter()
-                .map(|(k, v)| (k.clone(), v.hits))
-                .collect();
+            let mut hit_counts: Vec<(CacheKey, u64)> =
+                entries.iter().map(|(k, v)| (k.clone(), v.hits)).collect();
             hit_counts.sort_by_key(|(_, hits)| *hits);
 
             for (key, _) in hit_counts.into_iter().take(to_remove) {
