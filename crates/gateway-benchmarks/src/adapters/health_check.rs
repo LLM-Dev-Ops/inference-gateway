@@ -86,11 +86,7 @@ impl BenchTarget for HealthCheckBenchmark {
         let p95_idx = (latencies.len() as f64 * 0.95) as usize;
         let p99_idx = (latencies.len() as f64 * 0.99) as usize;
 
-        let throughput_rps = if avg_ms > 0.0 {
-            1000.0 / avg_ms
-        } else {
-            0.0
-        };
+        let throughput_rps = if avg_ms > 0.0 { 1000.0 / avg_ms } else { 0.0 };
 
         Ok(BenchmarkResult::new(
             self.id(),
@@ -125,7 +121,9 @@ async fn simulate_health_check(providers_count: u32) -> Vec<HealthStatus> {
     let mut results = Vec::with_capacity(providers_count as usize);
 
     for i in 0..providers_count {
-        let provider = providers.get(i as usize % providers.len()).unwrap_or(&"unknown");
+        let provider = providers
+            .get(i as usize % providers.len())
+            .unwrap_or(&"unknown");
 
         // Simulate async health check
         tokio::task::yield_now().await;

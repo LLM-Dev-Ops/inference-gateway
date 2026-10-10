@@ -31,11 +31,7 @@ pub fn cors_layer() -> CorsLayer {
             Method::DELETE,
             Method::OPTIONS,
         ])
-        .allow_headers([
-            header::AUTHORIZATION,
-            header::CONTENT_TYPE,
-            header::ACCEPT,
-        ])
+        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE, header::ACCEPT])
         .expose_headers([
             header::HeaderName::from_static("x-request-id"),
             header::HeaderName::from_static("x-response-time"),
@@ -49,10 +45,13 @@ pub async fn request_id_middleware(mut request: Request, next: Next) -> Response
     let request_id = request
         .headers()
         .get("x-request-id")
-        .and_then(|v| v.to_str().ok()).map_or_else(|| Uuid::new_v4().to_string(), String::from);
+        .and_then(|v| v.to_str().ok())
+        .map_or_else(|| Uuid::new_v4().to_string(), String::from);
 
     // Add to request extensions
-    request.extensions_mut().insert(RequestIdExt(request_id.clone()));
+    request
+        .extensions_mut()
+        .insert(RequestIdExt(request_id.clone()));
 
     // Add to request headers if not present
     if !request.headers().contains_key("x-request-id") {
@@ -85,7 +84,8 @@ pub async fn logging_middleware(request: Request, next: Next) -> Response {
     // Get request ID if available
     let request_id = request
         .extensions()
-        .get::<RequestIdExt>().map_or_else(|| "unknown".to_string(), |r| r.0.clone());
+        .get::<RequestIdExt>()
+        .map_or_else(|| "unknown".to_string(), |r| r.0.clone());
 
     let span = info_span!(
         "http_request",
@@ -166,10 +166,7 @@ pub async fn security_headers_middleware(request: Request, next: Next) -> Respon
     );
 
     // Prevent clickjacking
-    headers.insert(
-        "x-frame-options",
-        HeaderValue::from_static("DENY"),
-    );
+    headers.insert("x-frame-options", HeaderValue::from_static("DENY"));
 
     // XSS protection
     headers.insert(
@@ -374,12 +371,7 @@ mod tests {
             .layer(axum::middleware::from_fn(request_id_middleware));
 
         let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -417,12 +409,7 @@ mod tests {
             .layer(axum::middleware::from_fn(response_time_middleware));
 
         let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -467,10 +454,7 @@ mod tests {
 
     #[test]
     fn test_extract_rate_limit_key_unknown() {
-        let request = Request::builder()
-            .uri("/")
-            .body(Body::empty())
-            .unwrap();
+        let request = Request::builder().uri("/").body(Body::empty()).unwrap();
 
         let key = extract_rate_limit_key(&request);
         assert_eq!(key, "ip:unknown");

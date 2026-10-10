@@ -4,9 +4,9 @@
 //! or they run with mock servers when API keys are not set.
 
 use gateway_core::{GatewayRequest, LLMProvider};
-use gateway_providers::{OpenAIProvider, AnthropicProvider};
-use gateway_providers::openai::OpenAIConfig;
 use gateway_providers::anthropic::AnthropicConfig;
+use gateway_providers::openai::OpenAIConfig;
+use gateway_providers::{AnthropicProvider, OpenAIProvider};
 use std::env;
 use std::sync::Arc;
 
@@ -72,7 +72,9 @@ mod openai_tests {
 
         let request = GatewayRequest::builder()
             .model("gpt-4o-mini")
-            .message(gateway_core::ChatMessage::user("Say 'hello' and nothing else."))
+            .message(gateway_core::ChatMessage::user(
+                "Say 'hello' and nothing else.",
+            ))
             .max_tokens(10u32)
             .build()
             .unwrap();
@@ -109,7 +111,11 @@ mod openai_tests {
             .unwrap();
 
         let stream_result = provider.chat_completion_stream(&request).await;
-        assert!(stream_result.is_ok(), "Stream creation failed: {:?}", stream_result.err());
+        assert!(
+            stream_result.is_ok(),
+            "Stream creation failed: {:?}",
+            stream_result.err()
+        );
 
         let mut stream = stream_result.unwrap();
         let mut chunk_count = 0;
@@ -201,7 +207,9 @@ mod anthropic_tests {
 
         let request = GatewayRequest::builder()
             .model("claude-3-haiku-20240307")
-            .message(gateway_core::ChatMessage::user("Say 'hello' and nothing else."))
+            .message(gateway_core::ChatMessage::user(
+                "Say 'hello' and nothing else.",
+            ))
             .max_tokens(10u32)
             .build()
             .unwrap();
@@ -237,7 +245,11 @@ mod anthropic_tests {
             .unwrap();
 
         let stream_result = provider.chat_completion_stream(&request).await;
-        assert!(stream_result.is_ok(), "Stream creation failed: {:?}", stream_result.err());
+        assert!(
+            stream_result.is_ok(),
+            "Stream creation failed: {:?}",
+            stream_result.err()
+        );
 
         let mut stream = stream_result.unwrap();
         let mut chunk_count = 0;
@@ -294,12 +306,16 @@ mod provider_registry_tests {
         // Register OpenAI provider
         let openai_config = OpenAIConfig::new("openai", "sk-test");
         let openai_provider = OpenAIProvider::new(openai_config).unwrap();
-        registry.register(Arc::new(openai_provider), 1, 100).unwrap();
+        registry
+            .register(Arc::new(openai_provider), 1, 100)
+            .unwrap();
 
         // Register Anthropic provider
         let anthropic_config = AnthropicConfig::new("test-key");
         let anthropic_provider = AnthropicProvider::new(anthropic_config).unwrap();
-        registry.register(Arc::new(anthropic_provider), 2, 100).unwrap();
+        registry
+            .register(Arc::new(anthropic_provider), 2, 100)
+            .unwrap();
 
         let all_models = registry.get_all_models();
 

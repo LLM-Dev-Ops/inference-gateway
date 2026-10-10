@@ -6,9 +6,8 @@ use async_stream::try_stream;
 use futures::stream::BoxStream;
 use futures_util::StreamExt;
 use gateway_core::{
-    ChatChunk, FinishReason, GatewayError, GatewayRequest, GatewayResponse,
-    HealthStatus, LLMProvider, MessageContent, MessageRole, ModelInfo, ProviderCapabilities,
-    ProviderType, Usage,
+    ChatChunk, FinishReason, GatewayError, GatewayRequest, GatewayResponse, HealthStatus,
+    LLMProvider, MessageContent, MessageRole, ModelInfo, ProviderCapabilities, ProviderType, Usage,
 };
 use reqwest::Client;
 use reqwest_eventsource::{Event, EventSource};
@@ -158,7 +157,11 @@ impl AnthropicProvider {
 
     /// Get the API URL for a given endpoint
     fn api_url(&self, endpoint: &str) -> String {
-        format!("{}/v1{}", self.config.base_url.trim_end_matches('/'), endpoint)
+        format!(
+            "{}/v1{}",
+            self.config.base_url.trim_end_matches('/'),
+            endpoint
+        )
     }
 
     /// Build request headers
@@ -199,7 +202,10 @@ impl LLMProvider for AnthropicProvider {
     }
 
     #[instrument(skip(self, request), fields(provider = %self.id, model = %request.model))]
-    async fn chat_completion(&self, request: &GatewayRequest) -> Result<GatewayResponse, GatewayError> {
+    async fn chat_completion(
+        &self,
+        request: &GatewayRequest,
+    ) -> Result<GatewayResponse, GatewayError> {
         let anthropic_request = transform_request(request)?;
         let url = self.api_url("/messages");
 
@@ -228,14 +234,13 @@ impl LLMProvider for AnthropicProvider {
             return Err(parse_error_response(status, &error_body, &self.id));
         }
 
-        let anthropic_response: AnthropicResponse = response.json().await.map_err(|e| {
-            GatewayError::Provider {
+        let anthropic_response: AnthropicResponse =
+            response.json().await.map_err(|e| GatewayError::Provider {
                 provider: self.id.clone(),
                 message: format!("Failed to parse response: {e}"),
                 status_code: None,
                 retryable: false,
-            }
-        })?;
+            })?;
 
         transform_response(anthropic_response, &request.model)
     }
@@ -260,12 +265,13 @@ impl LLMProvider for AnthropicProvider {
             .headers(self.build_headers())
             .json(&anthropic_request);
 
-        let event_source = EventSource::new(request_builder).map_err(|e| GatewayError::Provider {
-            provider: provider_id.clone(),
-            message: format!("Failed to create event source: {e}"),
-            status_code: None,
-            retryable: false,
-        })?;
+        let event_source =
+            EventSource::new(request_builder).map_err(|e| GatewayError::Provider {
+                provider: provider_id.clone(),
+                message: format!("Failed to create event source: {e}"),
+                status_code: None,
+                retryable: false,
+            })?;
 
         let stream = try_stream! {
             let mut es = event_source;
@@ -670,10 +676,12 @@ fn transform_request(request: &GatewayRequest) -> Result<AnthropicRequest, Gatew
                 if let Some(tool_call_id) = &msg.tool_call_id {
                     messages.push(AnthropicMessage {
                         role: "user".to_string(),
-                        content: AnthropicContent::Blocks(vec![AnthropicContentBlock::ToolResult {
-                            tool_use_id: tool_call_id.clone(),
-                            content: extract_text_content(&msg.content),
-                        }]),
+                        content: AnthropicContent::Blocks(vec![
+                            AnthropicContentBlock::ToolResult {
+                                tool_use_id: tool_call_id.clone(),
+                                content: extract_text_content(&msg.content),
+                            },
+                        ]),
                     });
                 }
             }
@@ -687,7 +695,11 @@ fn transform_request(request: &GatewayRequest) -> Result<AnthropicRequest, Gatew
             .map(|t| AnthropicTool {
                 name: t.function.name.clone(),
                 description: t.function.description.clone(),
-                input_schema: t.function.parameters.clone().unwrap_or(serde_json::json!({})),
+                input_schema: t
+                    .function
+                    .parameters
+                    .clone()
+                    .unwrap_or(serde_json::json!({})),
             })
             .collect()
     });
@@ -700,9 +712,9 @@ fn transform_request(request: &GatewayRequest) -> Result<AnthropicRequest, Gatew
             "required" => Some(AnthropicToolChoice::Any),
             _ => None,
         },
-        gateway_core::ToolChoice::Tool { function, .. } => {
-            Some(AnthropicToolChoice::Tool { name: function.name.clone() })
-        },
+        gateway_core::ToolChoice::Tool { function, .. } => Some(AnthropicToolChoice::Tool {
+            name: function.name.clone(),
+        }),
     });
 
     Ok(AnthropicRequest {

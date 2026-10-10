@@ -4,7 +4,7 @@
 //! to make intelligent routing decisions.
 
 use crate::load_balancer::{LoadBalancer, LoadBalancerConfig};
-use crate::rules::{MatchContext, RuleAction, RoutingRule, RulesEngine};
+use crate::rules::{MatchContext, RoutingRule, RuleAction, RulesEngine};
 use crate::selector::{ProviderCandidate, SelectionCriteria};
 use gateway_core::{GatewayError, GatewayRequest, HealthStatus, LLMProvider};
 use parking_lot::RwLock;
@@ -116,12 +116,7 @@ impl Router {
     }
 
     /// Register a provider
-    pub fn register_provider(
-        &self,
-        provider: Arc<dyn LLMProvider>,
-        weight: u32,
-        priority: u32,
-    ) {
+    pub fn register_provider(&self, provider: Arc<dyn LLMProvider>, weight: u32, priority: u32) {
         let id = provider.id().to_string();
         let mut providers = self.providers.write();
         providers.insert(
@@ -209,10 +204,13 @@ impl Router {
         let criteria = SelectionCriteria::from_request(request);
 
         // Select provider via load balancer
-        let provider = self.load_balancer.select(&candidates, &criteria, tenant_id)?;
+        let provider = self
+            .load_balancer
+            .select(&candidates, &criteria, tenant_id)?;
 
         // Apply model transform if any
-        let model = model_transform.map_or_else(|| request.model.clone(), |t| t.apply(&request.model));
+        let model =
+            model_transform.map_or_else(|| request.model.clone(), |t| t.apply(&request.model));
 
         let decision = RouteDecision {
             provider_id: provider.id().to_string(),
@@ -233,13 +231,9 @@ impl Router {
     }
 
     /// Record request completion for load balancer
-    pub fn record_completion(
-        &self,
-        provider_id: &str,
-        latency: Duration,
-        success: bool,
-    ) {
-        self.load_balancer.record_completion(provider_id, latency, success);
+    pub fn record_completion(&self, provider_id: &str, latency: Duration, success: bool) {
+        self.load_balancer
+            .record_completion(provider_id, latency, success);
     }
 
     /// Get the load balancer for direct access
@@ -248,7 +242,11 @@ impl Router {
         &self.load_balancer
     }
 
-    fn build_match_context(&self, request: &GatewayRequest, tenant_id: Option<&str>) -> MatchContext {
+    fn build_match_context(
+        &self,
+        request: &GatewayRequest,
+        tenant_id: Option<&str>,
+    ) -> MatchContext {
         let mut context = MatchContext::new().with_model(&request.model);
 
         if let Some(tenant) = tenant_id {
@@ -346,8 +344,8 @@ impl Router {
 mod tests {
     use super::*;
     use crate::rules::{RuleAction, RuleMatcher};
-    use gateway_core::{ChatChunk, GatewayResponse, ModelInfo, ProviderCapabilities, ProviderType};
     use futures::stream::BoxStream;
+    use gateway_core::{ChatChunk, GatewayResponse, ModelInfo, ProviderCapabilities, ProviderType};
 
     struct MockProvider {
         id: String,
@@ -373,7 +371,10 @@ mod tests {
             ProviderType::Custom
         }
 
-        async fn chat_completion(&self, _: &GatewayRequest) -> Result<GatewayResponse, GatewayError> {
+        async fn chat_completion(
+            &self,
+            _: &GatewayRequest,
+        ) -> Result<GatewayResponse, GatewayError> {
             unimplemented!()
         }
 
@@ -483,7 +484,10 @@ mod tests {
             .unwrap();
 
         let result = router.route(&request, None);
-        assert!(matches!(result, Err(GatewayError::NoHealthyProviders { .. })));
+        assert!(matches!(
+            result,
+            Err(GatewayError::NoHealthyProviders { .. })
+        ));
     }
 
     #[test]
@@ -515,11 +519,9 @@ mod tests {
 
         // Add rule to try openai first, but it should fall back
         // Use "claude-3" model that anthropic supports
-        let rule = RoutingRule::new("claude-3", "Test")
-            .with_action(
-                RuleAction::new()
-                    .with_providers(vec!["openai".to_string(), "anthropic".to_string()]),
-            );
+        let rule = RoutingRule::new("claude-3", "Test").with_action(
+            RuleAction::new().with_providers(vec!["openai".to_string(), "anthropic".to_string()]),
+        );
 
         router.add_rule(rule);
 

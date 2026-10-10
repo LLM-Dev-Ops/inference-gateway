@@ -231,9 +231,10 @@ async fn execute_stats(
     );
 
     let stats: CacheStatsOutput = match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_stats(&args))
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_stats(&args)),
         _ => generate_sample_stats(&args),
     };
 
@@ -260,8 +261,14 @@ async fn execute_stats(
             output::key_value("Cache Hits", &stats.cache_hits.to_string());
             output::key_value("Cache Misses", &stats.cache_misses.to_string());
             output::key_value("Hit Rate", &format!("{:.1}%", stats.hit_rate));
-            output::key_value("Avg Hit Latency", &format!("{:.2}ms", stats.avg_hit_latency_ms));
-            output::key_value("Avg Miss Latency", &format!("{:.2}ms", stats.avg_miss_latency_ms));
+            output::key_value(
+                "Avg Hit Latency",
+                &format!("{:.2}ms", stats.avg_hit_latency_ms),
+            );
+            output::key_value(
+                "Avg Miss Latency",
+                &format!("{:.2}ms", stats.avg_miss_latency_ms),
+            );
             output::key_value("Evictions", &stats.evictions.to_string());
 
             if args.detailed {
@@ -307,9 +314,10 @@ async fn execute_list(
     url = format!("{}?{}", url, params.join("&"));
 
     let entries: Vec<CacheEntry> = match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_entries(&args))
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_entries(&args)),
         _ => generate_sample_entries(&args),
     };
 
@@ -341,12 +349,12 @@ async fn execute_clear(
 ) -> Result<()> {
     // Confirmation prompt (unless force or json mode)
     if !args.force && !json {
-        let filter_desc = if args.model.is_some() || args.tenant.is_some() || args.older_than.is_some()
-        {
-            "filtered entries"
-        } else {
-            "ALL entries"
-        };
+        let filter_desc =
+            if args.model.is_some() || args.tenant.is_some() || args.older_than.is_some() {
+                "filtered entries"
+            } else {
+                "ALL entries"
+            };
 
         output::warning(&format!("This will clear {} from the cache", filter_desc));
 
@@ -410,9 +418,10 @@ async fn execute_config(
     let url = format!("{}/api/v1/cache/config", base_url.trim_end_matches('/'));
 
     let config: CacheConfigOutput = match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_config())
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_config()),
         _ => generate_sample_config(),
     };
 
@@ -438,7 +447,10 @@ async fn execute_config(
                 "Similarity Threshold",
                 &format!("{:.2}", config.similarity_threshold),
             );
-            output::key_value("Cache-Control Header", &config.cache_control_header.to_string());
+            output::key_value(
+                "Cache-Control Header",
+                &config.cache_control_header.to_string(),
+            );
         }
     }
 
@@ -463,7 +475,7 @@ fn generate_sample_stats(args: &StatsArgs) -> CacheStatsOutput {
         enabled: true,
         total_entries: 8542,
         total_size_bytes: 524_288_000, // 500 MB
-        max_size_bytes: 1_073_741_824,  // 1 GB
+        max_size_bytes: 1_073_741_824, // 1 GB
         utilization_percent: 48.8,
         total_requests: 15432,
         cache_hits: 9876,
@@ -589,7 +601,7 @@ fn generate_sample_entries(args: &ListArgs) -> Vec<CacheEntry> {
     // Sort
     match args.sort.as_str() {
         "size" => entries.sort_by(|a, b| b.size_bytes.cmp(&a.size_bytes)),
-        "age" => {} // Already sorted by default
+        "age" => {}                                       // Already sorted by default
         _ => entries.sort_by(|a, b| b.hits.cmp(&a.hits)), // "hits" is default
     }
 
@@ -633,8 +645,7 @@ fn generate_sample_config() -> CacheConfigOutput {
 }
 
 fn build_client(api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();

@@ -99,13 +99,7 @@ mod tests {
 
     #[test]
     fn test_identity_creation() {
-        let identity = AgentIdentity::new(
-            "routing-agent",
-            "routing",
-            "phase7",
-            "layer2",
-            "1.0.0",
-        );
+        let identity = AgentIdentity::new("routing-agent", "routing", "phase7", "layer2", "1.0.0");
 
         assert_eq!(identity.source_agent, "routing-agent");
         assert_eq!(identity.domain, "routing");
@@ -116,13 +110,7 @@ mod tests {
 
     #[test]
     fn test_qualified_id() {
-        let identity = AgentIdentity::new(
-            "routing-agent",
-            "routing",
-            "phase7",
-            "layer2",
-            "1.0.0",
-        );
+        let identity = AgentIdentity::new("routing-agent", "routing", "phase7", "layer2", "1.0.0");
 
         assert_eq!(
             identity.qualified_id(),
@@ -132,13 +120,7 @@ mod tests {
 
     #[test]
     fn test_inject_into_event() {
-        let identity = AgentIdentity::new(
-            "routing-agent",
-            "routing",
-            "phase7",
-            "layer2",
-            "2.0.0",
-        );
+        let identity = AgentIdentity::new("routing-agent", "routing", "phase7", "layer2", "2.0.0");
 
         let event = DecisionEvent::new(
             "original-agent",
@@ -159,22 +141,13 @@ mod tests {
 
         let injected = identity.inject_into_event(event);
 
-        assert_eq!(
-            injected.agent_id,
-            "routing-agent:routing:phase7:layer2"
-        );
+        assert_eq!(injected.agent_id, "routing-agent:routing:phase7:layer2");
         assert_eq!(injected.agent_version, "2.0.0");
     }
 
     #[test]
     fn test_to_log_context() {
-        let identity = AgentIdentity::new(
-            "routing-agent",
-            "routing",
-            "phase7",
-            "layer2",
-            "1.0.0",
-        );
+        let identity = AgentIdentity::new("routing-agent", "routing", "phase7", "layer2", "1.0.0");
 
         let context = identity.to_log_context();
         assert_eq!(context["source_agent"], "routing-agent");

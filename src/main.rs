@@ -71,10 +71,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Create provider registry
     let registry = create_provider_registry(&config)?;
 
-    info!(
-        providers = registry.len(),
-        "Provider registry initialized"
-    );
+    info!(providers = registry.len(), "Provider registry initialized");
 
     // Create router
     let router_config = RouterConfig::new().with_default_providers(registry.provider_ids());
@@ -123,8 +120,7 @@ fn create_provider_registry(
     if let Ok(api_key) = env::var("OPENAI_API_KEY") {
         info!("Registering OpenAI provider from environment");
 
-        let openai_config =
-            gateway_providers::openai::OpenAIConfig::new("openai", api_key);
+        let openai_config = gateway_providers::openai::OpenAIConfig::new("openai", api_key);
         let provider = OpenAIProvider::new(openai_config)?;
         registry.register(Arc::new(provider), 100, 100)?;
     } else {
@@ -135,8 +131,7 @@ fn create_provider_registry(
     if let Ok(api_key) = env::var("ANTHROPIC_API_KEY") {
         info!("Registering Anthropic provider from environment");
 
-        let anthropic_config =
-            gateway_providers::anthropic::AnthropicConfig::new(api_key);
+        let anthropic_config = gateway_providers::anthropic::AnthropicConfig::new(api_key);
         let provider = AnthropicProvider::new(anthropic_config)?;
         registry.register(Arc::new(provider), 100, 100)?;
     } else {
@@ -149,10 +144,12 @@ fn create_provider_registry(
             continue;
         }
 
-        let api_key = provider_config
-            .api_key
-            .clone()
-            .or_else(|| provider_config.api_key_env.as_ref().and_then(|var| env::var(var).ok()));
+        let api_key = provider_config.api_key.clone().or_else(|| {
+            provider_config
+                .api_key_env
+                .as_ref()
+                .and_then(|var| env::var(var).ok())
+        });
 
         if api_key.is_none() {
             warn!(
@@ -167,10 +164,8 @@ fn create_provider_registry(
         match provider_config.provider_type {
             ProviderType::OpenAI => {
                 if registry.get(&provider_config.id).is_none() {
-                    let mut openai_config = gateway_providers::openai::OpenAIConfig::new(
-                        &provider_config.id,
-                        &api_key,
-                    );
+                    let mut openai_config =
+                        gateway_providers::openai::OpenAIConfig::new(&provider_config.id, &api_key);
                     if !provider_config.endpoint.is_empty() {
                         openai_config = openai_config.with_base_url(&provider_config.endpoint);
                     }

@@ -75,9 +75,7 @@ impl SecretValue {
     /// Check if the secret is expired.
     #[must_use]
     pub fn is_expired(&self) -> bool {
-        self.expires_at
-            .map(|exp| Utc::now() > exp)
-            .unwrap_or(false)
+        self.expires_at.map(|exp| Utc::now() > exp).unwrap_or(false)
     }
 
     /// Get creation time.
@@ -214,10 +212,7 @@ impl SecretStore {
     /// Check if a secret exists and is not expired.
     pub async fn exists(&self, name: &str) -> bool {
         let secrets = self.secrets.read().await;
-        secrets
-            .get(name)
-            .map(|s| !s.is_expired())
-            .unwrap_or(false)
+        secrets.get(name).map(|s| !s.is_expired()).unwrap_or(false)
     }
 
     /// List all secret names.
@@ -339,9 +334,7 @@ impl SecretRef {
     pub async fn resolve(&self, store: &SecretStore) -> Result<Zeroizing<String>> {
         match store.get_string(&self.name).await {
             Ok(value) => Ok(value),
-            Err(_) if self.default.is_some() => {
-                Ok(Zeroizing::new(self.default.clone().unwrap()))
-            }
+            Err(_) if self.default.is_some() => Ok(Zeroizing::new(self.default.clone().unwrap())),
             Err(e) => Err(e),
         }
     }
@@ -420,13 +413,12 @@ mod tests {
 
     #[test]
     fn test_secret_expiration() {
-        let expired = SecretValue::new("secret")
-            .with_expiry(Utc::now() - chrono::Duration::hours(1));
+        let expired =
+            SecretValue::new("secret").with_expiry(Utc::now() - chrono::Duration::hours(1));
 
         assert!(expired.is_expired());
 
-        let valid = SecretValue::new("secret")
-            .with_expiry(Utc::now() + chrono::Duration::hours(1));
+        let valid = SecretValue::new("secret").with_expiry(Utc::now() + chrono::Duration::hours(1));
 
         assert!(!valid.is_expired());
     }
@@ -465,8 +457,8 @@ mod tests {
     async fn test_secret_store_expired() {
         let store = SecretStore::default();
 
-        let expired_secret = SecretValue::new("value")
-            .with_expiry(Utc::now() - chrono::Duration::seconds(1));
+        let expired_secret =
+            SecretValue::new("value").with_expiry(Utc::now() - chrono::Duration::seconds(1));
 
         store.set("expired", expired_secret).await;
 
@@ -562,8 +554,7 @@ mod tests {
     async fn test_secret_ref_with_default() {
         let store = SecretStore::default();
 
-        let secret_ref = SecretRef::new("nonexistent")
-            .with_default("default_value");
+        let secret_ref = SecretRef::new("nonexistent").with_default("default_value");
 
         let value = secret_ref.resolve(&store).await.unwrap();
         assert_eq!(&*value, "default_value");
@@ -589,8 +580,8 @@ mod tests {
         store.set_string("valid1", "value1").await;
         store.set_string("valid2", "value2").await;
 
-        let expired = SecretValue::new("expired")
-            .with_expiry(Utc::now() - chrono::Duration::seconds(1));
+        let expired =
+            SecretValue::new("expired").with_expiry(Utc::now() - chrono::Duration::seconds(1));
         store.set("expired", expired).await;
 
         let valid = store.list_valid().await;

@@ -146,9 +146,10 @@ async fn fetch_or_generate_health(
     }
 
     match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_health(args))
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_health(args)),
         _ => generate_sample_health(args),
     }
 }
@@ -331,8 +332,7 @@ fn generate_sample_health(args: &BackendHealthArgs) -> BackendHealthOutput {
 }
 
 fn build_client(api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();

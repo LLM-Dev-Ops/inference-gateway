@@ -161,7 +161,10 @@ impl LoadBalancer {
 
     /// Create with a specific strategy
     #[must_use]
-    pub fn with_strategy(config: LoadBalancerConfig, strategy: Box<dyn LoadBalancingStrategy>) -> Self {
+    pub fn with_strategy(
+        config: LoadBalancerConfig,
+        strategy: Box<dyn LoadBalancingStrategy>,
+    ) -> Self {
         info!(strategy = %strategy.name(), "Load balancer initialized with custom strategy");
 
         Self {
@@ -236,12 +239,11 @@ impl LoadBalancer {
             .collect();
 
         // Use strategy to select
-        let selected_idx = self
-            .strategy
-            .select(&provider_stats)
-            .ok_or_else(|| GatewayError::NoHealthyProviders {
+        let selected_idx = self.strategy.select(&provider_stats).ok_or_else(|| {
+            GatewayError::NoHealthyProviders {
                 model: criteria.model.clone().unwrap_or_default(),
-            })?;
+            }
+        })?;
 
         let selected = &filtered[selected_idx];
         let provider = Arc::clone(&selected.provider);
@@ -269,12 +271,7 @@ impl LoadBalancer {
     }
 
     /// Record completion of a request
-    pub fn record_completion(
-        &self,
-        provider_id: &str,
-        latency: Duration,
-        success: bool,
-    ) {
+    pub fn record_completion(&self, provider_id: &str, latency: Duration, success: bool) {
         // Update internal stats
         {
             let mut stats = self.stats.write();
@@ -409,8 +406,10 @@ pub struct LoadBalancerStats {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use gateway_core::{ChatChunk, GatewayRequest, GatewayResponse, ModelInfo, ProviderCapabilities, ProviderType};
     use futures::stream::BoxStream;
+    use gateway_core::{
+        ChatChunk, GatewayRequest, GatewayResponse, ModelInfo, ProviderCapabilities, ProviderType,
+    };
 
     struct MockProvider {
         id: String,
@@ -436,7 +435,10 @@ mod tests {
             ProviderType::Custom
         }
 
-        async fn chat_completion(&self, _: &GatewayRequest) -> Result<GatewayResponse, GatewayError> {
+        async fn chat_completion(
+            &self,
+            _: &GatewayRequest,
+        ) -> Result<GatewayResponse, GatewayError> {
             unimplemented!()
         }
 
@@ -520,8 +522,7 @@ mod tests {
 
     #[test]
     fn test_sticky_sessions() {
-        let config = LoadBalancerConfig::new()
-            .with_sticky_sessions(true, Duration::from_secs(60));
+        let config = LoadBalancerConfig::new().with_sticky_sessions(true, Duration::from_secs(60));
         let lb = LoadBalancer::new(config);
         let candidates = create_candidates(3);
         let criteria = SelectionCriteria::new();
@@ -566,7 +567,10 @@ mod tests {
         let criteria = SelectionCriteria::new();
 
         let result = lb.select(&candidates, &criteria, None);
-        assert!(matches!(result, Err(GatewayError::NoHealthyProviders { .. })));
+        assert!(matches!(
+            result,
+            Err(GatewayError::NoHealthyProviders { .. })
+        ));
     }
 
     #[test]

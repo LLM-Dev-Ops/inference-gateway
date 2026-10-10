@@ -167,9 +167,10 @@ pub async fn execute(
                 spinner.finish_and_clear();
 
                 if resp.status().is_success() {
-                    let data: TokenUsageOutput = resp.json().await.unwrap_or_else(|_| {
-                        generate_sample_token_usage(&args)
-                    });
+                    let data: TokenUsageOutput = resp
+                        .json()
+                        .await
+                        .unwrap_or_else(|_| generate_sample_token_usage(&args));
                     display_token_usage_text(&data, &args);
                 } else {
                     let data = generate_sample_token_usage(&args);
@@ -187,9 +188,10 @@ pub async fn execute(
     } else {
         match client.get(&url).send().await {
             Ok(resp) if resp.status().is_success() => {
-                let data: TokenUsageOutput = resp.json().await.unwrap_or_else(|_| {
-                    generate_sample_token_usage(&args)
-                });
+                let data: TokenUsageOutput = resp
+                    .json()
+                    .await
+                    .unwrap_or_else(|_| generate_sample_token_usage(&args));
                 let result = CommandResult::success(data);
                 result.print(format)?;
             }
@@ -209,15 +211,30 @@ fn display_token_usage_text(data: &TokenUsageOutput, args: &TokenUsageArgs) {
     output::key_value("Time Window", &data.window);
     output::key_value("Total Requests", &data.total_requests.to_string());
     output::key_value("Total Tokens", &format_tokens_inline(data.total_tokens));
-    output::key_value("Input Tokens", &format_tokens_inline(data.total_input_tokens));
-    output::key_value("Output Tokens", &format_tokens_inline(data.total_output_tokens));
+    output::key_value(
+        "Input Tokens",
+        &format_tokens_inline(data.total_input_tokens),
+    );
+    output::key_value(
+        "Output Tokens",
+        &format_tokens_inline(data.total_output_tokens),
+    );
 
     println!();
     output::section("Averages");
-    output::key_value("Avg Tokens/Request", &format!("{:.1}", data.avg_tokens_per_request));
+    output::key_value(
+        "Avg Tokens/Request",
+        &format!("{:.1}", data.avg_tokens_per_request),
+    );
     output::key_value("Avg Input Tokens", &format!("{:.1}", data.avg_input_tokens));
-    output::key_value("Avg Output Tokens", &format!("{:.1}", data.avg_output_tokens));
-    output::key_value("Input/Output Ratio", &format!("{:.2}", data.input_output_ratio));
+    output::key_value(
+        "Avg Output Tokens",
+        &format!("{:.1}", data.avg_output_tokens),
+    );
+    output::key_value(
+        "Input/Output Ratio",
+        &format!("{:.2}", data.input_output_ratio),
+    );
 
     if args.detailed || args.group_by == "provider" {
         if let Some(ref providers) = data.by_provider {
@@ -390,8 +407,7 @@ fn generate_sample_token_usage(args: &TokenUsageArgs) -> TokenUsageOutput {
 }
 
 fn build_client(api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();
@@ -424,7 +440,10 @@ mod tests {
         let data = generate_sample_token_usage(&args);
         assert_eq!(data.window, "24h");
         assert!(data.total_tokens > 0);
-        assert_eq!(data.total_tokens, data.total_input_tokens + data.total_output_tokens);
+        assert_eq!(
+            data.total_tokens,
+            data.total_input_tokens + data.total_output_tokens
+        );
     }
 
     #[test]

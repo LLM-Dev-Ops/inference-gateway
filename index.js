@@ -5,6 +5,56 @@ const crypto = require('crypto');
 const SERVICE_NAME = 'inference-gateway-agents';
 const HEALTH_AGENTS = ['route'];
 const GATEWAY_INTERNAL_URL = process.env.GATEWAY_INTERNAL_URL || 'http://localhost:8080';
+const DEFAULT_GATEWAY_TIMEOUT_MS = 30_000;
+const DEFAULT_GATEWAY_MAX_RESPONSE_BYTES = 1_048_576;
+
+function readGatewayTimeout() {
+  const value = Number.parseInt(process.env.GATEWAY_REQUEST_TIMEOUT_MS || '', 10);
+  return Number.isInteger(value) && value >= 100 && value <= 120_000
+    ? value
+    : DEFAULT_GATEWAY_TIMEOUT_MS;
+}
+
+function readGatewayMaxResponseBytes() {
+  const value = Number.parseInt(process.env.GATEWAY_MAX_RESPONSE_BYTES || '', 10);
+  return Number.isInteger(value) && value >= 1_024 && value <= 10_485_760
+    ? value
+    : DEFAULT_GATEWAY_MAX_RESPONSE_BYTES;
+}
+
+async function readBoundedResponse(resp) {
+  const limit = readGatewayMaxResponseBytes();
+  const declaredLength = Number.parseInt(resp.headers.get('content-length') || '', 10);
+  if (Number.isFinite(declaredLength) && declaredLength > limit) {
+    throw new Error('gateway response exceeds configured limit');
+  }
+
+  if (!resp.body) return '';
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let bytesRead = 0;
+  let responseText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    bytesRead += value.byteLength;
+    if (bytesRead > limit) {
+      await reader.cancel();
+      throw new Error('gateway response exceeds configured limit');
+    }
+    responseText += decoder.decode(value, { stream: true });
+  }
+
+  return responseText + decoder.decode();
+}
+
+function normalizeTraceId(value) {
+  return typeof value === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(value)
+    ? value
+    : crypto.randomUUID();
+}
 
 // --- CORS ---
 
@@ -42,12 +92,35 @@ async function forwardToGateway(path, method, headers, body) {
   const opts = {
     method,
     headers: { 'Content-Type': 'application/json', ...headers },
+    signal: AbortSignal.timeout(readGatewayTimeout()),
   };
   if (body && method !== 'GET') {
     opts.body = typeof body === 'string' ? body : JSON.stringify(body);
   }
   const resp = await fetch(url, opts);
-  const respBody = await resp.json();
+  const contentType = resp.headers.get('content-type') || '';
+  const responseText = await readBoundedResponse(resp);
+  let respBody;
+
+  if (contentType.toLowerCase().includes('json')) {
+    try {
+      respBody = JSON.parse(responseText);
+    } catch {
+      respBody = {
+        error: {
+          type: 'invalid_gateway_response',
+          message: 'Inference gateway returned malformed JSON',
+        },
+      };
+    }
+  } else {
+    respBody = {
+      error: {
+        type: 'invalid_gateway_response',
+        message: 'Inference gateway returned a non-JSON response',
+      },
+    };
+  }
   return { status: resp.status, body: respBody };
 }
 
@@ -79,10 +152,10 @@ async function handleRoute(req, res, traceId, executionId) {
       { layer: 'INFERENCE_GATEWAY_ROUTE', status: 'completed', duration_ms: elapsed },
     ]);
     res.status(gw.status).json(payload);
-  } catch (err) {
+  } catch {
     const elapsed = Date.now() - start;
     const payload = envelop(
-      { error: { type: 'gateway_error', message: err.message || 'Failed to reach inference gateway' } },
+      { error: { type: 'gateway_error', message: 'Failed to reach inference gateway' } },
       traceId,
       executionId,
       [
@@ -121,7 +194,7 @@ exports.handler = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).send('');
 
   // Request context
-  const traceId = req.headers['x-correlation-id'] || crypto.randomUUID();
+  const traceId = normalizeTraceId(req.headers['x-correlation-id']);
   const executionId = crypto.randomUUID();
   res.set('X-Correlation-Id', traceId);
 

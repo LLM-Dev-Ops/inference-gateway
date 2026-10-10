@@ -188,12 +188,26 @@ impl RequestTracker {
         input_tokens: Option<u32>,
         output_tokens: Option<u32>,
     ) {
-        self.complete(request_id, status_code, true, None, input_tokens, output_tokens);
+        self.complete(
+            request_id,
+            status_code,
+            true,
+            None,
+            input_tokens,
+            output_tokens,
+        );
     }
 
     /// Complete a request with an error
     pub fn complete_error(&self, request_id: &str, status_code: u16, error: impl Into<String>) {
-        self.complete(request_id, status_code, false, Some(error.into()), None, None);
+        self.complete(
+            request_id,
+            status_code,
+            false,
+            Some(error.into()),
+            None,
+            None,
+        );
     }
 
     /// Complete a request
@@ -273,7 +287,11 @@ impl RequestTracker {
     /// Get all active requests
     #[must_use]
     pub fn get_all_active(&self) -> Vec<RequestInfo> {
-        self.active.read().values().map(|t| t.info.clone()).collect()
+        self.active
+            .read()
+            .values()
+            .map(|t| t.info.clone())
+            .collect()
     }
 
     /// Get recent completed requests
@@ -314,15 +332,9 @@ impl RequestTracker {
             Some(sum / streaming_requests.len() as u32)
         };
 
-        let total_input_tokens: u32 = completed
-            .iter()
-            .filter_map(|r| r.input_tokens)
-            .sum();
+        let total_input_tokens: u32 = completed.iter().filter_map(|r| r.input_tokens).sum();
 
-        let total_output_tokens: u32 = completed
-            .iter()
-            .filter_map(|r| r.output_tokens)
-            .sum();
+        let total_output_tokens: u32 = completed.iter().filter_map(|r| r.output_tokens).sum();
 
         TrackerStats {
             active_requests: self.active.read().len(),
@@ -403,8 +415,7 @@ mod tests {
     fn test_streaming_tracking() {
         let tracker = RequestTracker::new(100);
 
-        let info = RequestInfo::new("req-1", "gpt-4")
-            .with_streaming(true);
+        let info = RequestInfo::new("req-1", "gpt-4").with_streaming(true);
 
         tracker.start(info);
 

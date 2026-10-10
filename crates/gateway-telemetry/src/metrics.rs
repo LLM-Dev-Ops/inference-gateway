@@ -8,8 +8,7 @@
 
 use parking_lot::RwLock;
 use prometheus::{
-    CounterVec, Encoder, GaugeVec, HistogramOpts, HistogramVec, Opts,
-    Registry, TextEncoder,
+    CounterVec, Encoder, GaugeVec, HistogramOpts, HistogramVec, Opts, Registry, TextEncoder,
 };
 use std::collections::HashMap;
 use std::time::Duration;
@@ -191,23 +190,17 @@ impl Metrics {
 
         // Time to first token
         let ttft = HistogramVec::new(
-            HistogramOpts::new(
-                "llm_gateway_ttft_seconds",
-                "Time to first token in seconds",
-            )
-            .namespace("llm_gateway")
-            .buckets(vec![0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]),
+            HistogramOpts::new("llm_gateway_ttft_seconds", "Time to first token in seconds")
+                .namespace("llm_gateway")
+                .buckets(vec![0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]),
             &["model", "provider"],
         )?;
         registry.register(Box::new(ttft.clone()))?;
 
         // Tokens per second
         let tokens_per_second = GaugeVec::new(
-            Opts::new(
-                "llm_gateway_tokens_per_second",
-                "Token generation rate",
-            )
-            .namespace("llm_gateway"),
+            Opts::new("llm_gateway_tokens_per_second", "Token generation rate")
+                .namespace("llm_gateway"),
             &["model", "provider"],
         )?;
         registry.register(Box::new(tokens_per_second.clone()))?;

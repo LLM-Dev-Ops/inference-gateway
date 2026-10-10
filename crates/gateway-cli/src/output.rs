@@ -56,11 +56,7 @@ pub fn section(title: &str) {
 
 /// Print a status indicator.
 pub fn status(label: &str, ok: bool) {
-    let indicator = if ok {
-        "●".green()
-    } else {
-        "●".red()
-    };
+    let indicator = if ok { "●".green() } else { "●".red() };
     println!("  {} {}", indicator, label);
 }
 
@@ -211,14 +207,26 @@ mod tests {
     fn test_format_bytes() {
         // Test that bytes are formatted to human-readable strings
         let kb = format_bytes(1024);
-        assert!(kb.contains("KB") || kb.contains("KiB"), "Expected KB format: {}", kb);
+        assert!(
+            kb.contains("KB") || kb.contains("KiB"),
+            "Expected KB format: {}",
+            kb
+        );
 
         let mb = format_bytes(1_048_576);
-        assert!(mb.contains("KB") || mb.contains("MB") || mb.contains("MiB"), "Expected MB format: {}", mb);
+        assert!(
+            mb.contains("KB") || mb.contains("MB") || mb.contains("MiB"),
+            "Expected MB format: {}",
+            mb
+        );
 
         // Test zero bytes
         let zero = format_bytes(0);
-        assert!(zero.contains("0") || zero.contains("B"), "Expected zero format: {}", zero);
+        assert!(
+            zero.contains("0") || zero.contains("B"),
+            "Expected zero format: {}",
+            zero
+        );
     }
 
     #[test]

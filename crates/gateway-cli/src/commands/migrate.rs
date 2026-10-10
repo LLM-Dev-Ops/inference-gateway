@@ -106,7 +106,9 @@ pub async fn execute(args: MigrateArgs, json: bool) -> Result<()> {
     let format = OutputFormat::from_json_flag(json);
 
     // Check for database URL (not needed for info and new commands)
-    let database_url = args.database_url.or_else(|| std::env::var("DATABASE_URL").ok());
+    let database_url = args
+        .database_url
+        .or_else(|| std::env::var("DATABASE_URL").ok());
 
     // Commands that don't need database URL
     match &args.command {
@@ -125,9 +127,7 @@ pub async fn execute(args: MigrateArgs, json: bool) -> Result<()> {
 
     match args.command {
         MigrateCommand::Run(run_args) => execute_run(database_url, run_args, format).await,
-        MigrateCommand::Rollback(rb_args) => {
-            execute_rollback(database_url, rb_args, format).await
-        }
+        MigrateCommand::Rollback(rb_args) => execute_rollback(database_url, rb_args, format).await,
         MigrateCommand::Status(status_args) => {
             execute_status(database_url, status_args, format).await
         }
@@ -178,7 +178,10 @@ async fn execute_run(database_url: String, args: RunArgs, format: OutputFormat) 
                 result.print(format)?;
             }
             OutputFormat::Text => {
-                output::info(&format!("Dry run - {} migrations would be applied:", pending.len()));
+                output::info(&format!(
+                    "Dry run - {} migrations would be applied:",
+                    pending.len()
+                ));
                 for m in &pending {
                     output::key_value(&format!("V{}", m.version), &m.name);
                 }
@@ -393,7 +396,11 @@ async fn execute_status(
 
             if !migrations.is_empty() {
                 println!();
-                output::section(if args.all { "All Migrations" } else { "Pending Migrations" });
+                output::section(if args.all {
+                    "All Migrations"
+                } else {
+                    "Pending Migrations"
+                });
                 for m in &migrations {
                     let status_icon = match m.status.as_str() {
                         "applied" => "✓",
@@ -401,10 +408,7 @@ async fn execute_status(
                         "failed" => "✗",
                         _ => "?",
                     };
-                    println!(
-                        "  {} V{} - {}",
-                        status_icon, m.version, m.name
-                    );
+                    println!("  {} V{} - {}", status_icon, m.version, m.name);
                     if let Some(ref at) = m.applied_at {
                         println!("      Applied: {}", at);
                     }
@@ -475,7 +479,11 @@ async fn execute_validate(database_url: String, format: OutputFormat) -> Result<
 /// Execute migrate new.
 async fn execute_new(args: NewArgs, format: OutputFormat) -> Result<()> {
     let timestamp = chrono::Utc::now().format("%Y%m%d%H%M%S").to_string();
-    let filename = format!("V{}_{}.sql", timestamp, args.name.replace(' ', "_").to_lowercase());
+    let filename = format!(
+        "V{}_{}.sql",
+        timestamp,
+        args.name.replace(' ', "_").to_lowercase()
+    );
 
     let template = format!(
         r#"-- Migration: {}
@@ -506,7 +514,9 @@ async fn execute_new(args: NewArgs, format: OutputFormat) -> Result<()> {
             output::success(&format!("Migration template for: {}", filename));
             println!();
             println!("{}", template);
-            output::info("Note: Migrations are defined in code in gateway-migrations/src/schema.rs");
+            output::info(
+                "Note: Migrations are defined in code in gateway-migrations/src/schema.rs",
+            );
         }
     }
 
@@ -523,12 +533,14 @@ async fn execute_info(format: OutputFormat) -> Result<()> {
         OutputFormat::Json => {
             let info: Vec<_> = migrations
                 .iter()
-                .map(|m| serde_json::json!({
-                    "version": m.version,
-                    "name": m.name,
-                    "has_rollback": m.supports_rollback(),
-                    "tags": m.tags,
-                }))
+                .map(|m| {
+                    serde_json::json!({
+                        "version": m.version,
+                        "name": m.name,
+                        "has_rollback": m.supports_rollback(),
+                        "tags": m.tags,
+                    })
+                })
                 .collect();
 
             let result = CommandResult::success(serde_json::json!({
@@ -544,10 +556,7 @@ async fn execute_info(format: OutputFormat) -> Result<()> {
 
             for m in &migrations {
                 let rollback = if m.supports_rollback() { "✓" } else { "✗" };
-                println!(
-                    "  V{} - {} [rollback: {}]",
-                    m.version, m.name, rollback
-                );
+                println!("  V{} - {} [rollback: {}]", m.version, m.name, rollback);
                 if !m.tags.is_empty() {
                     println!("      Tags: {}", m.tags.join(", "));
                 }

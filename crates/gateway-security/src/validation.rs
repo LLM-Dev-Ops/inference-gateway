@@ -13,9 +13,8 @@ pub mod patterns {
     use super::*;
 
     /// Email pattern.
-    pub static EMAIL: Lazy<Regex> = Lazy::new(|| {
-        Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap()
-    });
+    pub static EMAIL: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap());
 
     /// UUID pattern.
     pub static UUID: Lazy<Regex> = Lazy::new(|| {
@@ -119,7 +118,11 @@ impl InputValidator {
     /// # Errors
     /// Returns error if content type is not allowed.
     pub fn validate_content_type(&self, content_type: &str) -> Result<()> {
-        let base_type = content_type.split(';').next().unwrap_or(content_type).trim();
+        let base_type = content_type
+            .split(';')
+            .next()
+            .unwrap_or(content_type)
+            .trim();
 
         if !self.config.allowed_content_types.contains(base_type) {
             return Err(SecurityError::validation(format!(
@@ -296,7 +299,11 @@ pub struct ValidationError {
 impl ValidationError {
     /// Create a new validation error.
     #[must_use]
-    pub fn new(field: impl Into<String>, message: impl Into<String>, code: impl Into<String>) -> Self {
+    pub fn new(
+        field: impl Into<String>,
+        message: impl Into<String>,
+        code: impl Into<String>,
+    ) -> Self {
         Self {
             field: field.into(),
             message: message.into(),
@@ -336,11 +343,8 @@ impl ValidatorBuilder {
     #[must_use]
     pub fn not_empty(mut self, field: &str, value: &str) -> Self {
         if value.is_empty() {
-            self.result.add_error(ValidationError::new(
-                field,
-                "must not be empty",
-                "required",
-            ));
+            self.result
+                .add_error(ValidationError::new(field, "must not be empty", "required"));
         }
         self
     }
@@ -375,11 +379,8 @@ impl ValidatorBuilder {
     #[must_use]
     pub fn matches(mut self, field: &str, value: &str, pattern: &Regex, message: &str) -> Self {
         if !pattern.is_match(value) {
-            self.result.add_error(ValidationError::new(
-                field,
-                message,
-                "pattern",
-            ));
+            self.result
+                .add_error(ValidationError::new(field, message, "pattern"));
         }
         self
     }
@@ -441,11 +442,8 @@ impl ValidatorBuilder {
         F: FnOnce() -> bool,
     {
         if !check() {
-            self.result.add_error(ValidationError::new(
-                field,
-                message,
-                "custom",
-            ));
+            self.result
+                .add_error(ValidationError::new(field, message, "custom"));
         }
         self
     }
@@ -562,7 +560,9 @@ mod tests {
         });
 
         assert!(validator.validate_string_length("short").is_ok());
-        assert!(validator.validate_string_length("this is too long").is_err());
+        assert!(validator
+            .validate_string_length("this is too long")
+            .is_err());
     }
 
     #[test]

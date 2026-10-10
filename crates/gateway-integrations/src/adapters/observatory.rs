@@ -162,9 +162,7 @@ impl ObservabilityEmitter for ObservatoryAdapter {
     }
 
     #[instrument(skip(self))]
-    async fn consume_performance_feedback(
-        &self,
-    ) -> IntegrationResult<Vec<PerformanceFeedback>> {
+    async fn consume_performance_feedback(&self) -> IntegrationResult<Vec<PerformanceFeedback>> {
         if !self.is_enabled() {
             return Err(IntegrationError::NotEnabled("observatory".to_string()));
         }

@@ -66,9 +66,9 @@ where
             .to_str()
             .map_err(|_| ApiError::unauthorized("Invalid Authorization header"))?;
 
-        let api_key = auth_str
-            .strip_prefix("Bearer ")
-            .ok_or_else(|| ApiError::unauthorized("Invalid Authorization format. Expected: Bearer <token>"))?;
+        let api_key = auth_str.strip_prefix("Bearer ").ok_or_else(|| {
+            ApiError::unauthorized("Invalid Authorization format. Expected: Bearer <token>")
+        })?;
 
         if api_key.is_empty() {
             return Err(ApiError::unauthorized("Empty API key"));
@@ -121,7 +121,8 @@ where
             .get("x-request-id")
             .or_else(|| parts.headers.get("x-correlation-id"))
             .or_else(|| parts.headers.get("request-id"))
-            .and_then(|v| v.to_str().ok()).map_or_else(|| uuid::Uuid::new_v4().to_string(), String::from);
+            .and_then(|v| v.to_str().ok())
+            .map_or_else(|| uuid::Uuid::new_v4().to_string(), String::from);
 
         Ok(Self(id))
     }

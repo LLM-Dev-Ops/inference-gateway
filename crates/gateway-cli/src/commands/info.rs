@@ -118,7 +118,10 @@ pub async fn execute(args: InfoArgs, base_url: &str, json: bool) -> Result<()> {
 
             if let Some(ref server) = info.server {
                 output::section("Server Status");
-                output::status(&format!("Status: {}", server.status), server.status == "healthy");
+                output::status(
+                    &format!("Status: {}", server.status),
+                    server.status == "healthy",
+                );
 
                 if let Some(ref version) = server.version {
                     output::key_value("Server Version", version);
@@ -157,8 +160,14 @@ async fn get_server_info(base_url: &str) -> Option<ServerInfo> {
                 .and_then(|v| v.as_str())
                 .unwrap_or("unknown")
                 .to_string(),
-            version: body.get("version").and_then(|v| v.as_str()).map(String::from),
-            uptime: body.get("uptime").and_then(|v| v.as_str()).map(String::from),
+            version: body
+                .get("version")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+            uptime: body
+                .get("uptime")
+                .and_then(|v| v.as_str())
+                .map(String::from),
         })
     } else {
         Some(ServerInfo {

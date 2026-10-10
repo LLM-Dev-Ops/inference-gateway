@@ -232,9 +232,10 @@ async fn execute_show(
     let url = format!("{}/api/v1/routing/config", base_url.trim_end_matches('/'));
 
     let data = match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_config(&args))
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_config(&args)),
         _ => generate_sample_config(&args),
     };
 
@@ -300,14 +301,18 @@ async fn execute_rules(
     let url = format!("{}/api/v1/routing/rules", base_url.trim_end_matches('/'));
 
     let rules: Vec<RoutingRule> = match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_rules())
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_rules()),
         _ => generate_sample_rules(),
     };
 
     let filtered_rules: Vec<_> = if let Some(ref rule_type) = args.rule_type {
-        rules.into_iter().filter(|r| r.rule_type == *rule_type).collect()
+        rules
+            .into_iter()
+            .filter(|r| r.rule_type == *rule_type)
+            .collect()
     } else {
         rules
     };
@@ -341,9 +346,10 @@ async fn execute_weights(
     let url = format!("{}/api/v1/routing/weights", base_url.trim_end_matches('/'));
 
     let weights: Vec<ProviderWeight> = match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_weights())
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_weights()),
         _ => generate_sample_weights(),
     };
 
@@ -451,9 +457,10 @@ async fn execute_stats(
     );
 
     let stats: RoutingStats = match client.get(&url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_stats(&args))
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_stats(&args)),
         _ => generate_sample_stats(&args),
     };
 
@@ -666,8 +673,7 @@ fn generate_sample_stats(args: &StatsArgs) -> RoutingStats {
 }
 
 fn build_client(api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();

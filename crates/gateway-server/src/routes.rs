@@ -27,9 +27,13 @@ pub fn create_router(state: AppState) -> Router {
         .nest("/", agent_routes())
         // Apply middleware
         .layer(axum::middleware::from_fn(middleware::request_id_middleware))
-        .layer(axum::middleware::from_fn(middleware::response_time_middleware))
+        .layer(axum::middleware::from_fn(
+            middleware::response_time_middleware,
+        ))
         .layer(axum::middleware::from_fn(middleware::logging_middleware))
-        .layer(axum::middleware::from_fn(middleware::security_headers_middleware))
+        .layer(axum::middleware::from_fn(
+            middleware::security_headers_middleware,
+        ))
         .layer(middleware::cors_layer())
         // Add state
         .with_state(state)
@@ -80,9 +84,7 @@ mod tests {
     use tower::ServiceExt;
 
     fn create_test_state() -> AppState {
-        AppState::builder()
-            .config(GatewayConfig::default())
-            .build()
+        AppState::builder().config(GatewayConfig::default()).build()
     }
 
     #[tokio::test]

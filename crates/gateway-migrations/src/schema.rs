@@ -65,11 +65,13 @@ pub fn v001_create_tenants() -> Migration {
             VALUES ('Default', 'default', 'enterprise')
             ON CONFLICT (slug) DO NOTHING;
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TRIGGER IF EXISTS update_tenants_updated_at ON tenants;
             DROP FUNCTION IF EXISTS update_updated_at_column();
             DROP TABLE IF EXISTS tenants CASCADE;
-        "#)
+        "#,
+        )
         .tag("core")
         .tag("tenants")
         .build()
@@ -114,10 +116,12 @@ pub fn v002_create_api_keys() -> Migration {
             CREATE INDEX idx_api_keys_expires_at ON api_keys(expires_at);
             CREATE INDEX idx_api_keys_last_used_at ON api_keys(last_used_at);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TRIGGER IF EXISTS update_api_keys_updated_at ON api_keys;
             DROP TABLE IF EXISTS api_keys CASCADE;
-        "#)
+        "#,
+        )
         .tag("core")
         .tag("auth")
         .build()
@@ -206,9 +210,11 @@ pub fn v004_create_audit_logs() -> Migration {
             CREATE INDEX idx_audit_logs_request_id ON audit_logs(request_id);
             CREATE INDEX idx_audit_logs_ip_address ON audit_logs(ip_address);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TABLE IF EXISTS audit_logs CASCADE;
-        "#)
+        "#,
+        )
         .tag("core")
         .tag("audit")
         .build()
@@ -261,11 +267,13 @@ pub fn v005_create_rate_limits() -> Migration {
             CREATE INDEX idx_rate_limit_state_key ON rate_limit_state(key);
             CREATE INDEX idx_rate_limit_state_expires ON rate_limit_state(expires_at);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TRIGGER IF EXISTS update_rate_limit_configs_updated_at ON rate_limit_configs;
             DROP TABLE IF EXISTS rate_limit_state CASCADE;
             DROP TABLE IF EXISTS rate_limit_configs CASCADE;
-        "#)
+        "#,
+        )
         .tag("core")
         .tag("rate_limiting")
         .build()
@@ -336,12 +344,14 @@ pub fn v006_create_provider_configs() -> Migration {
             CREATE INDEX idx_provider_configs_enabled ON provider_configs(enabled);
             CREATE INDEX idx_provider_health_status ON provider_health(status);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TRIGGER IF EXISTS update_provider_health_updated_at ON provider_health;
             DROP TRIGGER IF EXISTS update_provider_configs_updated_at ON provider_configs;
             DROP TABLE IF EXISTS provider_health CASCADE;
             DROP TABLE IF EXISTS provider_configs CASCADE;
-        "#)
+        "#,
+        )
         .tag("core")
         .tag("providers")
         .build()
@@ -401,12 +411,14 @@ pub fn v007_create_model_mappings() -> Migration {
             CREATE INDEX idx_model_mappings_target ON model_mappings(target_provider, target_model);
             CREATE INDEX idx_model_capabilities_provider ON model_capabilities(provider);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TRIGGER IF EXISTS update_model_capabilities_updated_at ON model_capabilities;
             DROP TRIGGER IF EXISTS update_model_mappings_updated_at ON model_mappings;
             DROP TABLE IF EXISTS model_capabilities CASCADE;
             DROP TABLE IF EXISTS model_mappings CASCADE;
-        "#)
+        "#,
+        )
         .tag("routing")
         .tag("models")
         .build()
@@ -442,9 +454,11 @@ pub fn v008_create_request_cache() -> Migration {
             CREATE INDEX idx_request_cache_expires_at ON request_cache(expires_at);
             CREATE INDEX idx_request_cache_request_hash ON request_cache(request_hash);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TABLE IF EXISTS request_cache CASCADE;
-        "#)
+        "#,
+        )
         .tag("cache")
         .build()
 }
@@ -505,11 +519,13 @@ pub fn v009_create_cost_tracking() -> Migration {
             CREATE INDEX idx_cost_budgets_tenant_id ON cost_budgets(tenant_id);
             CREATE INDEX idx_cost_budgets_period ON cost_budgets(period_start, period_end);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP TRIGGER IF EXISTS update_cost_budgets_updated_at ON cost_budgets;
             DROP TABLE IF EXISTS cost_budgets CASCADE;
             DROP TABLE IF EXISTS cost_records CASCADE;
-        "#)
+        "#,
+        )
         .tag("billing")
         .tag("cost")
         .build()
@@ -566,14 +582,16 @@ pub fn v010_add_indexes() -> Migration {
             CREATE UNIQUE INDEX IF NOT EXISTS idx_usage_stats_daily_unique
                 ON usage_stats_daily(tenant_id, api_key_id, model, provider, date);
         "#)
-        .down(r#"
+        .down(
+            r#"
             DROP MATERIALIZED VIEW IF EXISTS usage_stats_daily;
             DROP INDEX IF EXISTS idx_audit_logs_action_resource;
             DROP INDEX IF EXISTS idx_provider_configs_active;
             DROP INDEX IF EXISTS idx_api_keys_active;
             DROP INDEX IF EXISTS idx_usage_records_billing;
             DROP INDEX IF EXISTS idx_usage_records_analytics;
-        "#)
+        "#,
+        )
         .tag("performance")
         .tag("indexes")
         .build()

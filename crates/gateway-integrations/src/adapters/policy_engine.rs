@@ -6,8 +6,8 @@
 use crate::config::PolicyEngineConfig;
 use crate::error::{IntegrationError, IntegrationResult};
 use crate::traits::{
-    EnforcementOutcome, EnforcementReport, Policy, PolicyAction, PolicyActionType,
-    PolicyConsumer, PolicyDecision, PolicyRule, PolicyViolation,
+    EnforcementOutcome, EnforcementReport, Policy, PolicyAction, PolicyActionType, PolicyConsumer,
+    PolicyDecision, PolicyRule, PolicyViolation,
 };
 use async_trait::async_trait;
 use dashmap::DashMap;

@@ -127,9 +127,10 @@ impl AppStateBuilder {
     pub fn build(self) -> AppState {
         let config = self.config.expect("config is required");
 
-        let router = Arc::new(self.router.unwrap_or_else(|| {
-            Router::new(gateway_routing::RouterConfig::default())
-        }));
+        let router = Arc::new(
+            self.router
+                .unwrap_or_else(|| Router::new(gateway_routing::RouterConfig::default())),
+        );
 
         // Create inference routing agent, wrapping the router
         let inference_routing_agent = self.inference_routing_agent.unwrap_or_else(|| {
@@ -286,9 +287,7 @@ mod tests {
     #[test]
     fn test_state_builder() {
         let config = GatewayConfig::default();
-        let state = AppState::builder()
-            .config(config)
-            .build();
+        let state = AppState::builder().config(config).build();
 
         assert!(state.config().server.host.is_empty() || !state.config().server.host.is_empty());
     }
@@ -311,9 +310,7 @@ mod tests {
     #[test]
     fn test_config_update() {
         let config = GatewayConfig::default();
-        let state = AppState::builder()
-            .config(config)
-            .build();
+        let state = AppState::builder().config(config).build();
 
         let mut new_config = GatewayConfig::default();
         new_config.server.port = 9999;

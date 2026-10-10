@@ -15,12 +15,7 @@
 
 use std::sync::Arc;
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    response::IntoResponse,
-    Json,
-};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 
 use crate::inference_routing::{
@@ -148,12 +143,9 @@ pub async fn handle_route(
     State(agent): State<AgentState>,
     Json(input): Json<InferenceRoutingInput>,
 ) -> Result<Json<RouteResponse>, ApiErrorResponse> {
-    let (output, event) = agent
-        .route(input)
-        .await
-        .map_err(|e| ApiErrorResponse {
-            error: ApiError::routing(e.to_string()),
-        })?;
+    let (output, event) = agent.route(input).await.map_err(|e| ApiErrorResponse {
+        error: ApiError::routing(e.to_string()),
+    })?;
 
     Ok(Json(RouteResponse {
         output,
@@ -180,12 +172,13 @@ pub async fn handle_route_with_event(
     State(agent): State<AgentState>,
     Json(input): Json<InferenceRoutingInput>,
 ) -> Result<Json<RouteWithEventResponse>, ApiErrorResponse> {
-    let (output, decision_event) = agent
-        .route_with_decision_event(input)
-        .await
-        .map_err(|e| ApiErrorResponse {
-            error: ApiError::routing(e.to_string()),
-        })?;
+    let (output, decision_event) =
+        agent
+            .route_with_decision_event(input)
+            .await
+            .map_err(|e| ApiErrorResponse {
+                error: ApiError::routing(e.to_string()),
+            })?;
 
     Ok(Json(RouteWithEventResponse {
         output,
@@ -200,9 +193,7 @@ pub async fn handle_route_with_event(
 /// - Registered providers
 /// - Active rules
 /// - Configuration summary
-pub async fn handle_inspect(
-    State(agent): State<AgentState>,
-) -> Json<RoutingInspection> {
+pub async fn handle_inspect(State(agent): State<AgentState>) -> Json<RoutingInspection> {
     Json(agent.inspect())
 }
 
@@ -213,9 +204,7 @@ pub async fn handle_inspect(
 /// - Request counts and error rates
 /// - Average latency
 /// - Uptime information
-pub async fn handle_status(
-    State(agent): State<AgentState>,
-) -> Json<AgentStatus> {
+pub async fn handle_status(State(agent): State<AgentState>) -> Json<AgentStatus> {
     Json(agent.status())
 }
 
@@ -274,8 +263,11 @@ mod tests {
         body::Body,
         http::{Request, StatusCode},
     };
-    use gateway_core::{ChatMessage, GatewayRequest, HealthStatus, LLMProvider, ModelInfo, ProviderCapabilities, ProviderType};
     use futures::stream::BoxStream;
+    use gateway_core::{
+        ChatMessage, GatewayRequest, HealthStatus, LLMProvider, ModelInfo, ProviderCapabilities,
+        ProviderType,
+    };
     use tower::ServiceExt;
 
     struct MockProvider {
@@ -302,14 +294,20 @@ mod tests {
             ProviderType::Custom
         }
 
-        async fn chat_completion(&self, _: &GatewayRequest) -> Result<gateway_core::GatewayResponse, gateway_core::GatewayError> {
+        async fn chat_completion(
+            &self,
+            _: &GatewayRequest,
+        ) -> Result<gateway_core::GatewayResponse, gateway_core::GatewayError> {
             unimplemented!()
         }
 
         async fn chat_completion_stream(
             &self,
             _: &GatewayRequest,
-        ) -> Result<BoxStream<'static, Result<gateway_core::ChatChunk, gateway_core::GatewayError>>, gateway_core::GatewayError> {
+        ) -> Result<
+            BoxStream<'static, Result<gateway_core::ChatChunk, gateway_core::GatewayError>>,
+            gateway_core::GatewayError,
+        > {
             unimplemented!()
         }
 
@@ -344,9 +342,7 @@ mod tests {
     }
 
     fn create_test_agent() -> AgentState {
-        let agent = InferenceRoutingAgent::builder()
-            .id("test-agent")
-            .build();
+        let agent = InferenceRoutingAgent::builder().id("test-agent").build();
 
         let provider = Arc::new(MockProvider::new("test-provider"));
         agent.register_provider(provider, 100, 100);

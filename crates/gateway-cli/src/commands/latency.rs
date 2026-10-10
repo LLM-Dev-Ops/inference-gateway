@@ -143,9 +143,10 @@ pub async fn execute(
     } else {
         match client.get(&url).send().await {
             Ok(resp) if resp.status().is_success() => {
-                let data: LatencyOutput = resp.json().await.unwrap_or_else(|_| {
-                    generate_sample_latency(&args)
-                });
+                let data: LatencyOutput = resp
+                    .json()
+                    .await
+                    .unwrap_or_else(|_| generate_sample_latency(&args));
                 let result = CommandResult::success(data);
                 result.print(format)?;
             }
@@ -283,8 +284,7 @@ fn generate_sample_latency(args: &LatencyArgs) -> LatencyOutput {
 }
 
 fn build_client(api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();

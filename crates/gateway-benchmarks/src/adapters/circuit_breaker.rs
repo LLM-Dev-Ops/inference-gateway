@@ -90,11 +90,7 @@ impl BenchTarget for CircuitBreakerBenchmark {
         let p95_idx = (latencies.len() as f64 * 0.95) as usize;
         let p99_idx = (latencies.len() as f64 * 0.99) as usize;
 
-        let throughput_rps = if avg_ms > 0.0 {
-            1000.0 / avg_ms
-        } else {
-            0.0
-        };
+        let throughput_rps = if avg_ms > 0.0 { 1000.0 / avg_ms } else { 0.0 };
 
         // Get circuit stats
         let state_transitions = circuit.state_transitions.load(Ordering::Relaxed);
