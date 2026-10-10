@@ -83,6 +83,14 @@ describe('handler', () => {
       assert.equal(res._json.execution_metadata.trace_id, 'trace-abc');
       assert.equal(res._headers['X-Correlation-Id'], 'trace-abc');
     });
+
+    it('replaces invalid correlation IDs instead of reflecting them', async () => {
+      const res = mockRes();
+      await handler(mockReq({ path: '/health', headers: { 'x-correlation-id': 'bad\r\nheader' } }), res);
+
+      assert.match(res._json.execution_metadata.trace_id, /^[0-9a-f-]{36}$/);
+      assert.notEqual(res._headers['X-Correlation-Id'], 'bad\r\nheader');
+    });
   });
 
   describe('POST /v1/inference-gateway/route', () => {
@@ -115,6 +123,108 @@ describe('handler', () => {
       assert.equal(body.layers_executed[1].layer, 'INFERENCE_GATEWAY_ROUTE');
       assert.equal(body.layers_executed[1].status, 'failed');
       assert.ok(typeof body.layers_executed[1].duration_ms === 'number');
+    });
+
+    it('returns a bounded error for a non-JSON gateway response', async () => {
+      const originalFetch = global.fetch;
+      global.fetch = async () => new Response('<html>upstream error</html>', {
+        status: 503,
+        headers: { 'content-type': 'text/html' },
+      });
+
+      try {
+        const res = mockRes();
+        await handler(mockReq({
+          method: 'POST',
+          path: '/v1/inference-gateway/route',
+          body: { request: { model: 'test', messages: [] } },
+        }), res);
+
+        assert.equal(res._status, 503);
+        assert.deepEqual(res._json.error, {
+          type: 'invalid_gateway_response',
+          message: 'Inference gateway returned a non-JSON response',
+        });
+        assert.doesNotMatch(JSON.stringify(res._json), /upstream error/);
+      } finally {
+        global.fetch = originalFetch;
+      }
+    });
+
+    it('returns a bounded error for malformed gateway JSON', async () => {
+      const originalFetch = global.fetch;
+      global.fetch = async () => new Response('{not-json', {
+        status: 502,
+        headers: { 'content-type': 'application/json' },
+      });
+
+      try {
+        const res = mockRes();
+        await handler(mockReq({
+          method: 'POST',
+          path: '/v1/inference-gateway/route',
+          body: { request: { model: 'test', messages: [] } },
+        }), res);
+
+        assert.equal(res._status, 502);
+        assert.equal(res._json.error.type, 'invalid_gateway_response');
+      } finally {
+        global.fetch = originalFetch;
+      }
+    });
+
+    it('rejects an upstream response larger than the configured byte limit', async () => {
+      const originalFetch = global.fetch;
+      const originalLimit = process.env.GATEWAY_MAX_RESPONSE_BYTES;
+      process.env.GATEWAY_MAX_RESPONSE_BYTES = '1024';
+      global.fetch = async () => new Response('x'.repeat(1025), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+
+      try {
+        const res = mockRes();
+        await handler(mockReq({
+          method: 'POST',
+          path: '/v1/inference-gateway/route',
+          body: { request: { model: 'test', messages: [] } },
+        }), res);
+
+        assert.equal(res._status, 502);
+        assert.deepEqual(res._json.error, {
+          type: 'gateway_error',
+          message: 'Failed to reach inference gateway',
+        });
+      } finally {
+        global.fetch = originalFetch;
+        if (originalLimit === undefined) delete process.env.GATEWAY_MAX_RESPONSE_BYTES;
+        else process.env.GATEWAY_MAX_RESPONSE_BYTES = originalLimit;
+      }
+    });
+
+    it('aborts an upstream request after the configured timeout', async () => {
+      const originalFetch = global.fetch;
+      const originalTimeout = process.env.GATEWAY_REQUEST_TIMEOUT_MS;
+      process.env.GATEWAY_REQUEST_TIMEOUT_MS = '100';
+      global.fetch = async (_url, options) => new Promise((resolve, reject) => {
+        options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true });
+      });
+
+      try {
+        const res = mockRes();
+        await handler(mockReq({
+          method: 'POST',
+          path: '/v1/inference-gateway/route',
+          body: { request: { model: 'test', messages: [] } },
+        }), res);
+
+        assert.equal(res._status, 502);
+        assert.equal(res._json.error.type, 'gateway_error');
+      } finally {
+        global.fetch = originalFetch;
+        if (originalTimeout === undefined) delete process.env.GATEWAY_REQUEST_TIMEOUT_MS;
+        else process.env.GATEWAY_REQUEST_TIMEOUT_MS = originalTimeout;
+      }
     });
   });
 
