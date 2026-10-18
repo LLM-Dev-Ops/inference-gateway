@@ -1,0 +1,11 @@
+{
+  "baseline": "35a949a4671cda298cb81a38a1a8787dbbabb514",
+  "scope": "Phase7 startup configuration safety and parallel-test isolation",
+  "holdout": "Each of seven required variables must reject empty and whitespace-only values (14 cases); Debug must redact the API key (1 case)",
+  "anchor": "Valid complete configuration succeeds; wrong nonempty phase/layer and each missing variable fail (10 native process cases); all14 Node tests retained",
+  "measurement": "Build the identical probe against each real production module, execute each configuration in a separate process with an explicit synthetic environment. No mock module, live credentials, RuVector availability or persistence claim.",
+  "candidateAcceptance": "15/15 holdouts;10/10 native anchors;14/14 Node tests; default-parallel full locked Rust suite passes; repeated Phase7 tests pass without process-global environment mutation or serializing tests",
+  "wholeRepositoryMerge": "Strict Clippy, formatting, locked build/tests, security/audit and all required CI/approvals must pass. No suppression, threshold reduction, test skipping, --test-threads=1 workaround or force push.",
+  "darwin": { "generations": 1, "children": 2, "concurrency": 1, "seed": 2026101808, "sandbox": "real", "selection": "pareto" },
+  "architecture": "Rust core/TypeScript integration retained; stateless environment-configured GCP services; no persistence, IAM, schema or deployment changes"
+}
