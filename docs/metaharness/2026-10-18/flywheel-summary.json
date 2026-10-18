@@ -1,0 +1,271 @@
+{
+  "contract": {
+    "baseline": "35a949a4671cda298cb81a38a1a8787dbbabb514",
+    "scope": "Phase7 startup configuration safety and parallel-test isolation",
+    "holdout": "Each of seven required variables must reject empty and whitespace-only values (14 cases); Debug must redact the API key (1 case)",
+    "anchor": "Valid complete configuration succeeds; wrong nonempty phase/layer and each missing variable fail (10 native process cases); all14 Node tests retained",
+    "measurement": "Build the identical probe against each real production module, execute each configuration in a separate process with an explicit synthetic environment. No mock module, live credentials, RuVector availability or persistence claim.",
+    "candidateAcceptance": "15/15 holdouts;10/10 native anchors;14/14 Node tests; default-parallel full locked Rust suite passes; repeated Phase7 tests pass without process-global environment mutation or serializing tests",
+    "wholeRepositoryMerge": "Strict Clippy, formatting, locked build/tests, security/audit and all required CI/approvals must pass. No suppression, threshold reduction, test skipping, --test-threads=1 workaround or force push.",
+    "darwin": {
+      "generations": 1,
+      "children": 2,
+      "concurrency": 1,
+      "seed": 2026101808,
+      "sandbox": "real",
+      "selection": "pareto"
+    },
+    "architecture": "Rust core/TypeScript integration retained; stateless environment-configured GCP services; no persistence, IAM, schema or deployment changes"
+  },
+  "contractSha256": "af045912fd755781044fd2ddd6adafb1a9917e9e8253e51d0f73bbe0ba675e98",
+  "fixtureSha256": "be18b4b6e59a0c6c66bd1b59063380b45249840a8b290ae80929400d21902b78",
+  "baselineSource": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+  "candidateSource": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+  "cargoLock": "23f0119d7b26681b3aa57ed7ca3bfbbe5b1654207965a6121e6e48555f63ec4a",
+  "builds": [
+    {
+      "source": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+      "command": [
+        "cargo",
+        "+1.88.0",
+        "build",
+        "-p",
+        "gateway-agents",
+        "--example",
+        "phase7-config-probe",
+        "--locked"
+      ],
+      "exit": 0,
+      "stderr": "dapters/policy_engine.rs:9:5\n   |\n9  |     EnforcementOutcome, EnforcementReport, Policy, PolicyAction, PolicyActionType, PolicyConsumer,\n   |     ^^^^^^^^^^^^^^^^^^                             ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^\n10 |     PolicyDecision, PolicyRule, PolicyViolation,\n   |                     ^^^^^^^^^^  ^^^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:16:5\n   |\n16 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:18:34\n   |\n18 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/router.rs:13:5\n   |\n13 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/router.rs:15:34\n   |\n15 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:16:34\n   |\n16 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused imports: `ContentLocation`, `PiiType`, `SafetyCategory`, and `SafetyFinding`\n --> crates/gateway-integrations/src/adapters/shield.rs:9:5\n  |\n9 |     ContentLocation, PiiCheckResult, PiiType, SafetyCategory, SafetyFilter, SafetyFinding,\n  |     ^^^^^^^^^^^^^^^                  ^^^^^^^  ^^^^^^^^^^^^^^                ^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/shield.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/connector_hub.rs:35:5\n   |\n33 | struct CachedProvider {\n   |        -------------- field in this struct\n34 |     info: ProviderInfo,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` on by default\n\nwarning: method `should_flush` is never used\n  --> crates/gateway-integrations/src/adapters/observatory.rs:65:14\n   |\n33 | impl ObservatoryAdapter {\n   | ----------------------- method in this implementation\n...\n65 |     async fn should_flush(&self) -> bool {\n   |              ^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:35:5\n   |\n33 | struct CachedRule {\n   |        ---------- field in this struct\n34 |     rule: RoutingRule,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:41:5\n   |\n39 | struct CachedGraph {\n   |        ----------- field in this struct\n40 |     graph: DecisionGraph,\n41 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `config` is never read\n   --> crates/gateway-integrations/src/adapters/manager.rs:480:5\n    |\n479 | pub struct IntegrationManagerBuilder {\n    |            ------------------------- field in this struct\n480 |     config: IntegrationsConfig,\n    |     ^^^^^^\n\nwarning: methods `config`, `enabled`, and `build` are never used\n   --> crates/gateway-integrations/src/adapters/manager.rs:492:12\n    |\n483 | impl IntegrationManagerBuilder {\n    | ------------------------------ methods in this implementation\n...\n492 |     pub fn config(mut self, config: IntegrationsConfig) -> Self {\n    |            ^^^^^^\n...\n498 |     pub fn enabled(mut self, enabled: bool) -> Self {\n    |            ^^^^^^^\n...\n504 |     pub fn build(self) -> IntegrationManager {\n    |            ^^^^^\n\nwarning: `gateway-integrations` (lib) generated 24 warnings (run `cargo fix --lib -p gateway-integrations` to apply 18 suggestions)\n    Finished `dev` profile [unoptimized] target(s) in 0.22s\n"
+    },
+    {
+      "source": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+      "command": [
+        "cargo",
+        "+1.88.0",
+        "build",
+        "-p",
+        "gateway-agents",
+        "--example",
+        "phase7-config-probe",
+        "--locked"
+      ],
+      "exit": 0,
+      "stderr": "dapters/policy_engine.rs:9:5\n   |\n9  |     EnforcementOutcome, EnforcementReport, Policy, PolicyAction, PolicyActionType, PolicyConsumer,\n   |     ^^^^^^^^^^^^^^^^^^                             ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^\n10 |     PolicyDecision, PolicyRule, PolicyViolation,\n   |                     ^^^^^^^^^^  ^^^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:16:5\n   |\n16 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:18:34\n   |\n18 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/router.rs:13:5\n   |\n13 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/router.rs:15:34\n   |\n15 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:16:34\n   |\n16 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused imports: `ContentLocation`, `PiiType`, `SafetyCategory`, and `SafetyFinding`\n --> crates/gateway-integrations/src/adapters/shield.rs:9:5\n  |\n9 |     ContentLocation, PiiCheckResult, PiiType, SafetyCategory, SafetyFilter, SafetyFinding,\n  |     ^^^^^^^^^^^^^^^                  ^^^^^^^  ^^^^^^^^^^^^^^                ^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/shield.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/connector_hub.rs:35:5\n   |\n33 | struct CachedProvider {\n   |        -------------- field in this struct\n34 |     info: ProviderInfo,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` on by default\n\nwarning: method `should_flush` is never used\n  --> crates/gateway-integrations/src/adapters/observatory.rs:65:14\n   |\n33 | impl ObservatoryAdapter {\n   | ----------------------- method in this implementation\n...\n65 |     async fn should_flush(&self) -> bool {\n   |              ^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:35:5\n   |\n33 | struct CachedRule {\n   |        ---------- field in this struct\n34 |     rule: RoutingRule,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:41:5\n   |\n39 | struct CachedGraph {\n   |        ----------- field in this struct\n40 |     graph: DecisionGraph,\n41 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `config` is never read\n   --> crates/gateway-integrations/src/adapters/manager.rs:480:5\n    |\n479 | pub struct IntegrationManagerBuilder {\n    |            ------------------------- field in this struct\n480 |     config: IntegrationsConfig,\n    |     ^^^^^^\n\nwarning: methods `config`, `enabled`, and `build` are never used\n   --> crates/gateway-integrations/src/adapters/manager.rs:492:12\n    |\n483 | impl IntegrationManagerBuilder {\n    | ------------------------------ methods in this implementation\n...\n492 |     pub fn config(mut self, config: IntegrationsConfig) -> Self {\n    |            ^^^^^^\n...\n498 |     pub fn enabled(mut self, enabled: bool) -> Self {\n    |            ^^^^^^^\n...\n504 |     pub fn build(self) -> IntegrationManager {\n    |            ^^^^^\n\nwarning: `gateway-integrations` (lib) generated 24 warnings (run `cargo fix --lib -p gateway-integrations` to apply 18 suggestions)\n    Finished `dev` profile [unoptimized] target(s) in 0.28s\n"
+    }
+  ],
+  "measurements": [
+    {
+      "source": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+      "suite": "holdout",
+      "score": {
+        "primary": 0.26666666666666666,
+        "noopRate": 0.7333333333333334,
+        "costPerWin": 0,
+        "regressed": false,
+        "itemWins": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          true,
+          true,
+          true,
+          false,
+          false,
+          false
+        ]
+      },
+      "native": {
+        "passed": 4,
+        "total": 15,
+        "anchors": 10,
+        "binarySha256": "1b598a5074554d688b6828c309fdea6cfe793d041b6fa18faefe395f9bf73748"
+      },
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+            "/home/ruv/work/inference-gateway-oct18/target/debug/examples/phase7-config-probe"
+          ],
+          "exit": 1
+        }
+      ]
+    },
+    {
+      "source": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+      "suite": "anchor",
+      "score": {
+        "primary": 1,
+        "noopRate": 0,
+        "costPerWin": 0,
+        "regressed": false,
+        "itemWins": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "native": {
+        "passed": 4,
+        "total": 15,
+        "anchors": 10,
+        "binarySha256": "1b598a5074554d688b6828c309fdea6cfe793d041b6fa18faefe395f9bf73748"
+      },
+      "tests": {
+        "passed": 14,
+        "skipped": 0,
+        "retainedNames": true,
+        "existingNamesSha256": "f000093629c548747901e3bb7f41f7f62a02082f57582a7475c62d7074e5ff42"
+      },
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+            "/home/ruv/work/inference-gateway-oct18/target/debug/examples/phase7-config-probe"
+          ],
+          "exit": 1
+        },
+        {
+          "command": [
+            "/usr/bin/node",
+            "--test",
+            "--test-reporter=tap",
+            "test/index.test.js"
+          ],
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "source": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+      "suite": "holdout",
+      "score": {
+        "primary": 1,
+        "noopRate": 0,
+        "costPerWin": 0,
+        "regressed": false,
+        "itemWins": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "native": {
+        "passed": 15,
+        "total": 15,
+        "anchors": 10,
+        "binarySha256": "066086cfb3cd6b9a4f8e158de1ce0f69a584d6b702d28fe4191fbdf864e5cc0d"
+      },
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+            "/home/ruv/work/inference-gateway-candidate-oct18/target/debug/examples/phase7-config-probe"
+          ],
+          "exit": 0
+        }
+      ]
+    },
+    {
+      "source": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+      "suite": "anchor",
+      "score": {
+        "primary": 1,
+        "noopRate": 0,
+        "costPerWin": 0,
+        "regressed": false,
+        "itemWins": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "native": {
+        "passed": 15,
+        "total": 15,
+        "anchors": 10,
+        "binarySha256": "066086cfb3cd6b9a4f8e158de1ce0f69a584d6b702d28fe4191fbdf864e5cc0d"
+      },
+      "tests": {
+        "passed": 14,
+        "skipped": 0,
+        "retainedNames": true,
+        "existingNamesSha256": "f000093629c548747901e3bb7f41f7f62a02082f57582a7475c62d7074e5ff42"
+      },
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+            "/home/ruv/work/inference-gateway-candidate-oct18/target/debug/examples/phase7-config-probe"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "/usr/bin/node",
+            "--test",
+            "--test-reporter=tap",
+            "test/index.test.js"
+          ],
+          "exit": 0
+        }
+      ]
+    }
+  ],
+  "promotions": 1,
+  "fingerprint": "c5942e7c9bf8f28fe7af47a6ec3887d11eeb3f8c8e8601cc6a7a54969ea0b981",
+  "replay": {
+    "pass": true,
+    "checks": {
+      "receipts": true,
+      "reachesRoot": true,
+      "contiguousParents": true,
+      "allPromoted": true,
+      "gateUnchanged": true,
+      "gateReExecutes": true,
+      "allCommitsReceipts": true,
+      "sealedFieldsAuthentic": true
+    },
+    "failures": [],
+    "chainSummary": "gen1(startup) → gen0(root)"
+  },
+  "boundary": "Component configuration validation only, not whole-repository approval. No network calls, live secrets or RuVector persistence claims. Cost/latency/energy axes not measured; zero costPerWin is a neutral gate input, not a measurement. Full parallel Rust tests, strict Clippy, builds, formatting, audit and CI are independent merge gates."
+}
