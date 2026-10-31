@@ -101,11 +101,13 @@ async function forwardToGateway(path, method, headers, body) {
   const contentType = resp.headers.get('content-type') || '';
   const responseText = await readBoundedResponse(resp);
   let respBody;
+  let invalid = false;
 
   if (contentType.toLowerCase().includes('json')) {
     try {
       respBody = JSON.parse(responseText);
     } catch {
+      invalid = true;
       respBody = {
         error: {
           type: 'invalid_gateway_response',
@@ -114,6 +116,7 @@ async function forwardToGateway(path, method, headers, body) {
       };
     }
   } else {
+    invalid = true;
     respBody = {
       error: {
         type: 'invalid_gateway_response',
@@ -121,7 +124,18 @@ async function forwardToGateway(path, method, headers, body) {
       },
     };
   }
-  return { status: resp.status, body: respBody };
+  if (!respBody || typeof respBody !== 'object' || Array.isArray(respBody)) {
+    respBody = {
+      error: {
+        type: 'invalid_gateway_response',
+        message: 'Inference gateway returned a non-object JSON response',
+      },
+    };
+    return { status: 502, body: respBody, invalid: true };
+  }
+  // A locally constructed parser error is a gateway failure, not a successful
+  // upstream response. Never infer this from an untrusted error.type field.
+  return { status: invalid ? 502 : resp.status, body: respBody, invalid };
 }
 
 // --- Route handlers ---
@@ -149,7 +163,7 @@ async function handleRoute(req, res, traceId, executionId) {
 
     const payload = envelop(gw.body, traceId, executionId, [
       { layer: 'AGENT_ROUTING', status: 'completed' },
-      { layer: 'INFERENCE_GATEWAY_ROUTE', status: 'completed', duration_ms: elapsed },
+      { layer: 'INFERENCE_GATEWAY_ROUTE', status: gw.invalid ? 'failed' : 'completed', duration_ms: elapsed },
     ]);
     res.status(gw.status).json(payload);
   } catch {
