@@ -131,11 +131,11 @@ async function forwardToGateway(path, method, headers, body) {
         message: 'Inference gateway returned a non-object JSON response',
       },
     };
-    return { status: 502, body: respBody, invalid: true };
+    return { status: resp.status >= 200 && resp.status < 300 ? 502 : resp.status, body: respBody, invalid: true };
   }
   // A locally constructed parser error is a gateway failure, not a successful
   // upstream response. Never infer this from an untrusted error.type field.
-  return { status: invalid ? 502 : resp.status, body: respBody, invalid };
+  return { status: invalid && resp.status >= 200 && resp.status < 300 ? 502 : resp.status, body: respBody, invalid };
 }
 
 // --- Route handlers ---
