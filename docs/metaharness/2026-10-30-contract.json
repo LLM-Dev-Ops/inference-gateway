@@ -1,0 +1,8 @@
+{
+  "holdout": "Seven real loopback HTTP invalid upstream payloads must return502 typed error, no body reflection, failed layer",
+  "anchors": "Four valid object transport statuses and trusted trace metadata retained; existing Node/Rust assertions preserved",
+  "acceptance": "All full build/test/lint/security gates required; timeout/nonzero fails closed",
+  "boundsSeconds": 120,
+  "architecture": "No persistence/IAM/deployment/Rust changes",
+  "seed": 2026103020
+}
