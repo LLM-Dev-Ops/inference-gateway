@@ -235,7 +235,10 @@ async fn run_interactive_mode(
     args: &ChatArgs,
     _format: OutputFormat,
 ) -> Result<()> {
-    output::info(&format!("Interactive chat with {} (type 'exit' to quit)", args.model));
+    output::info(&format!(
+        "Interactive chat with {} (type 'exit' to quit)",
+        args.model
+    ));
 
     if let Some(ref system) = args.system {
         output::info(&format!("System: {}", system));
@@ -339,9 +342,7 @@ async fn run_interactive_mode(
                         if let Some(usage) = &response.usage {
                             output::info(&format!(
                                 "Tokens: {} prompt, {} completion, {} total",
-                                usage.prompt_tokens,
-                                usage.completion_tokens,
-                                usage.total_tokens
+                                usage.prompt_tokens, usage.completion_tokens, usage.total_tokens
                             ));
                         }
                     }

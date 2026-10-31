@@ -4,7 +4,7 @@
 # ==============================================================================
 # Stage 1: Build Environment
 # ==============================================================================
-FROM rust:1.75-bookworm AS builder
+FROM rust:1.88.0-bookworm AS builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
@@ -111,7 +111,7 @@ CMD []
 # ==============================================================================
 # Stage 3: Development Environment (optional)
 # ==============================================================================
-FROM rust:1.75-bookworm AS development
+FROM rust:1.88.0-bookworm AS development
 
 # Install development tools
 RUN apt-get update && apt-get install -y \

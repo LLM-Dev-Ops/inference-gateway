@@ -35,13 +35,13 @@
 use async_stream::try_stream;
 use async_trait::async_trait;
 use futures::stream::BoxStream;
-use gateway_core::{
-    ChatChunk, ChatMessage, Choice, ChunkChoice, ChunkDelta, FinishReason,
-    GatewayError, GatewayRequest, GatewayResponse, HealthStatus, LLMProvider, MessageContent,
-    MessageRole, ModelInfo, ProviderCapabilities, ProviderType, Usage,
-};
 use gateway_core::request::ContentPart;
 use gateway_core::response::ResponseMessage;
+use gateway_core::{
+    ChatChunk, ChatMessage, Choice, ChunkChoice, ChunkDelta, FinishReason, GatewayError,
+    GatewayRequest, GatewayResponse, HealthStatus, LLMProvider, MessageContent, MessageRole,
+    ModelInfo, ProviderCapabilities, ProviderType, Usage,
+};
 use reqwest::Client;
 use serde::Deserialize;
 use std::{
@@ -307,8 +307,7 @@ impl BedrockProvider {
     fn stream_url(&self, model_id: &str) -> String {
         format!(
             "{}/model/{}/invoke-with-response-stream",
-            self.base_url,
-            model_id
+            self.base_url, model_id
         )
     }
 
@@ -656,9 +655,7 @@ impl BedrockProvider {
     /// Transform content to Bedrock format
     fn transform_content(content: &MessageContent) -> serde_json::Value {
         match content {
-            MessageContent::Text(text) => {
-                serde_json::Value::String(text.clone())
-            }
+            MessageContent::Text(text) => serde_json::Value::String(text.clone()),
             MessageContent::Parts(parts) => {
                 let transformed: Vec<serde_json::Value> = parts
                     .iter()
@@ -694,16 +691,14 @@ impl BedrockProvider {
     fn extract_text_content(content: &MessageContent) -> String {
         match content {
             MessageContent::Text(text) => text.clone(),
-            MessageContent::Parts(parts) => {
-                parts
-                    .iter()
-                    .filter_map(|p| match p {
-                        ContentPart::Text { text } => Some(text.clone()),
-                        ContentPart::ImageUrl { .. } => None,
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            }
+            MessageContent::Parts(parts) => parts
+                .iter()
+                .filter_map(|p| match p {
+                    ContentPart::Text { text } => Some(text.clone()),
+                    ContentPart::ImageUrl { .. } => None,
+                })
+                .collect::<Vec<_>>()
+                .join("\n"),
         }
     }
 
@@ -771,7 +766,10 @@ impl BedrockProvider {
         };
 
         Ok(GatewayResponse::builder()
-            .id(response.id.clone().unwrap_or_else(|| format!("bedrock-{}", uuid::Uuid::new_v4())))
+            .id(response
+                .id
+                .clone()
+                .unwrap_or_else(|| format!("bedrock-{}", uuid::Uuid::new_v4())))
             .model(model.to_string())
             .choice(Choice {
                 index: 0,
@@ -789,10 +787,9 @@ impl BedrockProvider {
         response: &BedrockTitanResponse,
         model: &str,
     ) -> Result<GatewayResponse, GatewayError> {
-        let result = response
-            .results
-            .first()
-            .ok_or_else(|| GatewayError::provider("bedrock", "No results in Titan response", None, false))?;
+        let result = response.results.first().ok_or_else(|| {
+            GatewayError::provider("bedrock", "No results in Titan response", None, false)
+        })?;
 
         let finish_reason = match result.completion_reason.as_deref() {
             Some("FINISH") => Some(FinishReason::Stop),
@@ -873,10 +870,9 @@ impl BedrockProvider {
         response: &BedrockMistralResponse,
         model: &str,
     ) -> Result<GatewayResponse, GatewayError> {
-        let output = response
-            .outputs
-            .first()
-            .ok_or_else(|| GatewayError::provider("bedrock", "No outputs in Mistral response", None, false))?;
+        let output = response.outputs.first().ok_or_else(|| {
+            GatewayError::provider("bedrock", "No outputs in Mistral response", None, false)
+        })?;
 
         let finish_reason = match output.stop_reason.as_deref() {
             Some("stop") => Some(FinishReason::Stop),
@@ -910,10 +906,9 @@ impl BedrockProvider {
         response: &BedrockCohereResponse,
         model: &str,
     ) -> Result<GatewayResponse, GatewayError> {
-        let generation = response
-            .generations
-            .first()
-            .ok_or_else(|| GatewayError::provider("bedrock", "No generations in Cohere response", None, false))?;
+        let generation = response.generations.first().ok_or_else(|| {
+            GatewayError::provider("bedrock", "No generations in Cohere response", None, false)
+        })?;
 
         let finish_reason = match generation.finish_reason.as_deref() {
             Some("COMPLETE") => Some(FinishReason::Stop),
@@ -929,7 +924,10 @@ impl BedrockProvider {
         };
 
         Ok(GatewayResponse::builder()
-            .id(generation.id.clone().unwrap_or_else(|| format!("bedrock-{}", uuid::Uuid::new_v4())))
+            .id(generation
+                .id
+                .clone()
+                .unwrap_or_else(|| format!("bedrock-{}", uuid::Uuid::new_v4())))
             .model(model.to_string())
             .choice(Choice {
                 index: 0,
@@ -947,10 +945,9 @@ impl BedrockProvider {
         response: &BedrockAi21Response,
         model: &str,
     ) -> Result<GatewayResponse, GatewayError> {
-        let completion = response
-            .completions
-            .first()
-            .ok_or_else(|| GatewayError::provider("bedrock", "No completions in AI21 response", None, false))?;
+        let completion = response.completions.first().ok_or_else(|| {
+            GatewayError::provider("bedrock", "No completions in AI21 response", None, false)
+        })?;
 
         let finish_reason = match completion.finish_reason.reason.as_deref() {
             Some("endoftext") => Some(FinishReason::Stop),
@@ -966,7 +963,10 @@ impl BedrockProvider {
         };
 
         Ok(GatewayResponse::builder()
-            .id(response.id.clone().unwrap_or_else(|| format!("bedrock-{}", uuid::Uuid::new_v4())))
+            .id(response
+                .id
+                .clone()
+                .unwrap_or_else(|| format!("bedrock-{}", uuid::Uuid::new_v4())))
             .model(model.to_string())
             .choice(Choice {
                 index: 0,
@@ -986,12 +986,15 @@ impl BedrockProvider {
         body: &[u8],
         headers: &mut HashMap<String, String>,
     ) -> Result<(), GatewayError> {
-        let access_key = self.config.access_key_id.as_ref().ok_or_else(|| {
-            GatewayError::authentication("AWS access key ID not configured")
-        })?;
-        let secret_key = self.config.secret_access_key.as_ref().ok_or_else(|| {
-            GatewayError::authentication("AWS secret access key not configured")
-        })?;
+        let access_key = self
+            .config
+            .access_key_id
+            .as_ref()
+            .ok_or_else(|| GatewayError::authentication("AWS access key ID not configured"))?;
+        let secret_key =
+            self.config.secret_access_key.as_ref().ok_or_else(|| {
+                GatewayError::authentication("AWS secret access key not configured")
+            })?;
 
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -1055,7 +1058,10 @@ impl BedrockProvider {
         );
 
         // Calculate signature
-        let k_date = hmac_sha256(format!("AWS4{}", secret_key).as_bytes(), date_stamp.as_bytes());
+        let k_date = hmac_sha256(
+            format!("AWS4{}", secret_key).as_bytes(),
+            date_stamp.as_bytes(),
+        );
         let k_region = hmac_sha256(&k_date, region.as_bytes());
         let k_service = hmac_sha256(&k_region, service.as_bytes());
         let k_signing = hmac_sha256(&k_service, b"aws4_request");
@@ -1230,7 +1236,11 @@ impl LLMProvider for BedrockProvider {
 
         let body = self.transform_request(request, model_family)?;
         let body_bytes = serde_json::to_vec(&body).map_err(|e| {
-            GatewayError::validation(format!("Failed to serialize request: {}", e), None, "serialization_error")
+            GatewayError::validation(
+                format!("Failed to serialize request: {}", e),
+                None,
+                "serialization_error",
+            )
         })?;
 
         let url = self.invoke_url(model);
@@ -1247,20 +1257,23 @@ impl LLMProvider for BedrockProvider {
 
         debug!(model = %model, "Sending request to Bedrock");
 
-        let response = req_builder
-            .body(body_bytes)
-            .send()
-            .await
-            .map_err(|e| GatewayError::provider("bedrock", format!("Request failed: {}", e), None, true))?;
+        let response = req_builder.body(body_bytes).send().await.map_err(|e| {
+            GatewayError::provider("bedrock", format!("Request failed: {}", e), None, true)
+        })?;
 
         let status = response.status();
         let response_bytes = response.bytes().await.map_err(|e| {
-            GatewayError::provider("bedrock", format!("Failed to read response: {}", e), None, true)
+            GatewayError::provider(
+                "bedrock",
+                format!("Failed to read response: {}", e),
+                None,
+                true,
+            )
         })?;
 
         if !status.is_success() {
-            let error: BedrockError = serde_json::from_slice(&response_bytes)
-                .unwrap_or(BedrockError {
+            let error: BedrockError =
+                serde_json::from_slice(&response_bytes).unwrap_or(BedrockError {
                     message: Some(String::from_utf8_lossy(&response_bytes).to_string()),
                     message_alt: None,
                 });
@@ -1342,8 +1355,8 @@ impl LLMProvider for BedrockProvider {
                 self.parse_cohere_response(&parsed, model)
             }
             ModelFamily::Ai21 => {
-                let parsed: BedrockAi21Response = serde_json::from_slice(&response_bytes)
-                    .map_err(|e| {
+                let parsed: BedrockAi21Response =
+                    serde_json::from_slice(&response_bytes).map_err(|e| {
                         GatewayError::provider(
                             "bedrock",
                             format!("Failed to parse AI21 response: {}", e),
@@ -1359,8 +1372,7 @@ impl LLMProvider for BedrockProvider {
     async fn chat_completion_stream(
         &self,
         request: &GatewayRequest,
-    ) -> Result<BoxStream<'static, Result<ChatChunk, GatewayError>>, GatewayError>
-    {
+    ) -> Result<BoxStream<'static, Result<ChatChunk, GatewayError>>, GatewayError> {
         let model = request.model.clone();
         let model_family = ModelFamily::from_model_id(&model).ok_or_else(|| {
             GatewayError::model_not_found(&format!("Unsupported model family for: {}", model))
@@ -1368,13 +1380,20 @@ impl LLMProvider for BedrockProvider {
 
         let body = self.transform_request(request, model_family)?;
         let body_bytes = serde_json::to_vec(&body).map_err(|e| {
-            GatewayError::validation(format!("Failed to serialize request: {}", e), None, "serialization_error")
+            GatewayError::validation(
+                format!("Failed to serialize request: {}", e),
+                None,
+                "serialization_error",
+            )
         })?;
 
         let url = self.stream_url(&model);
         let mut headers = HashMap::new();
         headers.insert("content-type".to_string(), "application/json".to_string());
-        headers.insert("accept".to_string(), "application/vnd.amazon.eventstream".to_string());
+        headers.insert(
+            "accept".to_string(),
+            "application/vnd.amazon.eventstream".to_string(),
+        );
 
         self.sign_request("POST", &url, &body_bytes, &mut headers)?;
 
@@ -1385,11 +1404,9 @@ impl LLMProvider for BedrockProvider {
 
         debug!(model = %model, "Starting streaming request to Bedrock");
 
-        let response = req_builder
-            .body(body_bytes)
-            .send()
-            .await
-            .map_err(|e| GatewayError::provider("bedrock", format!("Request failed: {}", e), None, true))?;
+        let response = req_builder.body(body_bytes).send().await.map_err(|e| {
+            GatewayError::provider("bedrock", format!("Request failed: {}", e), None, true)
+        })?;
 
         let status = response.status();
         if !status.is_success() {
@@ -1408,7 +1425,12 @@ impl LLMProvider for BedrockProvider {
         warn!("Bedrock streaming uses binary event stream; falling back to non-streaming");
 
         let response_bytes = response.bytes().await.map_err(|e| {
-            GatewayError::provider("bedrock", format!("Failed to read response: {}", e), None, true)
+            GatewayError::provider(
+                "bedrock",
+                format!("Failed to read response: {}", e),
+                None,
+                true,
+            )
         })?;
 
         // Try to parse as JSON (some models return JSON in streaming mode)

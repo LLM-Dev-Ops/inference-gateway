@@ -224,9 +224,7 @@ mod tests {
 
     #[test]
     fn test_socket_addr() {
-        let config = ServerConfig::new()
-            .with_host("127.0.0.1")
-            .with_port(8080);
+        let config = ServerConfig::new().with_host("127.0.0.1").with_port(8080);
 
         let addr = config.socket_addr();
         assert_eq!(addr.to_string(), "127.0.0.1:8080");

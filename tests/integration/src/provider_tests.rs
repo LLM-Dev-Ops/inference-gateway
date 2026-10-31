@@ -62,7 +62,8 @@ async fn test_openai_multiple_models() {
 #[tokio::test]
 async fn test_anthropic_request_transformation() {
     let mock = MockAnthropic::new().await;
-    mock.mock_messages("claude-3-5-sonnet-latest", "Response").await;
+    mock.mock_messages("claude-3-5-sonnet-latest", "Response")
+        .await;
 
     let client = reqwest::Client::new();
     let response = client
@@ -90,7 +91,8 @@ async fn test_anthropic_request_transformation() {
 #[tokio::test]
 async fn test_anthropic_with_system_message() {
     let mock = MockAnthropic::new().await;
-    mock.mock_messages("claude-3-5-sonnet-latest", "Response").await;
+    mock.mock_messages("claude-3-5-sonnet-latest", "Response")
+        .await;
 
     let client = reqwest::Client::new();
     let response = client
@@ -129,7 +131,10 @@ async fn test_provider_rate_limit_handling() {
     assert_eq!(response.status(), 429);
 
     let body: serde_json::Value = response.json().await.unwrap();
-    assert!(body["error"]["type"].as_str().unwrap().contains("rate_limit"));
+    assert!(body["error"]["type"]
+        .as_str()
+        .unwrap()
+        .contains("rate_limit"));
 }
 
 /// Test provider handles server errors
@@ -177,11 +182,14 @@ async fn test_openai_streaming() {
     let response = client
         .post(format!("{}/v1/chat/completions", mock.url()))
         .header("Content-Type", "application/json")
-        .body(serde_json::to_string(&json!({
-            "model": "gpt-4o",
-            "messages": [{"role": "user", "content": "Hi"}],
-            "stream": true
-        })).unwrap())
+        .body(
+            serde_json::to_string(&json!({
+                "model": "gpt-4o",
+                "messages": [{"role": "user", "content": "Hi"}],
+                "stream": true
+            }))
+            .unwrap(),
+        )
         .send()
         .await
         .expect("Request failed");
@@ -317,7 +325,8 @@ async fn test_response_usage_stats() {
 #[tokio::test]
 async fn test_multi_turn_conversation() {
     let mock = MockOpenAI::new().await;
-    mock.mock_chat_completion("gpt-4o", "4 times 3 is 12.").await;
+    mock.mock_chat_completion("gpt-4o", "4 times 3 is 12.")
+        .await;
 
     let client = reqwest::Client::new();
     let response = client
@@ -343,7 +352,9 @@ async fn test_concurrent_provider_requests() {
     let openai = MockOpenAI::new().await;
     let anthropic = MockAnthropic::new().await;
 
-    openai.mock_chat_completion("gpt-4o", "OpenAI response").await;
+    openai
+        .mock_chat_completion("gpt-4o", "OpenAI response")
+        .await;
     anthropic
         .mock_messages("claude-3-5-sonnet-latest", "Anthropic response")
         .await;
@@ -366,8 +377,7 @@ async fn test_concurrent_provider_requests() {
         }))
         .send();
 
-    let (openai_result, anthropic_result) =
-        tokio::join!(openai_future, anthropic_future);
+    let (openai_result, anthropic_result) = tokio::join!(openai_future, anthropic_future);
 
     assert_eq!(openai_result.unwrap().status(), 200);
     assert_eq!(anthropic_result.unwrap().status(), 200);
@@ -420,7 +430,8 @@ async fn test_long_response_handling() {
 #[tokio::test]
 async fn test_unicode_content() {
     let mock = MockOpenAI::new().await;
-    mock.mock_chat_completion("gpt-4o", "こんにちは! 你好! 🌍🚀").await;
+    mock.mock_chat_completion("gpt-4o", "こんにちは! 你好! 🌍🚀")
+        .await;
 
     let client = reqwest::Client::new();
     let response = client

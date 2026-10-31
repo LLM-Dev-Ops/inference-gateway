@@ -337,9 +337,6 @@ mod tests {
     #[test]
     fn test_retry_after() {
         let err = Error::rate_limited(Some(60));
-        assert_eq!(
-            err.retry_after(),
-            Some(std::time::Duration::from_secs(60))
-        );
+        assert_eq!(err.retry_after(), Some(std::time::Duration::from_secs(60)));
     }
 }

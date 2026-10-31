@@ -195,7 +195,8 @@ fn extract_client_ip<B>(request: &Request<B>) -> Option<IpAddr> {
 
 /// Create an error response.
 fn error_response<B: Default>(error: SecurityError) -> Response<B> {
-    let status = StatusCode::from_u16(error.status_code()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+    let status =
+        StatusCode::from_u16(error.status_code()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
 
     Response::builder()
         .status(status)

@@ -72,7 +72,9 @@ pub async fn run_all_benchmarks() -> Vec<BenchmarkResult> {
 /// # Arguments
 ///
 /// * `output_dir` - Base output directory (typically `benchmarks/output/`)
-pub async fn run_and_save_benchmarks<P: AsRef<Path>>(output_dir: P) -> Result<Vec<BenchmarkResult>> {
+pub async fn run_and_save_benchmarks<P: AsRef<Path>>(
+    output_dir: P,
+) -> Result<Vec<BenchmarkResult>> {
     let results = run_all_benchmarks().await;
 
     // Write raw results

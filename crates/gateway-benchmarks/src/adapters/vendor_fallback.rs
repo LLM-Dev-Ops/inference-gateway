@@ -84,11 +84,7 @@ impl BenchTarget for VendorFallbackBenchmark {
         let avg_fallbacks: f64 =
             fallback_counts.iter().sum::<u32>() as f64 / fallback_counts.len() as f64;
 
-        let throughput_rps = if avg_ms > 0.0 {
-            1000.0 / avg_ms
-        } else {
-            0.0
-        };
+        let throughput_rps = if avg_ms > 0.0 { 1000.0 / avg_ms } else { 0.0 };
 
         Ok(BenchmarkResult::new(
             self.id(),
@@ -113,10 +109,10 @@ impl BenchTarget for VendorFallbackBenchmark {
 async fn simulate_fallback_resolution() -> u32 {
     // Simulate fallback chain: primary -> secondary -> tertiary
     let providers = [
-        ("openai", false),     // Primary: unavailable
-        ("anthropic", false),  // Secondary: unavailable
-        ("azure", true),       // Tertiary: available
-        ("google", true),      // Quaternary: available
+        ("openai", false),    // Primary: unavailable
+        ("anthropic", false), // Secondary: unavailable
+        ("azure", true),      // Tertiary: available
+        ("google", true),     // Quaternary: available
     ];
 
     let mut fallbacks = 0;

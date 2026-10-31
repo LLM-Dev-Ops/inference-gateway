@@ -159,9 +159,10 @@ pub async fn execute(
                 spinner.finish_and_clear();
 
                 if resp.status().is_success() {
-                    let data: CostOutput = resp.json().await.unwrap_or_else(|_| {
-                        generate_sample_cost(&args)
-                    });
+                    let data: CostOutput = resp
+                        .json()
+                        .await
+                        .unwrap_or_else(|_| generate_sample_cost(&args));
                     display_cost_text(&data, &args);
                 } else {
                     let data = generate_sample_cost(&args);
@@ -179,9 +180,10 @@ pub async fn execute(
     } else {
         match client.get(&url).send().await {
             Ok(resp) if resp.status().is_success() => {
-                let data: CostOutput = resp.json().await.unwrap_or_else(|_| {
-                    generate_sample_cost(&args)
-                });
+                let data: CostOutput = resp
+                    .json()
+                    .await
+                    .unwrap_or_else(|_| generate_sample_cost(&args));
                 let result = CommandResult::success(data);
                 result.print(format)?;
             }
@@ -202,9 +204,18 @@ fn display_cost_text(data: &CostOutput, args: &CostArgs) {
     output::key_value("Currency", &data.currency);
     output::key_value("Total Cost", &format!("${:.4}", data.total_cost));
     output::key_value("Total Requests", &data.total_requests.to_string());
-    output::key_value("Total Input Tokens", &format_tokens(data.total_input_tokens));
-    output::key_value("Total Output Tokens", &format_tokens(data.total_output_tokens));
-    output::key_value("Avg Cost/Request", &format!("${:.6}", data.avg_cost_per_request));
+    output::key_value(
+        "Total Input Tokens",
+        &format_tokens(data.total_input_tokens),
+    );
+    output::key_value(
+        "Total Output Tokens",
+        &format_tokens(data.total_output_tokens),
+    );
+    output::key_value(
+        "Avg Cost/Request",
+        &format!("${:.6}", data.avg_cost_per_request),
+    );
 
     if args.breakdown || args.group_by == "provider" {
         if let Some(ref providers) = data.by_provider {
@@ -371,8 +382,7 @@ fn generate_sample_cost(args: &CostArgs) -> CostOutput {
 }
 
 fn build_client(api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();

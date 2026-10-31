@@ -235,7 +235,9 @@ impl Sanitizer {
                     tracing::warn!(pattern = %pattern, "Command injection pattern detected");
                 }
                 if self.security_config.block_on_detection {
-                    return Err(SecurityError::forbidden("Command injection pattern detected"));
+                    return Err(SecurityError::forbidden(
+                        "Command injection pattern detected",
+                    ));
                 }
             }
         }
@@ -355,7 +357,8 @@ pub fn sanitize_path(input: &str) -> String {
 /// Sanitize a filename.
 #[must_use]
 pub fn sanitize_filename(input: &str) -> String {
-    static UNSAFE_CHARS: Lazy<Regex> = Lazy::new(|| Regex::new(r#"[<>:"/\\|?*\x00-\x1f]"#).unwrap());
+    static UNSAFE_CHARS: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r#"[<>:"/\\|?*\x00-\x1f]"#).unwrap());
 
     let sanitized = UNSAFE_CHARS.replace_all(input, "_").to_string();
 
@@ -526,8 +529,8 @@ mod tests {
 
     #[test]
     fn test_sanitizer_with_custom_patterns() {
-        let sanitizer = Sanitizer::default_sanitizer()
-            .with_patterns(vec![Regex::new(r"forbidden").unwrap()]);
+        let sanitizer =
+            Sanitizer::default_sanitizer().with_patterns(vec![Regex::new(r"forbidden").unwrap()]);
 
         assert!(sanitizer.check("This is forbidden content").is_err());
         assert!(sanitizer.check("This is allowed content").is_ok());
@@ -557,9 +560,8 @@ mod tests {
 
     #[test]
     fn test_sanitizer_permissive() {
-        let sanitizer = Sanitizer::default_sanitizer().with_security_config(
-            ContentSecurityConfig::permissive(),
-        );
+        let sanitizer = Sanitizer::default_sanitizer()
+            .with_security_config(ContentSecurityConfig::permissive());
 
         // With permissive config, detection is disabled but doesn't block
         let result = sanitizer.check("<script>alert('xss')</script>");

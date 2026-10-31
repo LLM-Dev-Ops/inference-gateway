@@ -58,7 +58,8 @@ impl BenchmarkResult {
 
     /// Check if this benchmark result indicates a failure.
     pub fn is_error(&self) -> bool {
-        self.metrics.get("error").is_some() || self.metrics.get("status") == Some(&serde_json::json!("failed"))
+        self.metrics.get("error").is_some()
+            || self.metrics.get("status") == Some(&serde_json::json!("failed"))
     }
 
     /// Get the latency in milliseconds if available.
@@ -110,7 +111,8 @@ mod tests {
         let result = BenchmarkResult::new("test", serde_json::json!({"value": 42}));
 
         let json = serde_json::to_string(&result).expect("Failed to serialize");
-        let deserialized: BenchmarkResult = serde_json::from_str(&json).expect("Failed to deserialize");
+        let deserialized: BenchmarkResult =
+            serde_json::from_str(&json).expect("Failed to deserialize");
 
         assert_eq!(deserialized.target_id, result.target_id);
         assert_eq!(deserialized.metrics, result.metrics);

@@ -20,7 +20,13 @@ pub struct Cli {
     pub json: bool,
 
     /// Gateway server URL
-    #[arg(short = 'u', long, env = "GATEWAY_URL", default_value = "http://localhost:8080", global = true)]
+    #[arg(
+        short = 'u',
+        long,
+        env = "GATEWAY_URL",
+        default_value = "http://localhost:8080",
+        global = true
+    )]
     pub url: String,
 
     /// API key for authentication
@@ -95,22 +101,57 @@ impl Cli {
     pub async fn execute(self) -> Result<()> {
         match self.command {
             Commands::Start(args) => commands::start::execute(args).await,
-            Commands::Health(args) => commands::health::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
-            Commands::Models(args) => commands::models::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
-            Commands::Chat(args) => commands::chat::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
+            Commands::Health(args) => {
+                commands::health::execute(args, &self.url, self.api_key.as_deref(), self.json).await
+            }
+            Commands::Models(args) => {
+                commands::models::execute(args, &self.url, self.api_key.as_deref(), self.json).await
+            }
+            Commands::Chat(args) => {
+                commands::chat::execute(args, &self.url, self.api_key.as_deref(), self.json).await
+            }
             Commands::Config(args) => commands::config::execute(args, self.json).await,
             Commands::Info(args) => commands::info::execute(args, &self.url, self.json).await,
             Commands::Validate(args) => commands::validate::execute(args, self.json).await,
             Commands::Completions(args) => commands::completions::execute(args),
             Commands::Migrate(args) => commands::migrate::execute(args, self.json).await,
-            Commands::Latency(args) => commands::latency::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
-            Commands::Cost(args) => commands::cost::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
-            Commands::TokenUsage(args) => commands::token_usage::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
-            Commands::BackendHealth(args) => commands::backend_health::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
-            Commands::RoutingStrategy(args) => commands::routing_strategy::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
-            Commands::CacheStatus(args) => commands::cache_status::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
+            Commands::Latency(args) => {
+                commands::latency::execute(args, &self.url, self.api_key.as_deref(), self.json)
+                    .await
+            }
+            Commands::Cost(args) => {
+                commands::cost::execute(args, &self.url, self.api_key.as_deref(), self.json).await
+            }
+            Commands::TokenUsage(args) => {
+                commands::token_usage::execute(args, &self.url, self.api_key.as_deref(), self.json)
+                    .await
+            }
+            Commands::BackendHealth(args) => {
+                commands::backend_health::execute(
+                    args,
+                    &self.url,
+                    self.api_key.as_deref(),
+                    self.json,
+                )
+                .await
+            }
+            Commands::RoutingStrategy(args) => {
+                commands::routing_strategy::execute(
+                    args,
+                    &self.url,
+                    self.api_key.as_deref(),
+                    self.json,
+                )
+                .await
+            }
+            Commands::CacheStatus(args) => {
+                commands::cache_status::execute(args, &self.url, self.api_key.as_deref(), self.json)
+                    .await
+            }
             Commands::Benchmark(args) => commands::benchmark::execute(args, self.json).await,
-            Commands::Agent(args) => commands::agent::execute(args, &self.url, self.api_key.as_deref(), self.json).await,
+            Commands::Agent(args) => {
+                commands::agent::execute(args, &self.url, self.api_key.as_deref(), self.json).await
+            }
         }
     }
 }

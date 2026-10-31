@@ -169,8 +169,7 @@ impl IntegrationManager {
                     result.policy_decision = Some(decision.clone());
                     if !decision.allowed && self.policy_engine.blocks_on_violation() {
                         result.blocked = true;
-                        result.block_reason =
-                            Some("Policy violation".to_string());
+                        result.block_reason = Some("Policy violation".to_string());
                         return Ok(result);
                     }
                 }
@@ -211,7 +210,11 @@ impl IntegrationManager {
 
         // Provider recommendation
         if self.connector_hub.is_enabled() {
-            match self.connector_hub.get_provider_recommendation(request).await {
+            match self
+                .connector_hub
+                .get_provider_recommendation(request)
+                .await
+            {
                 Ok(recommendation) => {
                     result.provider_recommendation = Some(recommendation);
                 }
@@ -293,7 +296,11 @@ impl IntegrationManager {
 
         // Policy check on response
         if self.policy_engine.is_enabled() && self.policy_engine.post_response_enabled() {
-            match self.policy_engine.evaluate_response(request, response).await {
+            match self
+                .policy_engine
+                .evaluate_response(request, response)
+                .await
+            {
                 Ok(decision) => {
                     result.policy_decision = Some(decision.clone());
                     if !decision.allowed && self.policy_engine.blocks_on_violation() {
@@ -359,7 +366,11 @@ impl IntegrationManager {
             router_enabled: self.router.is_enabled(),
             auto_optimizer_enabled: self.auto_optimizer.is_enabled(),
             policy_engine_enabled: self.policy_engine.is_enabled(),
-            ruvector_enabled: self.ruvector.as_ref().map(|r| r.is_enabled()).unwrap_or(false),
+            ruvector_enabled: self
+                .ruvector
+                .as_ref()
+                .map(|r| r.is_enabled())
+                .unwrap_or(false),
         }
     }
 }

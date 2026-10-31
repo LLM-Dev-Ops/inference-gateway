@@ -344,7 +344,9 @@ impl AuditEventBuilder {
             severity: self.severity,
             actor: self.actor.unwrap_or_else(AuditActor::system),
             resource: self.resource,
-            description: self.description.unwrap_or_else(|| self.event_type.to_string()),
+            description: self
+                .description
+                .unwrap_or_else(|| self.event_type.to_string()),
             outcome: self.outcome,
             metadata: self.metadata,
             request_id: self.request_id,
@@ -920,7 +922,10 @@ mod tests {
 
     #[test]
     fn test_event_type_display() {
-        assert_eq!(AuditEventType::RequestReceived.to_string(), "request_received");
+        assert_eq!(
+            AuditEventType::RequestReceived.to_string(),
+            "request_received"
+        );
         assert_eq!(AuditEventType::AuthFailure.to_string(), "auth_failure");
     }
 

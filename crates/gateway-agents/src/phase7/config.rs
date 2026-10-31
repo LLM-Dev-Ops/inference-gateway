@@ -5,7 +5,7 @@
 //! - Missing variables cause immediate startup abort (panic)
 //! - NO graceful degradation or fallback logic
 
-use std::env;
+use std::{env, fmt};
 use tracing::error;
 
 /// Maximum tokens allowed per agent run.
@@ -20,7 +20,7 @@ pub const MAX_CALLS_PER_RUN: u32 = 5;
 /// Phase 7 configuration loaded from environment variables.
 ///
 /// All fields are mandatory. If any are missing, the agent will abort.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Phase7Config {
     /// Ruvector service URL for telemetry and intelligence.
     pub ruvector_service_url: String,
@@ -38,6 +38,21 @@ pub struct Phase7Config {
     pub agent_version: String,
 }
 
+// Startup diagnostics must never disclose the configured authentication key.
+impl fmt::Debug for Phase7Config {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Phase7Config")
+            .field("ruvector_service_url", &self.ruvector_service_url)
+            .field("ruvector_api_key", &"[REDACTED]")
+            .field("agent_name", &self.agent_name)
+            .field("agent_domain", &self.agent_domain)
+            .field("agent_phase", &self.agent_phase)
+            .field("agent_layer", &self.agent_layer)
+            .field("agent_version", &self.agent_version)
+            .finish()
+    }
+}
+
 impl Phase7Config {
     /// Load configuration from environment variables.
     ///
@@ -47,15 +62,22 @@ impl Phase7Config {
     /// This is intentional - Phase 7 agents MUST NOT start in a degraded state.
     #[must_use]
     pub fn from_env() -> Self {
+        Self::from_lookup(|name| env::var(name).ok())
+    }
+
+    // Keep parsing independent of global environment mutation in unit tests.
+    // The public startup entry point still reads the real environment above.
+    fn from_lookup(mut lookup: impl FnMut(&str) -> Option<String>) -> Self {
         let mut missing_vars = Vec::new();
 
-        let ruvector_service_url = env::var("RUVECTOR_SERVICE_URL").ok();
-        let ruvector_api_key = env::var("RUVECTOR_API_KEY").ok();
-        let agent_name = env::var("AGENT_NAME").ok();
-        let agent_domain = env::var("AGENT_DOMAIN").ok();
-        let agent_phase = env::var("AGENT_PHASE").ok();
-        let agent_layer = env::var("AGENT_LAYER").ok();
-        let agent_version = env::var("AGENT_VERSION").ok();
+        let mut required = |name: &str| lookup(name).filter(|value| !value.trim().is_empty());
+        let ruvector_service_url = required("RUVECTOR_SERVICE_URL");
+        let ruvector_api_key = required("RUVECTOR_API_KEY");
+        let agent_name = required("AGENT_NAME");
+        let agent_domain = required("AGENT_DOMAIN");
+        let agent_phase = required("AGENT_PHASE");
+        let agent_layer = required("AGENT_LAYER");
+        let agent_version = required("AGENT_VERSION");
 
         if ruvector_service_url.is_none() {
             missing_vars.push("RUVECTOR_SERVICE_URL");
@@ -79,7 +101,24 @@ impl Phase7Config {
             missing_vars.push("AGENT_VERSION");
         }
 
-        if !missing_vars.is_empty() {
+        let (
+            Some(ruvector_service_url),
+            Some(ruvector_api_key),
+            Some(agent_name),
+            Some(agent_domain),
+            Some(agent_phase_value),
+            Some(agent_layer_value),
+            Some(agent_version),
+        ) = (
+            ruvector_service_url,
+            ruvector_api_key,
+            agent_name,
+            agent_domain,
+            agent_phase,
+            agent_layer,
+            agent_version,
+        )
+        else {
             error!(
                 target: "phase7",
                 reason = format!("Missing required environment variables: {}", missing_vars.join(", ")),
@@ -89,10 +128,7 @@ impl Phase7Config {
                 "Phase 7 startup aborted: Missing required environment variables: {}",
                 missing_vars.join(", ")
             );
-        }
-
-        let agent_phase_value = agent_phase.unwrap();
-        let agent_layer_value = agent_layer.unwrap();
+        };
 
         // Validate phase and layer values
         if agent_phase_value != "phase7" {
@@ -120,13 +156,13 @@ impl Phase7Config {
         }
 
         Self {
-            ruvector_service_url: ruvector_service_url.unwrap(),
-            ruvector_api_key: ruvector_api_key.unwrap(),
-            agent_name: agent_name.unwrap(),
-            agent_domain: agent_domain.unwrap(),
+            ruvector_service_url,
+            ruvector_api_key,
+            agent_name,
+            agent_domain,
             agent_phase: agent_phase_value,
             agent_layer: agent_layer_value,
-            agent_version: agent_version.unwrap(),
+            agent_version,
         }
     }
 
@@ -155,6 +191,22 @@ pub struct PerformanceBudget {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::BTreeMap;
+
+    fn valid_values() -> BTreeMap<&'static str, String> {
+        [
+            ("RUVECTOR_SERVICE_URL", "http://localhost:8080"),
+            ("RUVECTOR_API_KEY", "synthetic-config-test-value"),
+            ("AGENT_NAME", "test-agent"),
+            ("AGENT_DOMAIN", "routing"),
+            ("AGENT_PHASE", "phase7"),
+            ("AGENT_LAYER", "layer2"),
+            ("AGENT_VERSION", "1.0.0"),
+        ]
+        .into_iter()
+        .map(|(name, value)| (name, value.to_owned()))
+        .collect()
+    }
 
     #[test]
     fn test_performance_budget_constants() {
@@ -167,44 +219,66 @@ mod tests {
     #[test]
     #[should_panic(expected = "Phase 7 startup aborted")]
     fn test_from_env_panics_on_missing_vars() {
-        // Clear any existing env vars
-        env::remove_var("RUVECTOR_SERVICE_URL");
-        env::remove_var("RUVECTOR_API_KEY");
-        env::remove_var("AGENT_NAME");
-        env::remove_var("AGENT_DOMAIN");
-        env::remove_var("AGENT_PHASE");
-        env::remove_var("AGENT_LAYER");
-        env::remove_var("AGENT_VERSION");
-
-        // This should panic
-        let _ = Phase7Config::from_env();
+        let _ = Phase7Config::from_lookup(|_| None);
     }
 
     #[test]
     #[should_panic(expected = "AGENT_PHASE must be 'phase7'")]
     fn test_from_env_panics_on_wrong_phase() {
-        env::set_var("RUVECTOR_SERVICE_URL", "http://localhost:8080");
-        env::set_var("RUVECTOR_API_KEY", "test-key");
-        env::set_var("AGENT_NAME", "test-agent");
-        env::set_var("AGENT_DOMAIN", "routing");
-        env::set_var("AGENT_PHASE", "phase6"); // Wrong phase
-        env::set_var("AGENT_LAYER", "layer2");
-        env::set_var("AGENT_VERSION", "1.0.0");
-
-        let _ = Phase7Config::from_env();
+        let mut values = valid_values();
+        values.insert("AGENT_PHASE", "phase6".to_owned());
+        let _ = Phase7Config::from_lookup(|name| values.get(name).cloned());
     }
 
     #[test]
     #[should_panic(expected = "AGENT_LAYER must be 'layer2'")]
     fn test_from_env_panics_on_wrong_layer() {
-        env::set_var("RUVECTOR_SERVICE_URL", "http://localhost:8080");
-        env::set_var("RUVECTOR_API_KEY", "test-key");
-        env::set_var("AGENT_NAME", "test-agent");
-        env::set_var("AGENT_DOMAIN", "routing");
-        env::set_var("AGENT_PHASE", "phase7");
-        env::set_var("AGENT_LAYER", "layer1"); // Wrong layer
-        env::set_var("AGENT_VERSION", "1.0.0");
+        let mut values = valid_values();
+        values.insert("AGENT_LAYER", "layer1".to_owned());
+        let _ = Phase7Config::from_lookup(|name| values.get(name).cloned());
+    }
 
-        let _ = Phase7Config::from_env();
+    #[test]
+    fn test_required_values_reject_blanks() {
+        for name in valid_values().keys() {
+            for blank in ["", " \t "] {
+                let mut values = valid_values();
+                values.insert(name, blank.to_owned());
+                let result = std::panic::catch_unwind(|| {
+                    Phase7Config::from_lookup(|key| values.get(key).cloned())
+                });
+                assert!(result.is_err(), "{name} must reject blank values");
+            }
+        }
+    }
+
+    #[test]
+    fn test_debug_redacts_api_key() {
+        let values = valid_values();
+        let config = Phase7Config::from_lookup(|name| values.get(name).cloned());
+        let debug = format!("{config:?}");
+        assert!(!debug.contains(&config.ruvector_api_key));
+        assert!(debug.contains("[REDACTED]"));
+        assert!(debug.contains(&config.agent_name));
+    }
+
+    #[test]
+    fn test_parallel_configurations_are_isolated() {
+        let threads: Vec<_> = (0..8)
+            .map(|thread| {
+                std::thread::spawn(move || {
+                    let name = format!("agent-{thread}");
+                    let mut values = valid_values();
+                    values.insert("AGENT_NAME", name.clone());
+                    for _ in 0..30 {
+                        let config = Phase7Config::from_lookup(|key| values.get(key).cloned());
+                        assert_eq!(config.agent_name, name);
+                    }
+                })
+            })
+            .collect();
+        for thread in threads {
+            assert!(thread.join().is_ok());
+        }
     }
 }

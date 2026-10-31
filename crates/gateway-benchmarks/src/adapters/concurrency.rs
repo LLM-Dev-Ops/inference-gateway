@@ -91,10 +91,8 @@ impl BenchTarget for ConcurrencyBenchmark {
         let batches = (self.iterations + self.concurrency - 1) / self.concurrency;
 
         for batch in 0..batches {
-            let batch_size = std::cmp::min(
-                self.concurrency,
-                self.iterations - batch * self.concurrency,
-            );
+            let batch_size =
+                std::cmp::min(self.concurrency, self.iterations - batch * self.concurrency);
 
             let batch_start = Instant::now();
 

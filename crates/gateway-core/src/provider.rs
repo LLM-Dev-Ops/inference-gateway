@@ -57,7 +57,9 @@ pub trait LLMProvider: Send + Sync + 'static {
 
     /// Check if a specific model is supported
     fn supports_model(&self, model: &str) -> bool {
-        self.models().iter().any(|m| m.id == model || m.aliases.contains(&model.to_string()))
+        self.models()
+            .iter()
+            .any(|m| m.id == model || m.aliases.contains(&model.to_string()))
     }
 
     /// Get the configured timeout for this provider
@@ -159,7 +161,6 @@ impl HealthStatus {
         matches!(self, Self::Unhealthy)
     }
 }
-
 
 impl fmt::Display for HealthStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -431,10 +432,22 @@ mod tests {
 
     #[test]
     fn test_provider_type_parse() {
-        assert_eq!("openai".parse::<ProviderType>().unwrap(), ProviderType::OpenAI);
-        assert_eq!("OPENAI".parse::<ProviderType>().unwrap(), ProviderType::OpenAI);
-        assert_eq!("azure_openai".parse::<ProviderType>().unwrap(), ProviderType::Azure);
-        assert_eq!("aws-bedrock".parse::<ProviderType>().unwrap(), ProviderType::Bedrock);
+        assert_eq!(
+            "openai".parse::<ProviderType>().unwrap(),
+            ProviderType::OpenAI
+        );
+        assert_eq!(
+            "OPENAI".parse::<ProviderType>().unwrap(),
+            ProviderType::OpenAI
+        );
+        assert_eq!(
+            "azure_openai".parse::<ProviderType>().unwrap(),
+            ProviderType::Azure
+        );
+        assert_eq!(
+            "aws-bedrock".parse::<ProviderType>().unwrap(),
+            ProviderType::Bedrock
+        );
         assert!("invalid".parse::<ProviderType>().is_err());
     }
 

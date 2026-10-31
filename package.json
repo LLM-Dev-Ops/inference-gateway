@@ -10,9 +10,6 @@
     "start": "npx @google-cloud/functions-framework --target=handler",
     "test": "node --test test/index.test.js"
   },
-  "dependencies": {
-    "claude-flow": "^2.7.41"
-  },
   "devDependencies": {
     "@google-cloud/functions-framework": "^3.4.0"
   }

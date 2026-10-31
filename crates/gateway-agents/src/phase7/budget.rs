@@ -391,13 +391,7 @@ mod tests {
     use std::time::Duration;
 
     fn create_test_identity() -> AgentIdentity {
-        AgentIdentity::new(
-            "test-agent",
-            "routing",
-            "phase7",
-            "layer2",
-            "1.0.0",
-        )
+        AgentIdentity::new("test-agent", "routing", "phase7", "layer2", "1.0.0")
     }
 
     #[test]
@@ -539,13 +533,7 @@ mod tests {
 
     #[test]
     fn test_create_abort_event() {
-        let identity = AgentIdentity::new(
-            "phase7-agent",
-            "routing",
-            "phase7",
-            "layer2",
-            "0.1.0",
-        );
+        let identity = AgentIdentity::new("phase7-agent", "routing", "phase7", "layer2", "0.1.0");
         let reason = BudgetExceededReason::TokensExceeded {
             used: 3000,
             max: 2500,
@@ -568,13 +556,7 @@ mod tests {
 
     #[test]
     fn test_create_detailed_abort_event() {
-        let identity = AgentIdentity::new(
-            "phase7-agent",
-            "routing",
-            "phase7",
-            "layer2",
-            "0.1.0",
-        );
+        let identity = AgentIdentity::new("phase7-agent", "routing", "phase7", "layer2", "0.1.0");
         let mut budget = BudgetTracker::new();
         budget.record_tokens(3000);
         budget.record_call();
@@ -585,13 +567,8 @@ mod tests {
             max: 2500,
         };
 
-        let event = create_detailed_abort_event(
-            &identity,
-            &budget,
-            reason,
-            "req-456",
-            &"a".repeat(64),
-        );
+        let event =
+            create_detailed_abort_event(&identity, &budget, reason, "req-456", &"a".repeat(64));
 
         assert_eq!(event.agent_id, "phase7-agent:routing:phase7:layer2");
         assert_eq!(event.decision_type, DecisionType::RouteReject);

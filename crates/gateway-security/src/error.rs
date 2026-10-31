@@ -155,7 +155,10 @@ mod tests {
         assert_eq!(SecurityError::Validation("".to_string()).status_code(), 400);
         assert_eq!(SecurityError::InvalidSignature.status_code(), 401);
         assert_eq!(SecurityError::IpBlocked("".to_string()).status_code(), 403);
-        assert_eq!(SecurityError::RateLimitExceeded("".to_string()).status_code(), 429);
+        assert_eq!(
+            SecurityError::RateLimitExceeded("".to_string()).status_code(),
+            429
+        );
         assert_eq!(SecurityError::Internal("".to_string()).status_code(), 500);
     }
 }

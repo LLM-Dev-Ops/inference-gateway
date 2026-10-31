@@ -90,15 +90,11 @@ pub async fn execute(
 
                 // Apply filters
                 if let Some(ref provider) = args.provider {
-                    models.retain(|m| {
-                        m.owned_by.to_lowercase().contains(&provider.to_lowercase())
-                    });
+                    models.retain(|m| m.owned_by.to_lowercase().contains(&provider.to_lowercase()));
                 }
 
                 if let Some(ref filter) = args.filter {
-                    models.retain(|m| {
-                        m.id.to_lowercase().contains(&filter.to_lowercase())
-                    });
+                    models.retain(|m| m.id.to_lowercase().contains(&filter.to_lowercase()));
                 }
 
                 // Sort by ID
@@ -135,15 +131,11 @@ pub async fn execute(
 
                 // Apply filters
                 if let Some(ref provider) = args.provider {
-                    models.retain(|m| {
-                        m.owned_by.to_lowercase().contains(&provider.to_lowercase())
-                    });
+                    models.retain(|m| m.owned_by.to_lowercase().contains(&provider.to_lowercase()));
                 }
 
                 if let Some(ref filter) = args.filter {
-                    models.retain(|m| {
-                        m.id.to_lowercase().contains(&filter.to_lowercase())
-                    });
+                    models.retain(|m| m.id.to_lowercase().contains(&filter.to_lowercase()));
                 }
 
                 let result = CommandResult::success(models);

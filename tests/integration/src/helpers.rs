@@ -109,11 +109,7 @@ impl TestServer {
     }
 
     /// Make a GET request with headers
-    pub async fn get_with_headers(
-        &self,
-        path: &str,
-        headers: Vec<(&str, &str)>,
-    ) -> Response {
+    pub async fn get_with_headers(&self, path: &str, headers: Vec<(&str, &str)>) -> Response {
         let mut builder = self.client.get(self.url(path));
         for (key, value) in headers {
             builder = builder.header(key, value);
@@ -139,7 +135,8 @@ impl TestServer {
         body: &Value,
         headers: Vec<(&str, &str)>,
     ) -> Response {
-        let mut builder = self.client
+        let mut builder = self
+            .client
             .post(self.url(path))
             .header("Content-Type", "application/json")
             .json(body);
@@ -153,7 +150,8 @@ impl TestServer {
     pub async fn post_streaming(&self, path: &str, body: &Value) -> Vec<String> {
         use futures::StreamExt;
 
-        let response = self.client
+        let response = self
+            .client
             .post(self.url(path))
             .header("Content-Type", "application/json")
             .json(body)
@@ -255,11 +253,7 @@ pub fn assert_status(response: &Response, expected: u16) {
 /// Assert that a JSON response contains expected fields
 pub fn assert_json_contains(json: &Value, expected: &Value) {
     for (key, value) in expected.as_object().expect("Expected object") {
-        assert!(
-            json.get(key).is_some(),
-            "Missing key '{}' in response",
-            key
-        );
+        assert!(json.get(key).is_some(), "Missing key '{}' in response", key);
         if value.is_object() {
             assert_json_contains(&json[key], value);
         } else {

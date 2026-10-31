@@ -209,7 +209,11 @@ impl GatewayError {
 
     /// Create a validation error
     #[must_use]
-    pub fn validation(message: impl Into<String>, field: Option<String>, code: impl Into<String>) -> Self {
+    pub fn validation(
+        message: impl Into<String>,
+        field: Option<String>,
+        code: impl Into<String>,
+    ) -> Self {
         Self::Validation {
             message: message.into(),
             field,
@@ -305,15 +309,29 @@ impl GatewayError {
 impl From<ValidationError> for GatewayError {
     fn from(err: ValidationError) -> Self {
         let (field, code) = match &err {
-            ValidationError::InvalidTemperature { .. } => (Some("temperature".to_string()), "invalid_temperature"),
-            ValidationError::InvalidMaxTokens { .. } => (Some("max_tokens".to_string()), "invalid_max_tokens"),
+            ValidationError::InvalidTemperature { .. } => {
+                (Some("temperature".to_string()), "invalid_temperature")
+            }
+            ValidationError::InvalidMaxTokens { .. } => {
+                (Some("max_tokens".to_string()), "invalid_max_tokens")
+            }
             ValidationError::InvalidTopP { .. } => (Some("top_p".to_string()), "invalid_top_p"),
             ValidationError::InvalidTopK { .. } => (Some("top_k".to_string()), "invalid_top_k"),
-            ValidationError::InvalidModelId { .. } => (Some("model".to_string()), "invalid_model_id"),
-            ValidationError::InvalidRequestId { .. } => (Some("request_id".to_string()), "invalid_request_id"),
-            ValidationError::InvalidTenantId { .. } => (Some("tenant_id".to_string()), "invalid_tenant_id"),
-            ValidationError::InvalidProviderId { .. } => (Some("provider_id".to_string()), "invalid_provider_id"),
-            ValidationError::InvalidApiKey { .. } => (Some("api_key".to_string()), "invalid_api_key"),
+            ValidationError::InvalidModelId { .. } => {
+                (Some("model".to_string()), "invalid_model_id")
+            }
+            ValidationError::InvalidRequestId { .. } => {
+                (Some("request_id".to_string()), "invalid_request_id")
+            }
+            ValidationError::InvalidTenantId { .. } => {
+                (Some("tenant_id".to_string()), "invalid_tenant_id")
+            }
+            ValidationError::InvalidProviderId { .. } => {
+                (Some("provider_id".to_string()), "invalid_provider_id")
+            }
+            ValidationError::InvalidApiKey { .. } => {
+                (Some("api_key".to_string()), "invalid_api_key")
+            }
         };
         Self::Validation {
             message: err.to_string(),
@@ -415,7 +433,11 @@ mod tests {
 
     #[test]
     fn test_api_error_response() {
-        let err = GatewayError::validation("Invalid temperature", Some("temperature".to_string()), "invalid_temperature");
+        let err = GatewayError::validation(
+            "Invalid temperature",
+            Some("temperature".to_string()),
+            "invalid_temperature",
+        );
         let response = ApiErrorResponse::from(&err);
 
         assert_eq!(response.error.error_type, "invalid_request_error");

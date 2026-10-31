@@ -99,10 +99,7 @@ impl SafetyFilter for ShieldAdapter {
     }
 
     #[instrument(skip(self, response), fields(model = %response.model))]
-    async fn validate_output(
-        &self,
-        response: &GatewayResponse,
-    ) -> IntegrationResult<SafetyResult> {
+    async fn validate_output(&self, response: &GatewayResponse) -> IntegrationResult<SafetyResult> {
         if !self.is_enabled() {
             return Err(IntegrationError::NotEnabled("shield".to_string()));
         }

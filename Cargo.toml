@@ -3,7 +3,7 @@ name = "llm-inference-gateway"
 description = "Enterprise-grade LLM Inference Gateway with OpenAI-compatible API"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.75.0"
+rust-version = "1.88.0"
 license = "LicenseRef-LLM-DevOps-Commercial"
 repository = "https://github.com/llm-devops/llm-inference-gateway"
 authors = ["LLM DevOps Team"]
@@ -50,7 +50,7 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.75.0"
+rust-version = "1.88.0"
 license = "LicenseRef-LLM-DevOps-Commercial"
 repository = "https://github.com/llm-devops/llm-inference-gateway"
 authors = ["LLM DevOps Team"]

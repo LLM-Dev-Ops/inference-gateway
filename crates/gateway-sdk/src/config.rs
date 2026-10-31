@@ -45,10 +45,8 @@ impl ClientConfig {
     /// Default maximum retry delay (30 seconds).
     pub const DEFAULT_RETRY_MAX_DELAY: Duration = Duration::from_secs(30);
     /// Default user agent.
-    pub const DEFAULT_USER_AGENT: &'static str = concat!(
-        "gateway-sdk-rust/",
-        env!("CARGO_PKG_VERSION")
-    );
+    pub const DEFAULT_USER_AGENT: &'static str =
+        concat!("gateway-sdk-rust/", env!("CARGO_PKG_VERSION"));
 
     /// Create a new configuration with default values.
     pub fn new(base_url: Url) -> Self {
@@ -126,9 +124,7 @@ impl ClientConfig {
 
 impl Default for ClientConfig {
     fn default() -> Self {
-        Self::new(
-            Url::parse("http://localhost:8080").expect("valid default URL"),
-        )
+        Self::new(Url::parse("http://localhost:8080").expect("valid default URL"))
     }
 }
 

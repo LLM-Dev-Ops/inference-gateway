@@ -7,8 +7,7 @@
 use crate::config::ConnectorHubConfig;
 use crate::error::{IntegrationError, IntegrationResult};
 use crate::traits::{
-    ProviderCredentials, ProviderHealthReport, ProviderInfo, ProviderRecommendation,
-    ProviderRouter,
+    ProviderCredentials, ProviderHealthReport, ProviderInfo, ProviderRecommendation, ProviderRouter,
 };
 use async_trait::async_trait;
 use dashmap::DashMap;
@@ -58,7 +57,9 @@ impl ConnectorHubAdapter {
 
     /// Check if cache needs refresh.
     fn needs_refresh(&self) -> bool {
-        let last = self.last_discovery.load(std::sync::atomic::Ordering::Relaxed);
+        let last = self
+            .last_discovery
+            .load(std::sync::atomic::Ordering::Relaxed);
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.as_secs())
@@ -73,7 +74,8 @@ impl ConnectorHubAdapter {
             .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.as_secs())
             .unwrap_or(0);
-        self.last_discovery.store(now, std::sync::atomic::Ordering::Relaxed);
+        self.last_discovery
+            .store(now, std::sync::atomic::Ordering::Relaxed);
     }
 }
 

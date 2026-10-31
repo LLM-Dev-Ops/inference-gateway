@@ -102,13 +102,7 @@ async fn test_concurrent_multi_model_requests() {
         let url = server.url("/v1/chat/completions");
         let request = openai_json_request(model, "Hello");
 
-        futures.push(async move {
-            client
-                .post(&url)
-                .json(&request)
-                .send()
-                .await
-        });
+        futures.push(async move { client.post(&url).json(&request).send().await });
     }
 
     let results = futures::future::join_all(futures).await;
@@ -303,7 +297,9 @@ mod fallback_tests {
         // Primary fails
         primary.mock_server_error().await;
         // Secondary succeeds
-        secondary.mock_chat_completion("gpt-4o", "Fallback response").await;
+        secondary
+            .mock_chat_completion("gpt-4o", "Fallback response")
+            .await;
 
         // Test with primary mock
         let client = reqwest::Client::new();
@@ -427,13 +423,7 @@ mod load_balancing_tests {
                 let client = server.client.clone();
                 let url = server.url("/v1/chat/completions");
                 let req = request.clone();
-                async move {
-                    client
-                        .post(&url)
-                        .json(&req)
-                        .send()
-                        .await
-                }
+                async move { client.post(&url).json(&req).send().await }
             })
             .collect();
 

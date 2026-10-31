@@ -6,12 +6,12 @@ use async_stream::try_stream;
 use async_trait::async_trait;
 use futures::stream::BoxStream;
 use futures_util::StreamExt;
+use gateway_core::response::ResponseMessage;
 use gateway_core::{
     ChatChunk, ChatMessage, Choice, ChunkChoice, ChunkDelta, FinishReason, FunctionCall,
     GatewayError, GatewayRequest, GatewayResponse, HealthStatus, LLMProvider, MessageContent,
     MessageRole, ModelInfo, ProviderCapabilities, ProviderType, ToolCall, Usage,
 };
-use gateway_core::response::ResponseMessage;
 use reqwest::Client;
 use reqwest_eventsource::{Event, EventSource};
 use secrecy::{ExposeSecret, SecretString};
@@ -188,22 +188,26 @@ impl OpenAIProvider {
                     })
                     .collect()
             }),
-            tool_choice: request.tool_choice.as_ref().map(|tc| {
-                match tc {
-                    gateway_core::request::ToolChoice::String(s) => {
-                        serde_json::Value::String(s.clone())
-                    }
-                    gateway_core::request::ToolChoice::Tool { tool_type, function } => {
-                        serde_json::json!({
-                            "type": tool_type,
-                            "function": { "name": function.name }
-                        })
-                    }
+            tool_choice: request.tool_choice.as_ref().map(|tc| match tc {
+                gateway_core::request::ToolChoice::String(s) => {
+                    serde_json::Value::String(s.clone())
+                }
+                gateway_core::request::ToolChoice::Tool {
+                    tool_type,
+                    function,
+                } => {
+                    serde_json::json!({
+                        "type": tool_type,
+                        "function": { "name": function.name }
+                    })
                 }
             }),
-            response_format: request.response_format.as_ref().map(|rf| OpenAIResponseFormat {
-                format_type: rf.format_type.clone(),
-            }),
+            response_format: request
+                .response_format
+                .as_ref()
+                .map(|rf| OpenAIResponseFormat {
+                    format_type: rf.format_type.clone(),
+                }),
         }
     }
 
@@ -256,7 +260,6 @@ impl OpenAIProvider {
             provider: Some(self.config.id.clone()),
         }
     }
-
 }
 
 #[async_trait]
@@ -284,7 +287,10 @@ impl LLMProvider for OpenAIProvider {
         let mut req_builder = self
             .client
             .post(self.completions_url())
-            .header("Authorization", format!("Bearer {}", self.config.api_key.expose_secret()))
+            .header(
+                "Authorization",
+                format!("Bearer {}", self.config.api_key.expose_secret()),
+            )
             .header("Content-Type", "application/json");
 
         if let Some(ref org_id) = self.config.organization_id {
@@ -352,7 +358,10 @@ impl LLMProvider for OpenAIProvider {
         let mut req_builder = self
             .client
             .post(self.completions_url())
-            .header("Authorization", format!("Bearer {}", self.config.api_key.expose_secret()))
+            .header(
+                "Authorization",
+                format!("Bearer {}", self.config.api_key.expose_secret()),
+            )
             .header("Content-Type", "application/json");
 
         if let Some(ref org_id) = self.config.organization_id {
@@ -437,7 +446,10 @@ impl LLMProvider for OpenAIProvider {
         match self
             .client
             .get(&url)
-            .header("Authorization", format!("Bearer {}", self.config.api_key.expose_secret()))
+            .header(
+                "Authorization",
+                format!("Bearer {}", self.config.api_key.expose_secret()),
+            )
             .timeout(Duration::from_secs(10))
             .send()
             .await
@@ -722,8 +734,7 @@ mod tests {
 
     #[test]
     fn test_completions_url() {
-        let config = OpenAIConfig::new("test", "sk-test")
-            .with_base_url("https://api.openai.com");
+        let config = OpenAIConfig::new("test", "sk-test").with_base_url("https://api.openai.com");
         let provider = OpenAIProvider::new(config).expect("create provider");
 
         assert_eq!(

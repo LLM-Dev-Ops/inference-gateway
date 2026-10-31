@@ -320,15 +320,21 @@ impl InferenceRoutingAgent {
         );
 
         // Perform routing
-        let result = self.router.route(&input.request, input.tenant_id.as_deref());
+        let result = self
+            .router
+            .route(&input.request, input.tenant_id.as_deref());
 
         let latency_us = start.elapsed().as_micros() as u64;
 
         match result {
             Ok((provider, decision)) => {
                 // Update stats
-                self.stats.requests_processed.fetch_add(1, Ordering::Relaxed);
-                self.stats.total_latency_us.fetch_add(latency_us, Ordering::Relaxed);
+                self.stats
+                    .requests_processed
+                    .fetch_add(1, Ordering::Relaxed);
+                self.stats
+                    .total_latency_us
+                    .fetch_add(latency_us, Ordering::Relaxed);
 
                 let provider_id = provider.id().to_string();
                 let target_model = decision.model.clone();
@@ -387,7 +393,9 @@ impl InferenceRoutingAgent {
             Err(e) => {
                 // Update error stats
                 self.stats.errors.fetch_add(1, Ordering::Relaxed);
-                self.stats.requests_processed.fetch_add(1, Ordering::Relaxed);
+                self.stats
+                    .requests_processed
+                    .fetch_add(1, Ordering::Relaxed);
 
                 // Emit error telemetry
                 self.telemetry
@@ -438,15 +446,21 @@ impl InferenceRoutingAgent {
         );
 
         // Perform routing
-        let result = self.router.route(&input.request, input.tenant_id.as_deref());
+        let result = self
+            .router
+            .route(&input.request, input.tenant_id.as_deref());
 
         let latency_us = start.elapsed().as_micros() as u64;
 
         match result {
             Ok((provider, decision)) => {
                 // Update stats
-                self.stats.requests_processed.fetch_add(1, Ordering::Relaxed);
-                self.stats.total_latency_us.fetch_add(latency_us, Ordering::Relaxed);
+                self.stats
+                    .requests_processed
+                    .fetch_add(1, Ordering::Relaxed);
+                self.stats
+                    .total_latency_us
+                    .fetch_add(latency_us, Ordering::Relaxed);
 
                 let provider_id = provider.id().to_string();
                 let target_model = decision.model.clone();
@@ -532,7 +546,9 @@ impl InferenceRoutingAgent {
             Err(e) => {
                 // Update error stats
                 self.stats.errors.fetch_add(1, Ordering::Relaxed);
-                self.stats.requests_processed.fetch_add(1, Ordering::Relaxed);
+                self.stats
+                    .requests_processed
+                    .fetch_add(1, Ordering::Relaxed);
 
                 // Emit error telemetry
                 self.telemetry
@@ -557,7 +573,8 @@ impl InferenceRoutingAgent {
         &self,
         input: &InferenceRoutingInput,
     ) -> Result<(Arc<dyn LLMProvider>, RouteDecision), GatewayError> {
-        self.router.route(&input.request, input.tenant_id.as_deref())
+        self.router
+            .route(&input.request, input.tenant_id.as_deref())
     }
 
     /// Inspect the agent's current state
@@ -606,11 +623,7 @@ impl InferenceRoutingAgent {
             errors,
             avg_latency_ms,
             started_at: self.started_at,
-            last_activity: if requests > 0 {
-                Some(Utc::now())
-            } else {
-                None
-            },
+            last_activity: if requests > 0 { Some(Utc::now()) } else { None },
             details: None,
         }
     }
@@ -668,7 +681,12 @@ impl InferenceRoutingAgent {
     }
 
     /// Record a completion for load balancing
-    pub fn record_completion(&self, provider_id: &str, latency: std::time::Duration, success: bool) {
+    pub fn record_completion(
+        &self,
+        provider_id: &str,
+        latency: std::time::Duration,
+        success: bool,
+    ) {
         self.router.record_completion(provider_id, latency, success);
     }
 
@@ -743,9 +761,9 @@ impl InferenceRoutingAgentBuilder {
             Arc::new(Router::new(config))
         });
 
-        let telemetry = self.telemetry.unwrap_or_else(|| {
-            Arc::new(TracingTelemetryEmitter::new("inference-routing"))
-        });
+        let telemetry = self
+            .telemetry
+            .unwrap_or_else(|| Arc::new(TracingTelemetryEmitter::new("inference-routing")));
 
         InferenceRoutingAgent {
             id,
@@ -768,8 +786,10 @@ impl Default for InferenceRoutingAgentBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use gateway_core::{ChatChunk, ChatMessage, GatewayResponse, ModelInfo, ProviderCapabilities, ProviderType};
     use futures::stream::BoxStream;
+    use gateway_core::{
+        ChatChunk, ChatMessage, GatewayResponse, ModelInfo, ProviderCapabilities, ProviderType,
+    };
 
     struct MockProvider {
         id: String,
@@ -795,7 +815,10 @@ mod tests {
             ProviderType::Custom
         }
 
-        async fn chat_completion(&self, _: &GatewayRequest) -> Result<GatewayResponse, GatewayError> {
+        async fn chat_completion(
+            &self,
+            _: &GatewayRequest,
+        ) -> Result<GatewayResponse, GatewayError> {
             unimplemented!()
         }
 
@@ -837,9 +860,7 @@ mod tests {
     }
 
     fn create_test_agent() -> InferenceRoutingAgent {
-        let agent = InferenceRoutingAgent::builder()
-            .id("test-agent")
-            .build();
+        let agent = InferenceRoutingAgent::builder().id("test-agent").build();
 
         // Register a test provider
         let provider = Arc::new(MockProvider::new("test-provider"));

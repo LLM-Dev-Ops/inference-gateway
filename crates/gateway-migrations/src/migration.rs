@@ -370,9 +370,7 @@ mod tests {
     #[test]
     fn test_migration_record_lifecycle() {
         let m = Migration::new(1, "test", "SELECT 1;");
-        let record = MigrationRecord::new(&m)
-            .running()
-            .applied(100);
+        let record = MigrationRecord::new(&m).running().applied(100);
 
         assert_eq!(record.status, MigrationStatus::Applied);
         assert_eq!(record.execution_time_ms, 100);
@@ -382,9 +380,7 @@ mod tests {
     #[test]
     fn test_migration_record_failed() {
         let m = Migration::new(1, "test", "SELECT 1;");
-        let record = MigrationRecord::new(&m)
-            .running()
-            .failed("Syntax error");
+        let record = MigrationRecord::new(&m).running().failed("Syntax error");
 
         assert_eq!(record.status, MigrationStatus::Failed);
         assert_eq!(record.error.as_ref().unwrap(), "Syntax error");

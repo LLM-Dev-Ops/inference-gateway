@@ -1,8 +1,6 @@
 //! HTTP request handlers for the gateway API.
 
-use agentics_contracts::{
-    ExecutionCollector, ExecutionOutput, SpanArtifact, SpanStatus,
-};
+use agentics_contracts::{ExecutionCollector, ExecutionOutput, SpanArtifact, SpanStatus};
 use axum::{
     extract::{Path, State},
     http::{header, StatusCode},
@@ -135,8 +133,7 @@ pub async fn chat_completion(
     );
 
     // Track request
-    let request_info = RequestInfo::new(&request_id, &request.model)
-        .with_streaming(streaming);
+    let request_info = RequestInfo::new(&request_id, &request.model).with_streaming(streaming);
     state.tracker.start(request_info);
 
     // Create execution collector
@@ -152,12 +149,10 @@ pub async fn chat_completion(
             result
         }
         Err(e) => {
-            collector.end_agent_span(
-                routing_span_id,
-                SpanStatus::Failed,
-                Some(e.to_string()),
-            );
-            state.tracker.complete_error(&request_id, 503, e.to_string());
+            collector.end_agent_span(routing_span_id, SpanStatus::Failed, Some(e.to_string()));
+            state
+                .tracker
+                .complete_error(&request_id, 503, e.to_string());
             let output: ExecutionOutput<GatewayResponse> =
                 collector.finalize_failure(&e.to_string());
             return Ok(Json(output).into_response());
@@ -171,9 +166,10 @@ pub async fn chat_completion(
 
     // Check circuit breaker
     if let Err(err) = circuit_breaker.check() {
-        state.tracker.complete_error(&request_id, 503, err.to_string());
-        let output: ExecutionOutput<GatewayResponse> =
-            collector.finalize_failure(&err.to_string());
+        state
+            .tracker
+            .complete_error(&request_id, 503, err.to_string());
+        let output: ExecutionOutput<GatewayResponse> = collector.finalize_failure(&err.to_string());
         return Ok(Json(output).into_response());
     }
 
@@ -220,9 +216,7 @@ async fn handle_non_streaming_request(
     // Execute with retry
     let result = state
         .retry_policy
-        .execute(|| async {
-            provider.chat_completion(&request).await
-        })
+        .execute(|| async { provider.chat_completion(&request).await })
         .await;
 
     let duration = start.elapsed();
@@ -260,19 +254,23 @@ async fn handle_non_streaming_request(
                 Some(usage.completion_tokens),
             );
 
-            state.metrics.record_request(&gateway_telemetry::RequestMetrics {
-                model: request.model.clone(),
-                provider: provider.id().to_string(),
-                latency: duration,
-                success: true,
-                status_code: 200,
-                input_tokens: Some(usage.prompt_tokens),
-                output_tokens: Some(usage.completion_tokens),
-                streaming: false,
-                tenant_id: None,
-            });
+            state
+                .metrics
+                .record_request(&gateway_telemetry::RequestMetrics {
+                    model: request.model.clone(),
+                    provider: provider.id().to_string(),
+                    latency: duration,
+                    success: true,
+                    status_code: 200,
+                    input_tokens: Some(usage.prompt_tokens),
+                    output_tokens: Some(usage.completion_tokens),
+                    streaming: false,
+                    tenant_id: None,
+                });
 
-            state.router.record_completion(provider.id(), duration, true);
+            state
+                .router
+                .record_completion(provider.id(), duration, true);
 
             info!(
                 request_id = %request_id,
@@ -287,15 +285,15 @@ async fn handle_non_streaming_request(
         Err(e) => {
             circuit_breaker.record_failure();
 
-            collector.end_agent_span(
-                provider_span_id,
-                SpanStatus::Failed,
-                Some(e.to_string()),
-            );
+            collector.end_agent_span(provider_span_id, SpanStatus::Failed, Some(e.to_string()));
 
-            state.tracker.complete_error(&request_id, 500, e.to_string());
+            state
+                .tracker
+                .complete_error(&request_id, 500, e.to_string());
             state.metrics.record_error(provider.id(), &e.to_string());
-            state.router.record_completion(provider.id(), duration, false);
+            state
+                .router
+                .record_completion(provider.id(), duration, false);
 
             error!(
                 request_id = %request_id,
@@ -321,7 +319,8 @@ async fn handle_streaming_request(
     mut collector: ExecutionCollector,
 ) -> Result<Response, ApiError> {
     // --- Agent span: streaming provider call ---
-    let provider_span_id = collector.start_agent_span(&format!("provider-{}-stream", provider.id()));
+    let provider_span_id =
+        collector.start_agent_span(&format!("provider-{}-stream", provider.id()));
 
     // Get streaming response
     let stream_result = provider.chat_completion_stream(&request).await;
@@ -334,7 +333,8 @@ async fn handle_streaming_request(
             let exec_json = serde_json::to_string(&exec_output).unwrap_or_default();
 
             // Record first chunk time
-            let first_chunk_received = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+            let first_chunk_received =
+                std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
             let first_chunk_flag = first_chunk_received;
             let tracker = state.tracker.clone();
             let request_id_clone = request_id.clone();
@@ -375,11 +375,7 @@ async fn handle_streaming_request(
             // Add [DONE] event followed by execution_output event
             let done_stream = futures::stream::iter(vec![
                 Ok::<_, Infallible>(Event::default().data("[DONE]")),
-                Ok::<_, Infallible>(
-                    Event::default()
-                        .event("execution_output")
-                        .data(exec_json),
-                ),
+                Ok::<_, Infallible>(Event::default().event("execution_output").data(exec_json)),
             ]);
 
             let full_stream = sse_stream.chain(done_stream);
@@ -394,13 +390,11 @@ async fn handle_streaming_request(
         Err(e) => {
             circuit_breaker.record_failure();
 
-            collector.end_agent_span(
-                provider_span_id,
-                SpanStatus::Failed,
-                Some(e.to_string()),
-            );
+            collector.end_agent_span(provider_span_id, SpanStatus::Failed, Some(e.to_string()));
 
-            state.tracker.complete_error(&request_id, 500, e.to_string());
+            state
+                .tracker
+                .complete_error(&request_id, 500, e.to_string());
 
             error!(
                 request_id = %request_id,
@@ -555,11 +549,7 @@ pub async fn agent_route(
         }
         Err(e) => {
             error!(error = %e, "Agent routing failed");
-            collector.end_agent_span(
-                agent_span_id,
-                SpanStatus::Failed,
-                Some(e.to_string()),
-            );
+            collector.end_agent_span(agent_span_id, SpanStatus::Failed, Some(e.to_string()));
             let output = collector.finalize_failure(&e.to_string());
             Ok(Json(output))
         }

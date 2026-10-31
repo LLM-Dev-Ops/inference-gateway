@@ -20,9 +20,7 @@ pub mod types;
 
 // Re-export commonly used types
 pub use error::{GatewayError, GatewayResult};
-pub use provider::{
-    HealthStatus, LLMProvider, ModelInfo, ProviderCapabilities, ProviderType,
-};
+pub use provider::{HealthStatus, LLMProvider, ModelInfo, ProviderCapabilities, ProviderType};
 pub use request::{
     ChatMessage, ContentPart, FunctionCall, GatewayRequest, MessageContent, MessageRole,
     RequestMetadata, ToolCall, ToolChoice,

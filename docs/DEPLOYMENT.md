@@ -30,7 +30,7 @@ Comprehensive deployment guide for the LLM Inference Gateway across different en
 
 - **Docker**: 20.10+ (for container deployment)
 - **Kubernetes**: 1.25+ (for K8s deployment)
-- **Rust**: 1.75+ (for building from source)
+- **Rust**: 1.88+ (for building from source)
 
 ### API Keys
 

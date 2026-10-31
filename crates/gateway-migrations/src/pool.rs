@@ -3,7 +3,7 @@
 use crate::config::{DatabaseType, MigrationConfig};
 use crate::error::{MigrationError, Result};
 use serde::{Deserialize, Serialize};
-use sqlx::{AnyPool, any::AnyPoolOptions};
+use sqlx::{any::AnyPoolOptions, AnyPool};
 use std::sync::Arc;
 use std::time::Duration;
 

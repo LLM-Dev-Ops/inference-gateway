@@ -100,11 +100,7 @@ fn validate_config(
     }
 
     // Validate providers
-    let enabled_providers: Vec<_> = config
-        .providers
-        .iter()
-        .filter(|p| p.enabled)
-        .collect();
+    let enabled_providers: Vec<_> = config.providers.iter().filter(|p| p.enabled).collect();
 
     if enabled_providers.is_empty() {
         result.warnings.push(ValidationMessage {
@@ -135,10 +131,7 @@ fn validate_config(
             } else if provider.api_key.is_none() {
                 result.warnings.push(ValidationMessage {
                     level: "warning".to_string(),
-                    message: format!(
-                        "Provider '{}' has no API key configured",
-                        provider.id
-                    ),
+                    message: format!("Provider '{}' has no API key configured", provider.id),
                     path: Some(format!("providers.{}", provider.id)),
                 });
             }
@@ -167,7 +160,12 @@ fn validate_config(
             });
         }
 
-        if config.security.cors.allowed_origins.contains(&"*".to_string()) {
+        if config
+            .security
+            .cors
+            .allowed_origins
+            .contains(&"*".to_string())
+        {
             result.warnings.push(ValidationMessage {
                 level: "warning".to_string(),
                 message: "CORS allows all origins (not recommended for production)".to_string(),

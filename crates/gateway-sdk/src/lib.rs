@@ -77,11 +77,10 @@ pub use client::{Client, ClientBuilder};
 pub use config::ClientConfig;
 pub use error::{Error, Result};
 pub use request::{ChatRequest, ChatRequestBuilder, Message, MessageRole};
-pub use response::{ChatResponse, ChatChoice, Usage};
+pub use response::{ChatChoice, ChatResponse, Usage};
 pub use streaming::{ChatStream, StreamChunk, StreamResult};
 
 // Re-export core types for convenience
 pub use gateway_core::{
-    ChatMessage, FinishReason, GatewayRequest, GatewayResponse,
-    ModelObject, ModelsResponse,
+    ChatMessage, FinishReason, GatewayRequest, GatewayResponse, ModelObject, ModelsResponse,
 };

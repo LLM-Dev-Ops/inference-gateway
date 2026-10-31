@@ -180,7 +180,8 @@ impl CircuitBreaker {
                 let requests = self.request_count.load(Ordering::Relaxed);
 
                 // Only consider failure threshold if we have minimum requests
-                if requests >= self.config.min_requests && failures >= self.config.failure_threshold {
+                if requests >= self.config.min_requests && failures >= self.config.failure_threshold
+                {
                     debug!(
                         provider = %self.provider_id,
                         failures = failures,
@@ -245,7 +246,9 @@ impl CircuitBreaker {
     fn transition_to_half_open(&self) {
         let _guard = self.transition_lock.write();
 
-        let prev_state = self.state.swap(CircuitState::HalfOpen as u8, Ordering::Release);
+        let prev_state = self
+            .state
+            .swap(CircuitState::HalfOpen as u8, Ordering::Release);
 
         if prev_state == CircuitState::Open as u8 {
             self.half_open_successes.store(0, Ordering::Relaxed);

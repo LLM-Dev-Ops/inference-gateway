@@ -201,7 +201,7 @@ impl Default for PiiPatternConfig {
             jwt: true,
             bearer_token: true,
             aws_keys: true,
-            passport: false, // Country-specific, many false positives
+            passport: false,      // Country-specific, many false positives
             date_of_birth: false, // Many false positives
             url_credentials: true,
             base64_secrets: false, // Performance impact, many false positives
@@ -342,9 +342,8 @@ impl PiiPattern {
 }
 
 // Pre-compiled regex patterns for performance
-static EMAIL_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}").unwrap()
-});
+static EMAIL_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}").unwrap());
 
 static PHONE_REGEX: Lazy<Regex> = Lazy::new(|| {
     // Matches various phone formats:
@@ -378,9 +377,8 @@ static JWT_REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"\beyJ[A-Za-z0-9_-]*\.eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*\b").unwrap()
 });
 
-static BEARER_TOKEN_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(?i)Bearer\s+[A-Za-z0-9_-]+").unwrap()
-});
+static BEARER_TOKEN_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"(?i)Bearer\s+[A-Za-z0-9_-]+").unwrap());
 
 static API_KEY_REGEX: Lazy<Regex> = Lazy::new(|| {
     // Common API key patterns
@@ -394,7 +392,8 @@ static AWS_ACCESS_KEY_REGEX: Lazy<Regex> = Lazy::new(|| {
 
 static AWS_SECRET_KEY_REGEX: Lazy<Regex> = Lazy::new(|| {
     // AWS Secret Access Key: 40 character base64
-    Regex::new(r#"(?i)(?:aws[_-]?secret|secret[_-]?key)[=:\s]+['"]?([A-Za-z0-9/+=]{40})['"]?"#).unwrap()
+    Regex::new(r#"(?i)(?:aws[_-]?secret|secret[_-]?key)[=:\s]+['"]?([A-Za-z0-9/+=]{40})['"]?"#)
+        .unwrap()
 });
 
 static URL_CREDENTIALS_REGEX: Lazy<Regex> = Lazy::new(|| {
@@ -413,9 +412,8 @@ static OPENAI_KEY_REGEX: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r"\bsk-[A-Za-z0-9_-]{20,}\b").unwrap()
 });
 
-static ANTHROPIC_KEY_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"\bsk-ant-[A-Za-z0-9_-]{20,}\b").unwrap()
-});
+static ANTHROPIC_KEY_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"\bsk-ant-[A-Za-z0-9_-]{20,}\b").unwrap());
 
 /// PII Redactor - detects and redacts PII from text
 #[derive(Debug, Clone)]
@@ -862,18 +860,10 @@ mod tests {
         let redactor = PiiRedactor::default_config();
 
         // Various phone formats
-        assert!(redactor
-            .redact("Call 555-123-4567")
-            .contains("[PHONE]"));
-        assert!(redactor
-            .redact("Call (555) 123-4567")
-            .contains("[PHONE]"));
-        assert!(redactor
-            .redact("Call +1-555-123-4567")
-            .contains("[PHONE]"));
-        assert!(redactor
-            .redact("Call 555.123.4567")
-            .contains("[PHONE]"));
+        assert!(redactor.redact("Call 555-123-4567").contains("[PHONE]"));
+        assert!(redactor.redact("Call (555) 123-4567").contains("[PHONE]"));
+        assert!(redactor.redact("Call +1-555-123-4567").contains("[PHONE]"));
+        assert!(redactor.redact("Call 555.123.4567").contains("[PHONE]"));
     }
 
     #[test]
@@ -970,8 +960,16 @@ mod tests {
 
         let text = "Connect to https://admin:secretpass@db.example.com/mydb";
         let redacted = redactor.redact(text);
-        assert!(!redacted.contains("secretpass"), "Password should be redacted. Got: {}", redacted);
-        assert!(redacted.contains("[URL_CREDENTIALS]"), "Should contain placeholder. Got: {}", redacted);
+        assert!(
+            !redacted.contains("secretpass"),
+            "Password should be redacted. Got: {}",
+            redacted
+        );
+        assert!(
+            redacted.contains("[URL_CREDENTIALS]"),
+            "Should contain placeholder. Got: {}",
+            redacted
+        );
     }
 
     #[test]

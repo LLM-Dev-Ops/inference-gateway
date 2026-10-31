@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),http=require('node:http'),path=require('node:path');
+const root=path.resolve(process.argv[2]||'.');let response;
+const server=http.createServer((req,res)=>{req.resume();res.writeHead(response.status||200,{'Content-Type':response.type||'application/json'});res.end(response.body);});
+const holdout=[],anchors=[];
+async function check(list,name,fn){try{await fn();list.push({name,passed:true});}catch(e){list.push({name,passed:false,error:e.message});}}
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));process.env.GATEWAY_INTERNAL_URL=`http://127.0.0.1:${server.address().port}`;const {handler}=require(path.join(root,'index.js'));
+async function invoke(spec){response=spec;let result={headers:{},status(n){this.code=n;return this},set(k,v){this.headers[k]=v;return this},json(body){this.body=body;return this}};await handler({method:'POST',path:'/v1/inference-gateway/route',headers:{'x-correlation-id':'probe-id'},body:{model:'fixture'}},result);return result;}
+try{for(const [name,body,type]of [['malformed','{','application/json'],['html','<p>fixture-private-marker</p>','text/html'],['null','null'],['array','[]'],['string','"fixture-private-marker"'],['boolean','true'],['number','42']])await check(holdout,name,async()=>{let r=await invoke({body,type});assert.equal(r.code,502);assert.equal(r.body.error.type,'invalid_gateway_response');assert.equal(JSON.stringify(r.body).includes('fixture-private-marker'),false);assert.equal(r.body.execution_metadata.trace_id,'probe-id');assert.equal(r.body.layers_executed.at(-1).status,'failed');});
+for(const status of [200,401,429,503])await check(anchors,'valid object preserves '+status,async()=>{let r=await invoke({status,body:JSON.stringify({result:'fixture',status:999,execution_metadata:{trace_id:'untrusted'}})});assert.equal(r.code,status);assert.equal(r.body.result,'fixture');assert.equal(r.body.execution_metadata.trace_id,'probe-id');});
+console.log(JSON.stringify({holdout,anchors,passed:[...holdout,...anchors].every(x=>x.passed)}));process.exitCode=[...holdout,...anchors].every(x=>x.passed)?0:1;
+}finally{server.closeAllConnections();await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);server.closeAllConnections();server.close();process.exitCode=1});

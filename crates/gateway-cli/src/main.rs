@@ -40,9 +40,7 @@ fn init_tracing(verbose: u8, json: bool) {
     let subscriber = tracing_subscriber::registry().with(filter);
 
     if json {
-        subscriber
-            .with(fmt::layer().json())
-            .init();
+        subscriber.with(fmt::layer().json()).init();
     } else {
         subscriber
             .with(fmt::layer().with_target(verbose > 1))

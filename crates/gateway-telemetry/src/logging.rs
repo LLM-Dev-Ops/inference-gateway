@@ -174,8 +174,8 @@ pub fn init_logging(config: &LoggingConfig) -> Result<(), LoggingError> {
 
 fn build_filter(config: &LoggingConfig) -> Result<EnvFilter, LoggingError> {
     // Start with RUST_LOG env var or default level
-    let base_filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| EnvFilter::new(&config.level));
+    let base_filter =
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(&config.level));
 
     // Add custom filter directives if specified
     if let Some(ref filter_str) = config.filter {
@@ -332,12 +332,30 @@ mod tests {
 
     #[test]
     fn test_tracing_level() {
-        assert_eq!(LoggingConfig::new().with_level("trace").tracing_level(), Level::TRACE);
-        assert_eq!(LoggingConfig::new().with_level("DEBUG").tracing_level(), Level::DEBUG);
-        assert_eq!(LoggingConfig::new().with_level("Info").tracing_level(), Level::INFO);
-        assert_eq!(LoggingConfig::new().with_level("WARN").tracing_level(), Level::WARN);
-        assert_eq!(LoggingConfig::new().with_level("error").tracing_level(), Level::ERROR);
-        assert_eq!(LoggingConfig::new().with_level("invalid").tracing_level(), Level::INFO);
+        assert_eq!(
+            LoggingConfig::new().with_level("trace").tracing_level(),
+            Level::TRACE
+        );
+        assert_eq!(
+            LoggingConfig::new().with_level("DEBUG").tracing_level(),
+            Level::DEBUG
+        );
+        assert_eq!(
+            LoggingConfig::new().with_level("Info").tracing_level(),
+            Level::INFO
+        );
+        assert_eq!(
+            LoggingConfig::new().with_level("WARN").tracing_level(),
+            Level::WARN
+        );
+        assert_eq!(
+            LoggingConfig::new().with_level("error").tracing_level(),
+            Level::ERROR
+        );
+        assert_eq!(
+            LoggingConfig::new().with_level("invalid").tracing_level(),
+            Level::INFO
+        );
     }
 
     #[test]

@@ -76,10 +76,7 @@ pub async fn execute(
                 if status.is_success() {
                     output::success("Gateway is healthy");
                     output::key_value("Endpoint", &args.endpoint);
-                    output::key_value(
-                        "Response Time",
-                        &format!("{}ms", elapsed.as_millis()),
-                    );
+                    output::key_value("Response Time", &format!("{}ms", elapsed.as_millis()));
 
                     if let Some(status_val) = body.get("status") {
                         output::key_value("Status", status_val.as_str().unwrap_or("unknown"));
@@ -119,7 +116,10 @@ pub async fn execute(
                     },
                     endpoint: args.endpoint.clone(),
                     response_time_ms: elapsed.as_millis() as u64,
-                    version: body.get("version").and_then(|v| v.as_str()).map(String::from),
+                    version: body
+                        .get("version")
+                        .and_then(|v| v.as_str())
+                        .map(String::from),
                     details: if args.detailed { Some(body) } else { None },
                 };
 
@@ -137,13 +137,8 @@ pub async fn execute(
     Ok(())
 }
 
-fn build_client(
-    _base_url: &str,
-    api_key: Option<&str>,
-    timeout: u64,
-) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+fn build_client(_base_url: &str, api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();

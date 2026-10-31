@@ -94,8 +94,7 @@ impl BenchTarget for StreamingThroughputBenchmark {
         let p95_idx = (latencies.len() as f64 * 0.95) as usize;
         let p99_idx = (latencies.len() as f64 * 0.99) as usize;
 
-        let tokens_per_second =
-            total_tokens as f64 / total_duration.as_secs_f64();
+        let tokens_per_second = total_tokens as f64 / total_duration.as_secs_f64();
         let streams_per_second = self.iterations as f64 / total_duration.as_secs_f64();
 
         Ok(BenchmarkResult::new(

@@ -39,7 +39,6 @@ pub struct GatewayConfig {
     pub security: SecurityConfig,
 }
 
-
 impl GatewayConfig {
     /// Validate the configuration
     ///
@@ -249,7 +248,6 @@ pub struct ProviderRateLimitConfig {
     pub max_concurrent: Option<u32>,
 }
 
-
 /// Routing configuration
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
 #[serde(default)]
@@ -305,7 +303,6 @@ pub enum LoadBalancingStrategy {
     /// Always use primary, failover on error
     PrimaryBackup,
 }
-
 
 /// Routing rule
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -377,7 +374,6 @@ pub struct ResilienceConfig {
     #[validate(nested)]
     pub timeout: TimeoutConfig,
 }
-
 
 /// Circuit breaker configuration
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
@@ -553,7 +549,6 @@ pub struct ObservabilityConfig {
     pub logging: LoggingConfig,
 }
 
-
 /// Metrics configuration
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
 #[serde(default)]
@@ -573,7 +568,9 @@ pub struct MetricsConfig {
 }
 
 fn default_latency_buckets() -> Vec<f64> {
-    vec![0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
+    vec![
+        0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0,
+    ]
 }
 
 impl Default for MetricsConfig {
@@ -658,7 +655,6 @@ pub enum LogFormat {
     Compact,
 }
 
-
 /// Security configuration
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
 #[serde(default)]
@@ -675,7 +671,6 @@ pub struct SecurityConfig {
     /// CORS configuration
     pub cors: CorsConfig,
 }
-
 
 /// Authentication configuration
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
@@ -816,7 +811,6 @@ pub enum RateLimitKeyBy {
     /// Rate limit by tenant ID
     Tenant,
 }
-
 
 /// CORS configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]

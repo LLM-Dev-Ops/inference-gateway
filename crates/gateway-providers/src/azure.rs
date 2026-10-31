@@ -10,12 +10,12 @@ use async_stream::try_stream;
 use async_trait::async_trait;
 use futures::stream::BoxStream;
 use futures_util::StreamExt;
+use gateway_core::response::ResponseMessage;
 use gateway_core::{
     ChatChunk, ChatMessage, Choice, ChunkChoice, ChunkDelta, FinishReason, FunctionCall,
     GatewayError, GatewayRequest, GatewayResponse, HealthStatus, LLMProvider, MessageContent,
     MessageRole, ModelInfo, ProviderCapabilities, ProviderType, ToolCall, Usage,
 };
-use gateway_core::response::ResponseMessage;
 use reqwest::Client;
 use reqwest_eventsource::{Event, EventSource};
 use secrecy::{ExposeSecret, SecretString};
@@ -288,22 +288,24 @@ impl AzureOpenAIProvider {
                     })
                     .collect()
             }),
-            tool_choice: request.tool_choice.as_ref().map(|tc| {
-                match tc {
-                    gateway_core::request::ToolChoice::String(s) => {
-                        serde_json::Value::String(s.clone())
-                    }
-                    gateway_core::request::ToolChoice::Tool { tool_type, function } => {
-                        serde_json::json!({
-                            "type": tool_type,
-                            "function": { "name": function.name }
-                        })
-                    }
+            tool_choice: request.tool_choice.as_ref().map(|tc| match tc {
+                gateway_core::request::ToolChoice::String(s) => {
+                    serde_json::Value::String(s.clone())
+                }
+                gateway_core::request::ToolChoice::Tool {
+                    tool_type,
+                    function,
+                } => {
+                    serde_json::json!({
+                        "type": tool_type,
+                        "function": { "name": function.name }
+                    })
                 }
             }),
-            response_format: request.response_format.as_ref().map(|rf| {
-                serde_json::json!({"type": rf.format_type})
-            }),
+            response_format: request
+                .response_format
+                .as_ref()
+                .map(|rf| serde_json::json!({"type": rf.format_type})),
         }
     }
 
@@ -383,12 +385,9 @@ impl AzureOpenAIProvider {
                 retry_after: Some(Duration::from_secs(60)),
                 limit: None,
             },
-            500 | 502 | 503 => GatewayError::provider(
-                &self.config.id,
-                message.clone(),
-                Some(status),
-                true,
-            ),
+            500 | 502 | 503 => {
+                GatewayError::provider(&self.config.id, message.clone(), Some(status), true)
+            }
             _ => GatewayError::provider(
                 &self.config.id,
                 format!("{code}: {message}"),
@@ -492,7 +491,9 @@ impl LLMProvider for AzureOpenAIProvider {
             .json(&azure_request)
             .send()
             .await
-            .map_err(|e| GatewayError::provider(&self.config.id, format!("Request failed: {e}"), None, true))?;
+            .map_err(|e| {
+                GatewayError::provider(&self.config.id, format!("Request failed: {e}"), None, true)
+            })?;
 
         if !response.status().is_success() {
             let status = response.status();
@@ -511,10 +512,14 @@ impl LLMProvider for AzureOpenAIProvider {
             ));
         }
 
-        let azure_response: AzureResponse = response
-            .json()
-            .await
-            .map_err(|e| GatewayError::provider(&self.config.id, format!("Failed to parse response: {e}"), None, false))?;
+        let azure_response: AzureResponse = response.json().await.map_err(|e| {
+            GatewayError::provider(
+                &self.config.id,
+                format!("Failed to parse response: {e}"),
+                None,
+                false,
+            )
+        })?;
 
         Ok(self.transform_response(azure_response, &deployment))
     }
@@ -546,8 +551,14 @@ impl LLMProvider for AzureOpenAIProvider {
             .header("Content-Type", "application/json")
             .json(&azure_request);
 
-        let event_source = EventSource::new(request_builder)
-            .map_err(|e| GatewayError::provider(&self.config.id, format!("Failed to create event source: {e}"), None, true))?;
+        let event_source = EventSource::new(request_builder).map_err(|e| {
+            GatewayError::provider(
+                &self.config.id,
+                format!("Failed to create event source: {e}"),
+                None,
+                true,
+            )
+        })?;
 
         let deployment_owned = deployment.to_string();
         let provider_id = self.config.id.clone();
@@ -687,18 +698,22 @@ impl AzureMessage {
                     .iter()
                     .map(|p| match p {
                         gateway_core::request::ContentPart::Text { text } => {
-                            AzureContentPart::Text {
-                                text: text.clone(),
-                            }
+                            AzureContentPart::Text { text: text.clone() }
                         }
                         gateway_core::request::ContentPart::ImageUrl { image_url } => {
                             AzureContentPart::ImageUrl {
                                 image_url: AzureImageUrl {
                                     url: image_url.url.clone(),
                                     detail: image_url.detail.map(|d| match d {
-                                        gateway_core::request::ImageDetail::Auto => "auto".to_string(),
-                                        gateway_core::request::ImageDetail::Low => "low".to_string(),
-                                        gateway_core::request::ImageDetail::High => "high".to_string(),
+                                        gateway_core::request::ImageDetail::Auto => {
+                                            "auto".to_string()
+                                        }
+                                        gateway_core::request::ImageDetail::Low => {
+                                            "low".to_string()
+                                        }
+                                        gateway_core::request::ImageDetail::High => {
+                                            "high".to_string()
+                                        }
                                     }),
                                 },
                             }
@@ -949,15 +964,17 @@ mod tests {
 
     #[test]
     fn test_find_deployment() {
-        let config = AzureOpenAIConfig::new("azure-1", "my-resource", "test-key")
-            .with_deployment(
-                "gpt4-prod".to_string(),
-                ModelInfo::new("gpt4-prod").with_name("GPT-4 Production"),
-            );
+        let config = AzureOpenAIConfig::new("azure-1", "my-resource", "test-key").with_deployment(
+            "gpt4-prod".to_string(),
+            ModelInfo::new("gpt4-prod").with_name("GPT-4 Production"),
+        );
         let provider = AzureOpenAIProvider::new(config).unwrap();
 
         // Exact match
-        assert_eq!(provider.find_deployment("gpt4-prod"), Some("gpt4-prod".to_string()));
+        assert_eq!(
+            provider.find_deployment("gpt4-prod"),
+            Some("gpt4-prod".to_string())
+        );
 
         // No match
         assert_eq!(provider.find_deployment("gpt-3.5"), None);

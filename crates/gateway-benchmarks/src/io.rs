@@ -22,8 +22,10 @@ pub fn write_raw_results(results: &[BenchmarkResult], output_dir: &Path) -> Resu
         let filename = format!("{}.json", sanitize_filename(&result.target_id));
         let filepath = raw_dir.join(&filename);
 
-        let json = serde_json::to_string_pretty(result)
-            .context(format!("Failed to serialize result for {}", result.target_id))?;
+        let json = serde_json::to_string_pretty(result).context(format!(
+            "Failed to serialize result for {}",
+            result.target_id
+        ))?;
 
         fs::write(&filepath, json).context(format!("Failed to write {}", filepath.display()))?;
     }
@@ -77,8 +79,8 @@ pub fn read_raw_results(output_dir: &Path) -> Result<Vec<BenchmarkResult>> {
         let path = entry.path();
 
         if path.extension().map_or(false, |ext| ext == "json") {
-            let content = fs::read_to_string(&path)
-                .context(format!("Failed to read {}", path.display()))?;
+            let content =
+                fs::read_to_string(&path).context(format!("Failed to read {}", path.display()))?;
 
             let result: BenchmarkResult = serde_json::from_str(&content)
                 .context(format!("Failed to parse {}", path.display()))?;

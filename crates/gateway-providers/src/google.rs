@@ -10,13 +10,13 @@ use async_stream::try_stream;
 use async_trait::async_trait;
 use futures::stream::BoxStream;
 use futures_util::StreamExt;
+use gateway_core::request::ContentPart;
+use gateway_core::response::ResponseMessage;
 use gateway_core::{
     ChatChunk, Choice, ChunkChoice, ChunkDelta, FinishReason, GatewayError, GatewayRequest,
     GatewayResponse, HealthStatus, LLMProvider, MessageContent, MessageRole, ModelInfo,
     ProviderCapabilities, ProviderType, Usage,
 };
-use gateway_core::request::ContentPart;
-use gateway_core::response::ResponseMessage;
 use reqwest::Client;
 use secrecy::{ExposeSecret, SecretString};
 use serde::{Deserialize, Serialize};
@@ -334,9 +334,7 @@ impl GoogleProvider {
     /// Transform message content to Google parts
     fn transform_content(&self, content: &MessageContent) -> Vec<GooglePart> {
         match content {
-            MessageContent::Text(text) => vec![GooglePart::Text {
-                text: text.clone(),
-            }],
+            MessageContent::Text(text) => vec![GooglePart::Text { text: text.clone() }],
             MessageContent::Parts(parts) => {
                 parts
                     .iter()
@@ -470,9 +468,10 @@ impl GoogleProvider {
         let usage = response.usage_metadata.map(|u| Usage {
             prompt_tokens: u.prompt_token_count as u32,
             completion_tokens: u.candidates_token_count.unwrap_or(0) as u32,
-            total_tokens: u.total_token_count.unwrap_or(
-                u.prompt_token_count + u.candidates_token_count.unwrap_or(0),
-            ) as u32,
+            total_tokens: u
+                .total_token_count
+                .unwrap_or(u.prompt_token_count + u.candidates_token_count.unwrap_or(0))
+                as u32,
         });
 
         Ok(GatewayResponse::builder()
@@ -563,7 +562,12 @@ impl LLMProvider for GoogleProvider {
 
         let status = response.status();
         let body = response.text().await.map_err(|e| {
-            GatewayError::provider("google", format!("Failed to read response: {e}"), None, false)
+            GatewayError::provider(
+                "google",
+                format!("Failed to read response: {e}"),
+                None,
+                false,
+            )
         })?;
 
         trace!(status = %status, body = %body, "Received Google response");
@@ -616,7 +620,12 @@ impl LLMProvider for GoogleProvider {
             .await
             .map_err(|e| {
                 error!(error = %e, "Google API streaming request failed");
-                GatewayError::provider("google", format!("Streaming request failed: {e}"), None, true)
+                GatewayError::provider(
+                    "google",
+                    format!("Streaming request failed: {e}"),
+                    None,
+                    true,
+                )
             })?;
 
         let status = response.status();
@@ -760,7 +769,12 @@ impl GoogleProvider {
                 _ => GatewayError::provider("google", message, Some(status), false),
             }
         } else {
-            GatewayError::provider("google", format!("HTTP {status}: {body}"), Some(status), false)
+            GatewayError::provider(
+                "google",
+                format!("HTTP {status}: {body}"),
+                Some(status),
+                false,
+            )
         }
     }
 }
@@ -921,8 +935,7 @@ mod tests {
 
     #[test]
     fn test_vertex_ai_config() {
-        let config =
-            GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
+        let config = GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
 
         assert_eq!(config.id, "vertex-1");
         assert!(config.access_token.is_some());
@@ -950,8 +963,7 @@ mod tests {
 
     #[test]
     fn test_base_url_vertex_ai() {
-        let config =
-            GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
+        let config = GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
         let url = config.base_url();
 
         assert!(url.contains("us-central1-aiplatform.googleapis.com"));
@@ -1002,8 +1014,7 @@ mod tests {
 
     #[test]
     fn test_provider_creation_vertex_ai() {
-        let config =
-            GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
+        let config = GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
         let provider = GoogleProvider::new(config);
 
         assert!(provider.is_ok());
@@ -1074,8 +1085,7 @@ mod tests {
 
     #[test]
     fn test_endpoint_url_vertex_ai() {
-        let config =
-            GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
+        let config = GoogleConfig::vertex_ai("vertex-1", "my-project", "us-central1", "test-token");
         let provider = GoogleProvider::new(config).unwrap();
 
         let url = provider.endpoint_url("gemini-1.5-pro", false);

@@ -266,7 +266,6 @@ pub enum DecisionType {
     // Phase 7 agents provide intermediate intelligence that feeds into
     // downstream decision-making processes.
     // =========================================================================
-
     /// A proposed hypothesis for evaluation.
     ///
     /// Agents emit this signal when they have formulated a hypothesis

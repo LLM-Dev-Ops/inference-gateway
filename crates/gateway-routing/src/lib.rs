@@ -12,15 +12,15 @@
 #![forbid(unsafe_code)]
 #![warn(missing_docs)]
 
+pub mod load_balancer;
 pub mod router;
 pub mod rules;
-pub mod load_balancer;
-pub mod strategy;
 pub mod selector;
+pub mod strategy;
 
 // Re-export main types
-pub use router::{Router, RouterConfig, RouteDecision};
-pub use rules::{RoutingRule, RuleMatcher, RuleAction};
 pub use load_balancer::{LoadBalancer, LoadBalancerConfig};
+pub use router::{RouteDecision, Router, RouterConfig};
+pub use rules::{RoutingRule, RuleAction, RuleMatcher};
+pub use selector::{ProviderCandidate, ProviderSelector, SelectionCriteria};
 pub use strategy::{LoadBalancingStrategy, StrategyFactory};
-pub use selector::{ProviderSelector, SelectionCriteria, ProviderCandidate};

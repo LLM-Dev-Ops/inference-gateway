@@ -1,0 +1,1591 @@
+{
+  "date": "2026-10-18",
+  "repository": "LLM-Dev-Ops/inference-gateway",
+  "pr": "https://github.com/LLM-Dev-Ops/inference-gateway/pull/1",
+  "branch": "metaharness/inference-gateway-2026-10-10",
+  "status": {
+    "execution": "EXECUTED",
+    "component": "VALIDATED",
+    "darwin": "NO_IMPROVEMENT",
+    "repository": "BLOCKED",
+    "merged": false
+  },
+  "main": "a07a604dc14a3eeb2b9a07e85e9c41212156de9a",
+  "baseline": "35a949a4671cda298cb81a38a1a8787dbbabb514",
+  "sourceCommit": "7256ae266290481a050f0a3b2cd2313fa4bda745",
+  "changes": [
+    "Reject empty and whitespace-only values for all seven required Phase7 variables; preserve nonblank values and existing phase/layer/missing-variable failure behavior.",
+    "Redact the API-key field from Phase7Config Debug; real key remains available to the authorized runtime, no raw debug string emitted by probe.",
+    "Separate private config parser from environment lookup; remove all three tests' process-global env mutation without serializing tests or relaxing panic assertions.",
+    "Add three unit tests, a compiled native real-production-module probe and15holdout/10anchor subprocess checks.",
+    "Keep existing Rust workspace job name; pin Node20.19.5 for probe, run locked tests/build/probe even after Clippy failure. All step failures remain fatal to the job."
+  ],
+  "coverage": {
+    "repositories": 58,
+    "archived": 0,
+    "repositoryPages": [
+      {
+        "offset": 0,
+        "count": 58
+      },
+      {
+        "offset": 100,
+        "count": 0
+      }
+    ],
+    "openPrPages": [
+      100,
+      18
+    ],
+    "openPrTotal": 118,
+    "worked": [
+      "inference-gateway"
+    ],
+    "readOnlyPrInspected": [
+      "sentinel#22",
+      "incident-manager#2"
+    ],
+    "metadataInspected": [
+      {
+        "repo": "shield",
+        "main": "1c46282495b94bb1fcae2d9e63cf34f495226699",
+        "ci": [
+          {
+            "id": 38398421866,
+            "sha": "60bcd3c463228ee8c8ccadc4c7c560502d73e273",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "observatory",
+        "main": "020f9031a2f1272d55deef0d6c715650b6647150",
+        "ci": [
+          {
+            "id": 38326924256,
+            "sha": "6806b2266882c081ec05dc0ab8350b32c34caf3d",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "sentinel",
+        "main": "504b0ea466620ffacfd7ea19993d5a62b71babdd",
+        "ci": [
+          {
+            "id": 38445143556,
+            "sha": "16249d00b5ebaca889ac6ea372c8acc1b867579f",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "memory-graph",
+        "main": "d9b9dc5eb7ac313eedc2831dce6af46641bfaaa7",
+        "ci": [
+          {
+            "id": 38985101510,
+            "sha": "a1268650619d3ee7b58d833fa9a7ea727206d66f",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "latency-lens",
+        "main": "8370e90fa788959a0b80e3f9c4140422f3eccd69",
+        "ci": [
+          {
+            "id": 22300475883,
+            "sha": "ea8a15eb987f18e59f8d448f0bf48c2ef0891e7e",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "test-bench",
+        "main": "4d58c46426fe085d25fef3fcb35fa5e2cce83b30",
+        "ci": [
+          {
+            "id": 39057164377,
+            "sha": "75797aa19adb133d2bbd8317a6af73fa33a36261",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "orchestrator",
+        "main": "24b373c41cbac1d946fda31b7c86a5ff26037375",
+        "ci": [
+          {
+            "id": 30310547202,
+            "sha": "24b373c41cbac1d946fda31b7c86a5ff26037375",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "incident-manager",
+        "main": "bcb8c8d027997c3363a9fd0ebd0ddc9c086227c6",
+        "ci": [
+          {
+            "id": 38052159946,
+            "sha": "834452bad11f38fd70cf73bb9991f83d9d19c299",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "cost-ops",
+        "main": "aef76ae9c264b888abc60aace3dd6948f2422906",
+        "ci": [
+          {
+            "id": 39125850181,
+            "sha": "aef76ae9c264b888abc60aace3dd6948f2422906",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "forge",
+        "main": "4b5e43618b8fd1b8f63bddd24ff524510d9514bc",
+        "ci": [
+          {
+            "id": 39092600263,
+            "sha": "4b5e43618b8fd1b8f63bddd24ff524510d9514bc",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "auto-optimizer",
+        "main": "114865b4c3beb78b9fbeacbfc19ef93ab4501f97",
+        "ci": [
+          {
+            "id": 39032697977,
+            "sha": "e544ac4cb47f1cc9db15c76002c66f00f04f9b53",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "edge-agent",
+        "main": "483c8a353855d8d54a1b1dee181f12376b5f592a",
+        "ci": [
+          {
+            "id": 38562684113,
+            "sha": "11da64cb7e409beac9b3c3647767715d6f0b7101",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "governance-dashboard",
+        "main": "53047917da900f397a5045cfc7ddf5e32e735872",
+        "ci": [
+          {
+            "id": 30302815912,
+            "sha": "53047917da900f397a5045cfc7ddf5e32e735872",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "policy-engine",
+        "main": "c44b699eadc6b8dbbd26fa35d7cf82d61275979b",
+        "ci": []
+      },
+      {
+        "repo": "registry",
+        "main": "322d9c90806a433b0363dffaac92c84ea50af886",
+        "ci": []
+      },
+      {
+        "repo": "analytics-hub",
+        "main": "88f4ffa94afd4a14ec94c9b4b3dc723badc7fac1",
+        "ci": [
+          {
+            "id": 38188081580,
+            "sha": "0021e2d7504db3046128bc2e6144983194f802fa",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "marketplace",
+        "main": "70071f0eda8e8bf76574488f74779ed7f1229b47",
+        "ci": [
+          {
+            "id": 30302618197,
+            "sha": "70071f0eda8e8bf76574488f74779ed7f1229b47",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "config-manager",
+        "main": "02b463c3cbf088183f14b2ec951389f797863ac7",
+        "ci": [
+          {
+            "id": 39034597763,
+            "sha": "2d4649c8defecc32442252672950b1729a2c46a7",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "schema-registry",
+        "main": "d0d89f267c32a2d31b622ad112836435c2534f39",
+        "ci": [
+          {
+            "id": 30302600641,
+            "sha": "d0d89f267c32a2d31b622ad112836435c2534f39",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "copilot-agent",
+        "main": "756402a87e39419efa90a2accfe34b46083af945",
+        "ci": [
+          {
+            "id": 30302673145,
+            "sha": "756402a87e39419efa90a2accfe34b46083af945",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "inference-gateway",
+        "main": "a07a604dc14a3eeb2b9a07e85e9c41212156de9a",
+        "ci": [
+          {
+            "id": 38008985239,
+            "sha": "35a949a4671cda298cb81a38a1a8787dbbabb514",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "simulator",
+        "main": "96091398ad2cb1189774d2581fb26c2bebe1abd9",
+        "ci": [
+          {
+            "id": 37978961653,
+            "sha": "8c8d01c419cd0df3006601a83c8846f3ebff40d8",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "benchmark-exchange",
+        "main": "09236748843306e9cc5f33cd91b0c9182c7b18e1",
+        "ci": [
+          {
+            "id": 30302631143,
+            "sha": "09236748843306e9cc5f33cd91b0c9182c7b18e1",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "data-vault",
+        "main": "01c0240871f03f0cbc0f497bff47360940bcb637",
+        "ci": [
+          {
+            "id": 30302592934,
+            "sha": "01c0240871f03f0cbc0f497bff47360940bcb637",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "connector-hub",
+        "main": "b25fcb3bd9a06ae9e7d73c7acd677607123d081d",
+        "ci": [
+          {
+            "id": 30302596307,
+            "sha": "b25fcb3bd9a06ae9e7d73c7acd677607123d081d",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "integrations",
+        "main": "6c9b05037db6445a460e2446c2df7e01acb7b11f",
+        "ci": [
+          {
+            "id": 20294303478,
+            "sha": "6c9b05037db6445a460e2446c2df7e01acb7b11f",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "ruvector-service",
+        "main": "9f030fd5939c2eb85cd9bd0b9618de84165bddda",
+        "ci": [
+          {
+            "id": 38164317697,
+            "sha": "9f030fd5939c2eb85cd9bd0b9618de84165bddda",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "infra",
+        "main": "a8bc89c190f63b139812f30a54e21a25b8f70e81",
+        "ci": []
+      },
+      {
+        "repo": "research-lab",
+        "main": "83c4850c04d6243c1f700ec4a6a0e406a7d7198a",
+        "ci": [
+          {
+            "id": 38920009861,
+            "sha": "83c4850c04d6243c1f700ec4a6a0e406a7d7198a",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "intelligence-core",
+        "main": "69aa70372e45279c22942fcee248884e753d8d93",
+        "ci": []
+      },
+      {
+        "repo": "security-core",
+        "main": "e37520508c0eab91faf8977b80661dc68ac3826f",
+        "ci": []
+      },
+      {
+        "repo": "governance-core",
+        "main": "a537d4a6cfe5081667415192cfb30b91c37a9e56",
+        "ci": []
+      },
+      {
+        "repo": "data-core",
+        "main": "d8a4d82b3918f2cf8aaf5fe003b5c351f184a9a9",
+        "ci": [
+          {
+            "id": 38734205492,
+            "sha": "d8a4d82b3918f2cf8aaf5fe003b5c351f184a9a9",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "automation-core",
+        "main": "7833fc66f12a4233e73db81dc060e1482a4ea771",
+        "ci": []
+      },
+      {
+        "repo": "ecosystem-core",
+        "main": "af3c7e8999c7b8d8891995994a0bd0958c445099",
+        "ci": []
+      },
+      {
+        "repo": "research-core",
+        "main": "5c86396ac8cf14a17517134ac811c6ea9fc347b7",
+        "ci": [
+          {
+            "id": 38659306826,
+            "sha": "5c86396ac8cf14a17517134ac811c6ea9fc347b7",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "interface-core",
+        "main": "d4185560cf74b52fd44e515238cebeec88241371",
+        "ci": []
+      },
+      {
+        "repo": "agentics-diligence-artifacts",
+        "main": "131b0aaa8d316655d7d860bc9ffa38fea4767447",
+        "ci": []
+      },
+      {
+        "repo": "agentics-deployment-intent",
+        "main": "95111d9f55c7aba9c392b2eab08540b3a67e1d51",
+        "ci": []
+      },
+      {
+        "repo": "agentics-platform",
+        "main": "9b3fa8d3faeda67230e953355eee1ab87112fcaf",
+        "ci": [
+          {
+            "id": 30359780578,
+            "sha": "9b3fa8d3faeda67230e953355eee1ab87112fcaf",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "agentics-simulation-planner",
+        "main": "144a6c41b8532cfc0ae8bffe7e2f1676cb5068fe",
+        "ci": []
+      },
+      {
+        "repo": "agentics-simulation-runner",
+        "main": "ead6a0f0b2f0af389c1cae6dc7b001ecfe7a90f8",
+        "ci": []
+      },
+      {
+        "repo": "agentics-deployment-exporters",
+        "main": "ea60a265f6fb9a89e0b2012ed7d0441cb6637168",
+        "ci": []
+      },
+      {
+        "repo": "agentics-cli",
+        "main": "a6fa67a40fe3d08d51ff2c66d0f96e43a89ff9a6",
+        "ci": [
+          {
+            "id": 28767269473,
+            "sha": "a6fa67a40fe3d08d51ff2c66d0f96e43a89ff9a6",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "erp-surface",
+        "main": "188099d51ff1f1d4af944401d5fef18666317643",
+        "ci": [
+          {
+            "id": 22001663894,
+            "sha": "188099d51ff1f1d4af944401d5fef18666317643",
+            "status": "completed",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "repo": "agentics-org-manifests",
+        "main": "a52b61eea0e6b60883e436c982abc55bb9030edd",
+        "ci": []
+      },
+      {
+        "repo": "agentics-orchestration-engine",
+        "main": "a365c1a6f954041aefef67678fc3fe1b0b4eba7d",
+        "ci": []
+      },
+      {
+        "repo": "enterprise-roi-engine",
+        "main": "1f4d33cc057740f9f96e75e6c11b0dfd44cd35e7",
+        "ci": []
+      },
+      {
+        "repo": "agentics-contracts",
+        "main": "716a33348721f78a7a14bd98e6717e3b40470730",
+        "ci": []
+      },
+      {
+        "repo": "agentics-usage-ledger",
+        "main": "dbd63a6ae35a45f889170fc2ca3e611907506c45",
+        "ci": []
+      },
+      {
+        "repo": "agentics-results-index",
+        "main": "876cd8cf38eb9e5687c92b73e8d3b8ac7e34e57c",
+        "ci": []
+      },
+      {
+        "repo": "agentics-execution-engine",
+        "main": "accaf090c78cb0dfe439c771b2ecba868cdfbeac",
+        "ci": []
+      },
+      {
+        "repo": "agentics-enforcement",
+        "main": "45277702166465be82fe2fa255aaa0dec0893994",
+        "ci": []
+      },
+      {
+        "repo": "agentics-cli-test",
+        "main": "fb73fe95db97bd35cfe378291004f09f2929675d",
+        "ci": []
+      },
+      {
+        "repo": "platform-agents",
+        "main": "94fbbc82db9cc10f66093df428560ef01aa2b322",
+        "ci": []
+      },
+      {
+        "repo": "RuVector",
+        "main": "9e12078ae2af74d0613ae604266cf22fb1113b10",
+        "ci": []
+      },
+      {
+        "repo": "agentics-evolution",
+        "main": "855c0b2e9a53ade5ab2f06d4185b7c3c8fff0369",
+        "ci": [
+          {
+            "id": 31585157853,
+            "sha": "e1d5f3236b4c938e1febb9cdd8ab0c2d4b1655d0",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "repo": "agentics-dream-machine",
+        "main": "2fba2550182d81b36423447221823e98e227482a",
+        "ci": [
+          {
+            "id": 39114634947,
+            "sha": "8e116361aeb3079bb9c55d6d4d6855a5c5891bad",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ],
+    "deferred": [
+      {
+        "repo": "LLM-Dev-Ops/shield",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/test-bench",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/observatory",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/sentinel",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/memory-graph",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/latency-lens",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/forge",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/edge-agent",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/auto-optimizer",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/incident-manager",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/orchestrator",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/cost-ops",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/governance-dashboard",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/policy-engine",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/registry",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/marketplace",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/analytics-hub",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/config-manager",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/schema-registry",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/connector-hub",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/copilot-agent",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/simulator",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/benchmark-exchange",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/data-vault",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/research-lab",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/infra",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/integrations",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/ruvector-service",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/intelligence-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/security-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/automation-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/governance-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/data-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/ecosystem-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/research-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/interface-core",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-platform",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-diligence-artifacts",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-deployment-intent",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-simulation-planner",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-simulation-runner",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-deployment-exporters",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-org-manifests",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-cli",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/erp-surface",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-orchestration-engine",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/enterprise-roi-engine",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-contracts",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-results-index",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-usage-ledger",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-execution-engine",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-enforcement",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/platform-agents",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-cli-test",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-evolution",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/RuVector",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      },
+      {
+        "repo": "LLM-Dev-Ops/agentics-dream-machine",
+        "reason": "Main/latestCI metadata inspected; no implementation or per-repository validation claimed. Fair bounded rotation beyond recent memory-graph, auto-optimizer, config-manager, test-bench and Forge."
+      }
+    ]
+  },
+  "coordination": {
+    "task": "task-mvds7cnz",
+    "swarm": "swarm-1792325294813-f6c5iw",
+    "maxAgents": 1,
+    "delegatedWorkers": 0,
+    "writer": "One coordinator, new isolated source/baseline/candidate worktrees, active RuOS processes checked before starting; no prior writer observed. Baseline/candidate use separate Cargo target directories.",
+    "githubWrites": "Connected Git-object API with expected SHA and force=false verified. Shell Git writes not assumed or attempted.",
+    "runtimeState": "Tracked .swarm/state.json changed by real Ruflo, deliberately excluded from publication; no unrelated edits overwritten."
+  },
+  "instructions": {
+    "AGENTS": "No AGENTS.md or CLAUDE.md found. README development/quality instructions inspected; referenced CONTRIBUTING.md absent.",
+    "coreMemory": "task_start/check_risk returned unscreened:true with no playbook entries or warnings. No invented guidance.",
+    "architectureMapping": [
+      "Rust core and existing Node integration retained; no dependency manifest or lockfile edits.",
+      "Only environment-based config validation changed; no IAM/service deployment/schema/persistence changes.",
+      "RuVector backed by Cloud SQL Postgres remains only authorized intelligence/persistence layer; no service-owned database added.",
+      "Existing startup hard-failure contract retained; no fallback when required values are blank.",
+      "No coverage/test/Clippy suppression, no ignored-test changes or serial-thread workaround.",
+      "Ruflo uses fail-closed Linux seccomp and checksum-pinned real local model; no model or task data egress."
+    ]
+  },
+  "runtime": {
+    "localNode": "24.19.0",
+    "RuOSNode": "20.20.2",
+    "Rust": "1.88.0",
+    "securityToolchain": "1.99.0",
+    "cargoAudit": "0.22.2",
+    "bootstrapCheckout": "6454d374a939f2b5f94709b6909f4251b7204252",
+    "bootstrapUpstream": "83c4850c04d6243c1f700ec4a6a0e406a7d7198a",
+    "OpenSSL": "3.0.13",
+    "diskInitialFreeGiB": 18,
+    "priorRunEnvironmentNotAssumed": true,
+    "tests": "Existing authorized RuOS desktop; no new provisioning"
+  },
+  "tools": {
+    "Ruflo": "3.56.3",
+    "Transformers": "4.3.1",
+    "MetaHarness": "0.4.17",
+    "Darwin": "0.10.3",
+    "Flywheel": "0.1.12",
+    "upstreamDocsRevision": "e0dfd44da72b7adfb7c57fdd42d124be58ed7086",
+    "model": "Xenova/all-MiniLM-L6-v2",
+    "modelRevision": "751bff37182d3f1213fa05d7196b954e230abad9",
+    "hashes": {
+      "cargoLock": "23f0119d7b26681b3aa57ed7ca3bfbbe5b1654207965a6121e6e48555f63ec4a",
+      "npmLock": "792307ce634503acd29213f7c58ab9b6491f99b2ea02523532d04b93762ece85",
+      "contract": "af045912fd755781044fd2ddd6adafb1a9917e9e8253e51d0f73bbe0ba675e98",
+      "evaluator": "73de8b2543d7c0a8ae7c7413e46f443bca1660c5baca4fa24586f44c020936de",
+      "nativeFixture": "be18b4b6e59a0c6c66bd1b59063380b45249840a8b290ae80929400d21902b78",
+      "offlineLauncher": "e4abfedba54133eeedae7fddb1bc35308a0e93df194453ab424cd96c2dd7ee89",
+      "modelAdapter": "636a3717b69ef9c55b104e37fd0443adcee0e98aca712c51458ed66904cc2c80"
+    }
+  },
+  "commands": [
+    {
+      "command": "RUFLO_DAEMON_AUTOSTART=0 node ../cycle-tools-20261017/node_modules/ruflo/bin/ruflo.js swarm init --topology hierarchical --max-agents 1 --strategy specialized",
+      "exit": 0
+    },
+    {
+      "command": "RUFLO_DAEMON_AUTOSTART=0 node ../cycle-tools-20261017/node_modules/ruflo/bin/ruflo.js hooks pre-task --description 'inference-oct18 repair Phase7 environment validation and parallel test race without serializing tests'",
+      "exit": 0
+    },
+    {
+      "command": "node ../cycle-tools-20261017/node_modules/metaharness/dist/bin.js score . --json",
+      "exit": 0,
+      "baseline": 76,
+      "candidate": 76,
+      "hardConstraints": "6/6",
+      "warning": "Static estimate, not compiler/runtime proof"
+    },
+    {
+      "command": "node ../cycle-tools-20261017/node_modules/@metaharness/darwin/dist/cli.js evolve . --generations 1 --children 2 --concurrency 1 --seed 2026101808 --sandbox real --selection pareto",
+      "exit": 0,
+      "variants": [
+        {
+          "variant": "baseline",
+          "score": {
+            "variantId": "baseline",
+            "taskSuccess": 1,
+            "testPassRate": 1,
+            "traceQuality": 0.9,
+            "costEfficiency": 1,
+            "latencyEfficiency": 1,
+            "safetyScore": 1,
+            "secretExposure": 0,
+            "destructiveAction": 0,
+            "hallucinatedFile": 0,
+            "toolLoop": 0,
+            "costOverrun": 0,
+            "baseScore": 0.985,
+            "finalScore": 0.985,
+            "promoted": true,
+            "reason": "promoted: finalScore 0.9850 > parent 0.0000 + delta 0.05 (safety 1.00, no test regression)"
+          },
+          "traces": [
+            {
+              "exit": 0,
+              "durationMs": 346,
+              "timedOut": false,
+              "blockedActions": []
+            },
+            {
+              "exit": 0,
+              "durationMs": 345,
+              "timedOut": false,
+              "blockedActions": []
+            },
+            {
+              "exit": 0,
+              "durationMs": 362,
+              "timedOut": false,
+              "blockedActions": []
+            }
+          ]
+        },
+        {
+          "variant": "g1_v0",
+          "score": {
+            "variantId": "g1_v0",
+            "taskSuccess": 1,
+            "testPassRate": 1,
+            "traceQuality": 0.9,
+            "costEfficiency": 1,
+            "latencyEfficiency": 1,
+            "safetyScore": 1,
+            "secretExposure": 0,
+            "destructiveAction": 0,
+            "hallucinatedFile": 0,
+            "toolLoop": 0,
+            "costOverrun": 0,
+            "baseScore": 0.985,
+            "finalScore": 0.985,
+            "promoted": false,
+            "reason": "not promoted: finalScore 0.9850 ≤ parent 0.9850 + delta 0.05"
+          },
+          "traces": [
+            {
+              "exit": 0,
+              "durationMs": 412,
+              "timedOut": false,
+              "blockedActions": []
+            },
+            {
+              "exit": 0,
+              "durationMs": 446,
+              "timedOut": false,
+              "blockedActions": []
+            },
+            {
+              "exit": 0,
+              "durationMs": 374,
+              "timedOut": false,
+              "blockedActions": []
+            }
+          ]
+        },
+        {
+          "variant": "g1_v1",
+          "score": {
+            "variantId": "g1_v1",
+            "taskSuccess": 1,
+            "testPassRate": 1,
+            "traceQuality": 0.9,
+            "costEfficiency": 1,
+            "latencyEfficiency": 1,
+            "safetyScore": 1,
+            "secretExposure": 0,
+            "destructiveAction": 0,
+            "hallucinatedFile": 0,
+            "toolLoop": 0,
+            "costOverrun": 0,
+            "baseScore": 0.985,
+            "finalScore": 0.985,
+            "promoted": false,
+            "reason": "not promoted: finalScore 0.9850 ≤ parent 0.9850 + delta 0.05"
+          },
+          "traces": [
+            {
+              "exit": 0,
+              "durationMs": 392,
+              "timedOut": false,
+              "blockedActions": []
+            },
+            {
+              "exit": 0,
+              "durationMs": 372,
+              "timedOut": false,
+              "blockedActions": []
+            },
+            {
+              "exit": 0,
+              "durationMs": 356,
+              "timedOut": false,
+              "blockedActions": []
+            }
+          ]
+        }
+      ],
+      "conclusion": "Two tied mutations rejected: memoryPolicy/contextBuilder. Nine actual Node test executions exited0. Rust-specific native behavior was evaluated separately by Flywheel, not inferred from Darwin's Node-only test substrate."
+    },
+    {
+      "command": "node /home/ruv/work/inference-oct18-evaluate.mjs /home/ruv/work/inference-gateway-oct18 /home/ruv/work/inference-gateway-candidate-oct18 /home/ruv/.local/share/llm-dev-ops-tools /home/ruv/work/inference-oct18-flywheel.json",
+      "exit": 0,
+      "publishedEquivalent": "node tests/evaluate-phase7.mjs BASELINE CANDIDATE PINNED_TOOLS OUTPUT.json",
+      "holdout": [
+        4,
+        15
+      ],
+      "holdoutTotal": 15,
+      "nativeAnchor": [
+        10,
+        10
+      ],
+      "nodeAnchor": [
+        14,
+        14
+      ],
+      "replay": "8/8",
+      "promotion": "Component only",
+      "fixtureEnvironment": "Separate synthetic process environments for native cases; identical GATEWAY_INTERNAL_URL=http://127.0.0.1:9 for Node compatibility unit tests"
+    },
+    {
+      "command": "RUFLO_DAEMON_AUTOSTART=0 RUFLO_MODEL_DIR=/workspace/scratch/4f25900b71ff/ruflo-models python3 /workspace/scratch/4f25900b71ff/research-lab-blockers/scripts/offline-exec.py node --import /workspace/scratch/4f25900b71ff/research-lab-blockers/scripts/ruflo-local-model.mjs /workspace/scratch/4f25900b71ff/cycle-tools-20261017/node_modules/ruflo/bin/ruflo.js hooks post-task --task-id task-mvds7cnz --success false --quality 0.8 --agent codex --agent-role coordinator --task 'Inference Phase7 native safety15of15, Rust879pass and100parallel repetitions pass; strictClippy and18Rust advisories blockmerge; no deployment' --store-results --format json",
+      "exit": 0,
+      "learningUpdates": {
+        "available": true,
+        "outcomePersisted": true,
+        "patternsUpdated": 2
+      },
+      "feedback": {
+        "recorded": true,
+        "updates": 2
+      },
+      "trajectory": {
+        "recorded": true
+      },
+      "realEmbeddingDimensions": 384,
+      "remoteLoading": false,
+      "overallSuccess": false
+    },
+    {
+      "command": "bash /home/ruv/work/research-lab-runtime-recovery-20261016/scripts/bootstrap-ruos.sh",
+      "exit": 0
+    },
+    {
+      "command": "pkg-config --modversion openssl",
+      "exit": 0,
+      "stdout": "3.0.13"
+    },
+    {
+      "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=3 cargo +1.88.0 test --workspace --all-features --locked",
+      "baselineExit": 0,
+      "exit": 0,
+      "baseline": {
+        "passed": 876,
+        "ignored": 19
+      },
+      "candidate": {
+        "passed": 879,
+        "ignored": 19
+      },
+      "note": "Total includes executable doc tests; no ignored tests were counted as passed. Default parallel runner, not --test-threads=1."
+    },
+    {
+      "command": "cargo +1.88.0 test -p gateway-agents --locked phase7::config -- --test-threads=8 (repeat up to100, stop on failure)",
+      "baseline": {
+        "trials": 5,
+        "firstFailure": 5,
+        "passedTrials": 4,
+        "failedTrials": 1,
+        "failedTest": "test_from_env_panics_on_wrong_phase",
+        "observed": "Missing-variable panic instead of expected phase panic due shared env race"
+      },
+      "candidate": {
+        "trials": 100,
+        "passedTrials": 100,
+        "failedTrials": 0,
+        "testsPerTrial": 7
+      },
+      "statisticalClaim": "Observed stability, not a zero-race probability guarantee or throughput benchmark"
+    },
+    {
+      "command": "cargo +1.88.0 fmt --all -- --check",
+      "exit": 0,
+      "note": "Initial candidate formatting failed one let-else newline; corrected via pinned rustfmt before source publication, rebuilt/revalidated resulting source commit"
+    },
+    {
+      "command": "cargo +1.88.0 build --workspace --all-features --locked",
+      "exit": 0
+    },
+    {
+      "command": "cargo +1.88.0 build -p gateway-agents --example phase7-config-probe --locked",
+      "exit": 0,
+      "baselineExit": 0
+    },
+    {
+      "command": "node tests/phase7-config-probe.mjs target/debug/examples/phase7-config-probe",
+      "baselineExit": 1,
+      "exit": 0
+    },
+    {
+      "command": "cargo +1.88.0 clippy --workspace --all-targets --all-features --locked -- -D warnings",
+      "baselineExit": 101,
+      "exit": 101,
+      "observedSameErrors": [
+        "gateway-routing cognitive complexity27/25",
+        "gateway-routing cognitive complexity32/25",
+        "gateway-routing cognitive complexity37/25"
+      ],
+      "note": "Compiler stopped before all crates; not a complete repository error count or a passing changed-crate lint claim."
+    },
+    {
+      "command": "cargo +1.99.0 audit --json --file Cargo.lock",
+      "exit": 1,
+      "vulnerabilities": 18,
+      "warnings": {
+        "unmaintained": 6,
+        "unsound": 4,
+        "yanked": 1
+      },
+      "databaseRevision": "999ec89d5d3f10f20be14750ec8c2d8b44e0ac9b",
+      "databaseUpdated": "2026-10-17T17:23:59+02:00",
+      "lockUnchanged": true
+    },
+    {
+      "command": "npm ci --ignore-scripts --no-audit",
+      "exit": 0,
+      "installed": 144,
+      "note": "Engine warnings retained, not suppressed"
+    },
+    {
+      "command": "npm test",
+      "localNode24Exit": 0,
+      "passed": 14,
+      "skipped": 0
+    },
+    {
+      "command": "GATEWAY_INTERNAL_URL=http://127.0.0.1:9 node --test --test-reporter=tap test/index.test.js",
+      "RuOSNode20Exit": 0,
+      "passed": 14,
+      "skipped": 0
+    },
+    {
+      "command": "npm audit --omit=dev --json --fetch-retries=0 --fetch-timeout=20000",
+      "exit": 0,
+      "findings": 0
+    },
+    {
+      "command": "npm audit --json --fetch-retries=0 --fetch-timeout=20000",
+      "exit": 1,
+      "findings": {
+        "info": 0,
+        "low": 0,
+        "moderate": 7,
+        "high": 2,
+        "critical": 1,
+        "total": 10
+      }
+    },
+    {
+      "command": "git diff --cached --binary | git apply --check --reverse",
+      "exit": 0,
+      "note": "Reverse applicability verified; signed parent source bytes retained. No production rollback performed."
+    }
+  ],
+  "flywheel": {
+    "contract": {
+      "baseline": "35a949a4671cda298cb81a38a1a8787dbbabb514",
+      "scope": "Phase7 startup configuration safety and parallel-test isolation",
+      "holdout": "Each of seven required variables must reject empty and whitespace-only values (14 cases); Debug must redact the API key (1 case)",
+      "anchor": "Valid complete configuration succeeds; wrong nonempty phase/layer and each missing variable fail (10 native process cases); all14 Node tests retained",
+      "measurement": "Build the identical probe against each real production module, execute each configuration in a separate process with an explicit synthetic environment. No mock module, live credentials, RuVector availability or persistence claim.",
+      "candidateAcceptance": "15/15 holdouts;10/10 native anchors;14/14 Node tests; default-parallel full locked Rust suite passes; repeated Phase7 tests pass without process-global environment mutation or serializing tests",
+      "wholeRepositoryMerge": "Strict Clippy, formatting, locked build/tests, security/audit and all required CI/approvals must pass. No suppression, threshold reduction, test skipping, --test-threads=1 workaround or force push.",
+      "darwin": {
+        "generations": 1,
+        "children": 2,
+        "concurrency": 1,
+        "seed": 2026101808,
+        "sandbox": "real",
+        "selection": "pareto"
+      },
+      "architecture": "Rust core/TypeScript integration retained; stateless environment-configured GCP services; no persistence, IAM, schema or deployment changes"
+    },
+    "contractSha256": "af045912fd755781044fd2ddd6adafb1a9917e9e8253e51d0f73bbe0ba675e98",
+    "fixtureSha256": "be18b4b6e59a0c6c66bd1b59063380b45249840a8b290ae80929400d21902b78",
+    "baselineSource": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+    "candidateSource": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+    "cargoLock": "23f0119d7b26681b3aa57ed7ca3bfbbe5b1654207965a6121e6e48555f63ec4a",
+    "builds": [
+      {
+        "source": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "build",
+          "-p",
+          "gateway-agents",
+          "--example",
+          "phase7-config-probe",
+          "--locked"
+        ],
+        "exit": 0,
+        "stderr": "dapters/policy_engine.rs:9:5\n   |\n9  |     EnforcementOutcome, EnforcementReport, Policy, PolicyAction, PolicyActionType, PolicyConsumer,\n   |     ^^^^^^^^^^^^^^^^^^                             ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^\n10 |     PolicyDecision, PolicyRule, PolicyViolation,\n   |                     ^^^^^^^^^^  ^^^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:16:5\n   |\n16 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:18:34\n   |\n18 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/router.rs:13:5\n   |\n13 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/router.rs:15:34\n   |\n15 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:16:34\n   |\n16 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused imports: `ContentLocation`, `PiiType`, `SafetyCategory`, and `SafetyFinding`\n --> crates/gateway-integrations/src/adapters/shield.rs:9:5\n  |\n9 |     ContentLocation, PiiCheckResult, PiiType, SafetyCategory, SafetyFilter, SafetyFinding,\n  |     ^^^^^^^^^^^^^^^                  ^^^^^^^  ^^^^^^^^^^^^^^                ^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/shield.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/connector_hub.rs:35:5\n   |\n33 | struct CachedProvider {\n   |        -------------- field in this struct\n34 |     info: ProviderInfo,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` on by default\n\nwarning: method `should_flush` is never used\n  --> crates/gateway-integrations/src/adapters/observatory.rs:65:14\n   |\n33 | impl ObservatoryAdapter {\n   | ----------------------- method in this implementation\n...\n65 |     async fn should_flush(&self) -> bool {\n   |              ^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:35:5\n   |\n33 | struct CachedRule {\n   |        ---------- field in this struct\n34 |     rule: RoutingRule,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:41:5\n   |\n39 | struct CachedGraph {\n   |        ----------- field in this struct\n40 |     graph: DecisionGraph,\n41 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `config` is never read\n   --> crates/gateway-integrations/src/adapters/manager.rs:480:5\n    |\n479 | pub struct IntegrationManagerBuilder {\n    |            ------------------------- field in this struct\n480 |     config: IntegrationsConfig,\n    |     ^^^^^^\n\nwarning: methods `config`, `enabled`, and `build` are never used\n   --> crates/gateway-integrations/src/adapters/manager.rs:492:12\n    |\n483 | impl IntegrationManagerBuilder {\n    | ------------------------------ methods in this implementation\n...\n492 |     pub fn config(mut self, config: IntegrationsConfig) -> Self {\n    |            ^^^^^^\n...\n498 |     pub fn enabled(mut self, enabled: bool) -> Self {\n    |            ^^^^^^^\n...\n504 |     pub fn build(self) -> IntegrationManager {\n    |            ^^^^^\n\nwarning: `gateway-integrations` (lib) generated 24 warnings (run `cargo fix --lib -p gateway-integrations` to apply 18 suggestions)\n    Finished `dev` profile [unoptimized] target(s) in 0.22s\n"
+      },
+      {
+        "source": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "build",
+          "-p",
+          "gateway-agents",
+          "--example",
+          "phase7-config-probe",
+          "--locked"
+        ],
+        "exit": 0,
+        "stderr": "dapters/policy_engine.rs:9:5\n   |\n9  |     EnforcementOutcome, EnforcementReport, Policy, PolicyAction, PolicyActionType, PolicyConsumer,\n   |     ^^^^^^^^^^^^^^^^^^                             ^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^\n10 |     PolicyDecision, PolicyRule, PolicyViolation,\n   |                     ^^^^^^^^^^  ^^^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:16:5\n   |\n16 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/policy_engine.rs:18:34\n   |\n18 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/router.rs:13:5\n   |\n13 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/router.rs:15:34\n   |\n15 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: unused import: `warn`\n  --> crates/gateway-integrations/src/adapters/sentinel.rs:16:34\n   |\n16 | use tracing::{debug, instrument, warn};\n   |                                  ^^^^\n\nwarning: unused imports: `ContentLocation`, `PiiType`, `SafetyCategory`, and `SafetyFinding`\n --> crates/gateway-integrations/src/adapters/shield.rs:9:5\n  |\n9 |     ContentLocation, PiiCheckResult, PiiType, SafetyCategory, SafetyFilter, SafetyFinding,\n  |     ^^^^^^^^^^^^^^^                  ^^^^^^^  ^^^^^^^^^^^^^^                ^^^^^^^^^^^^^\n\nwarning: unused import: `std::sync::Arc`\n  --> crates/gateway-integrations/src/adapters/shield.rs:14:5\n   |\n14 | use std::sync::Arc;\n   |     ^^^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/connector_hub.rs:35:5\n   |\n33 | struct CachedProvider {\n   |        -------------- field in this struct\n34 |     info: ProviderInfo,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n   |\n   = note: `#[warn(dead_code)]` on by default\n\nwarning: method `should_flush` is never used\n  --> crates/gateway-integrations/src/adapters/observatory.rs:65:14\n   |\n33 | impl ObservatoryAdapter {\n   | ----------------------- method in this implementation\n...\n65 |     async fn should_flush(&self) -> bool {\n   |              ^^^^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:35:5\n   |\n33 | struct CachedRule {\n   |        ---------- field in this struct\n34 |     rule: RoutingRule,\n35 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `cached_at` is never read\n  --> crates/gateway-integrations/src/adapters/router.rs:41:5\n   |\n39 | struct CachedGraph {\n   |        ----------- field in this struct\n40 |     graph: DecisionGraph,\n41 |     cached_at: Instant,\n   |     ^^^^^^^^^\n\nwarning: field `config` is never read\n   --> crates/gateway-integrations/src/adapters/manager.rs:480:5\n    |\n479 | pub struct IntegrationManagerBuilder {\n    |            ------------------------- field in this struct\n480 |     config: IntegrationsConfig,\n    |     ^^^^^^\n\nwarning: methods `config`, `enabled`, and `build` are never used\n   --> crates/gateway-integrations/src/adapters/manager.rs:492:12\n    |\n483 | impl IntegrationManagerBuilder {\n    | ------------------------------ methods in this implementation\n...\n492 |     pub fn config(mut self, config: IntegrationsConfig) -> Self {\n    |            ^^^^^^\n...\n498 |     pub fn enabled(mut self, enabled: bool) -> Self {\n    |            ^^^^^^^\n...\n504 |     pub fn build(self) -> IntegrationManager {\n    |            ^^^^^\n\nwarning: `gateway-integrations` (lib) generated 24 warnings (run `cargo fix --lib -p gateway-integrations` to apply 18 suggestions)\n    Finished `dev` profile [unoptimized] target(s) in 0.28s\n"
+      }
+    ],
+    "measurements": [
+      {
+        "source": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+        "suite": "holdout",
+        "score": {
+          "primary": 0.26666666666666666,
+          "noopRate": 0.7333333333333334,
+          "costPerWin": 0,
+          "regressed": false,
+          "itemWins": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false
+          ]
+        },
+        "native": {
+          "passed": 4,
+          "total": 15,
+          "anchors": 10,
+          "binarySha256": "1b598a5074554d688b6828c309fdea6cfe793d041b6fa18faefe395f9bf73748"
+        },
+        "commands": [
+          {
+            "command": [
+              "/usr/bin/node",
+              "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+              "/home/ruv/work/inference-gateway-oct18/target/debug/examples/phase7-config-probe"
+            ],
+            "exit": 1
+          }
+        ]
+      },
+      {
+        "source": "e694adc85a9e26970701641ce150a0f2ec957ca548a1cf8efc63eb4ad069d492",
+        "suite": "anchor",
+        "score": {
+          "primary": 1,
+          "noopRate": 0,
+          "costPerWin": 0,
+          "regressed": false,
+          "itemWins": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "native": {
+          "passed": 4,
+          "total": 15,
+          "anchors": 10,
+          "binarySha256": "1b598a5074554d688b6828c309fdea6cfe793d041b6fa18faefe395f9bf73748"
+        },
+        "tests": {
+          "passed": 14,
+          "skipped": 0,
+          "retainedNames": true,
+          "existingNamesSha256": "f000093629c548747901e3bb7f41f7f62a02082f57582a7475c62d7074e5ff42"
+        },
+        "commands": [
+          {
+            "command": [
+              "/usr/bin/node",
+              "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+              "/home/ruv/work/inference-gateway-oct18/target/debug/examples/phase7-config-probe"
+            ],
+            "exit": 1
+          },
+          {
+            "command": [
+              "/usr/bin/node",
+              "--test",
+              "--test-reporter=tap",
+              "test/index.test.js"
+            ],
+            "exit": 0
+          }
+        ]
+      },
+      {
+        "source": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+        "suite": "holdout",
+        "score": {
+          "primary": 1,
+          "noopRate": 0,
+          "costPerWin": 0,
+          "regressed": false,
+          "itemWins": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "native": {
+          "passed": 15,
+          "total": 15,
+          "anchors": 10,
+          "binarySha256": "066086cfb3cd6b9a4f8e158de1ce0f69a584d6b702d28fe4191fbdf864e5cc0d"
+        },
+        "commands": [
+          {
+            "command": [
+              "/usr/bin/node",
+              "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+              "/home/ruv/work/inference-gateway-candidate-oct18/target/debug/examples/phase7-config-probe"
+            ],
+            "exit": 0
+          }
+        ]
+      },
+      {
+        "source": "d4766de5093b42c631eda88fbeb3ab41defddd64d30421eff14a1e0c75f6aa14",
+        "suite": "anchor",
+        "score": {
+          "primary": 1,
+          "noopRate": 0,
+          "costPerWin": 0,
+          "regressed": false,
+          "itemWins": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "native": {
+          "passed": 15,
+          "total": 15,
+          "anchors": 10,
+          "binarySha256": "066086cfb3cd6b9a4f8e158de1ce0f69a584d6b702d28fe4191fbdf864e5cc0d"
+        },
+        "tests": {
+          "passed": 14,
+          "skipped": 0,
+          "retainedNames": true,
+          "existingNamesSha256": "f000093629c548747901e3bb7f41f7f62a02082f57582a7475c62d7074e5ff42"
+        },
+        "commands": [
+          {
+            "command": [
+              "/usr/bin/node",
+              "/home/ruv/work/inference-gateway-candidate-oct18/tests/phase7-config-probe.mjs",
+              "/home/ruv/work/inference-gateway-candidate-oct18/target/debug/examples/phase7-config-probe"
+            ],
+            "exit": 0
+          },
+          {
+            "command": [
+              "/usr/bin/node",
+              "--test",
+              "--test-reporter=tap",
+              "test/index.test.js"
+            ],
+            "exit": 0
+          }
+        ]
+      }
+    ],
+    "promotions": 1,
+    "fingerprint": "c5942e7c9bf8f28fe7af47a6ec3887d11eeb3f8c8e8601cc6a7a54969ea0b981",
+    "replay": {
+      "pass": true,
+      "checks": {
+        "receipts": true,
+        "reachesRoot": true,
+        "contiguousParents": true,
+        "allPromoted": true,
+        "gateUnchanged": true,
+        "gateReExecutes": true,
+        "allCommitsReceipts": true,
+        "sealedFieldsAuthentic": true
+      },
+      "failures": [],
+      "chainSummary": "gen1(startup) → gen0(root)"
+    },
+    "boundary": "Component configuration validation only, not whole-repository approval. No network calls, live secrets or RuVector persistence claims. Cost/latency/energy axes not measured; zero costPerWin is a neutral gate input, not a measurement. Full parallel Rust tests, strict Clippy, builds, formatting, audit and CI are independent merge gates."
+  },
+  "sourceCi": {
+    "run": 39126746903,
+    "url": "https://github.com/LLM-Dev-Ops/inference-gateway/actions/runs/39126746903",
+    "jobs": [
+      {
+        "id": 117673368285,
+        "name": "Rust workspace",
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Install pinned Rust toolchain",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run cargo +1.88.0 fmt --all -- --check",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run cargo +1.88.0 clippy --workspace --all-targets --all-features --locked -- -D warnings",
+            "status": "completed",
+            "conclusion": "failure"
+          },
+          {
+            "name": "Run cargo +1.88.0 test --workspace --all-features --locked",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run cargo +1.88.0 build --workspace --all-features --locked",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run cargo +1.88.0 build -p gateway-agents --example phase7-config-probe --locked",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run node tests/phase7-config-probe.mjs target/debug/examples/phase7-config-probe",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "status": "completed",
+            "conclusion": "skipped"
+          },
+          {
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "id": 117673368407,
+        "name": "Node tests and production audit",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run npm ci",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run npm test",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run npm audit --omit=dev --audit-level=high",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "conflicts": {
+    "mainChanged": false,
+    "mergeable": true,
+    "resolutions": [],
+    "mergeDecision": "Do not merge while strictClippy/audit/required checks red. Final evidence commit revalidated separately and recorded on PR."
+  },
+  "rejectedAttempts": [
+    "Two Darwin mutations tied0.985 and were not applied.",
+    "Initial candidate rustfmt failed one newline; fixed before publication and full source commit rerun.",
+    "First Flywheel attempt failed closed: ambient desktop gateway configuration made existing unreachable-upstream unit return501, so13/14Node assertions passed. No receipt or score accepted. Identical explicit local endpoint applied to both revisions and all builds/probes/anchors rerun; no test expectation or criterion changed.",
+    "No serial Rust runner, lint suppression, force dependency update, scoring change, mock Rust module, fake external service or hash embeddings used."
+  ],
+  "remaining": [
+    "Refactor three legacy gateway-routing functions to satisfy unchanged strict cognitive-complexity lint, then rerun whole workspace to discover any later lint debt.",
+    "Resolve18Rust lockfile advisories and11warnings without unsafe/breaking updates.",
+    "Resolve10development npm advisories(1critical2high7moderate); production graph is clean.",
+    "Nineteen existing ignoredRust/doc integration tests are not execution proof; no live RuVector/GCP integration or deployment claimed.",
+    "Full-repository merge remains blocked despite component improvement."
+  ],
+  "rollback": "Revert this cycle's source and evidence commits, retaining prior PR recovery commits. Signed inverse restores exact parent config bytes; revert would undo blank-value hardening and key redaction, so review before any future production rollback. No persistence/schema migration.",
+  "finalVerification": "Exact final SHA, hosted CI and latest main are recorded on PR1 after evidence publication; this artifact makes no claim about future CI."
+}

@@ -103,7 +103,9 @@ impl TimeoutManager {
     where
         F: Future<Output = Result<T, GatewayError>>,
     {
-        if let Ok(result) = tokio::time::timeout(timeout, future).await { result } else {
+        if let Ok(result) = tokio::time::timeout(timeout, future).await {
+            result
+        } else {
             warn!(timeout_ms = timeout.as_millis(), "Request timed out");
             Err(GatewayError::timeout(timeout))
         }
@@ -289,9 +291,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_timeout_ext() {
-        let result = async { 42 }
-            .with_timeout(Duration::from_secs(1))
-            .await;
+        let result = async { 42 }.with_timeout(Duration::from_secs(1)).await;
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), 42);

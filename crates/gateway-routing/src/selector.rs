@@ -107,9 +107,9 @@ impl SelectionCriteria {
         // Check if request has images (vision)
         let has_images = request.messages.iter().any(|msg| {
             if let gateway_core::MessageContent::Parts(parts) = &msg.content {
-                parts.iter().any(|p| {
-                    matches!(p, gateway_core::ContentPart::ImageUrl { .. })
-                })
+                parts
+                    .iter()
+                    .any(|p| matches!(p, gateway_core::ContentPart::ImageUrl { .. }))
             } else {
                 false
             }
@@ -306,9 +306,9 @@ impl ProviderSelector {
                 // Check model support
                 if let Some(model) = &criteria.model {
                     let models = c.provider.models();
-                    let supports_model = models.iter().any(|m| {
-                        m.id == *model || m.aliases.contains(model)
-                    });
+                    let supports_model = models
+                        .iter()
+                        .any(|m| m.id == *model || m.aliases.contains(model));
                     if !supports_model {
                         debug!(
                             provider = %c.id,
@@ -320,7 +320,10 @@ impl ProviderSelector {
                 }
 
                 // Check capabilities
-                if !criteria.capabilities.satisfied_by(c.provider.capabilities()) {
+                if !criteria
+                    .capabilities
+                    .satisfied_by(c.provider.capabilities())
+                {
                     debug!(
                         provider = %c.id,
                         "Capabilities not satisfied"
@@ -349,7 +352,9 @@ impl ProviderSelector {
         }
 
         candidates.iter().max_by(|a, b| {
-            a.score().partial_cmp(&b.score()).unwrap_or(std::cmp::Ordering::Equal)
+            a.score()
+                .partial_cmp(&b.score())
+                .unwrap_or(std::cmp::Ordering::Equal)
         })
     }
 
@@ -361,7 +366,9 @@ impl ProviderSelector {
     ) -> Vec<&ProviderCandidate> {
         let mut sorted: Vec<_> = candidates.iter().collect();
         sorted.sort_by(|a, b| {
-            b.score().partial_cmp(&a.score()).unwrap_or(std::cmp::Ordering::Equal)
+            b.score()
+                .partial_cmp(&a.score())
+                .unwrap_or(std::cmp::Ordering::Equal)
         });
         sorted.into_iter().take(limit).collect()
     }
@@ -379,8 +386,8 @@ fn meets_health_requirement(actual: HealthStatus, required: HealthStatus) -> boo
 #[cfg(test)]
 mod tests {
     use super::*;
-    use gateway_core::{ChatChunk, GatewayError, GatewayResponse, ModelInfo, ProviderType};
     use futures::stream::BoxStream;
+    use gateway_core::{ChatChunk, GatewayError, GatewayResponse, ModelInfo, ProviderType};
 
     struct MockProvider {
         id: String,
@@ -418,7 +425,10 @@ mod tests {
             ProviderType::Custom
         }
 
-        async fn chat_completion(&self, _: &GatewayRequest) -> Result<GatewayResponse, GatewayError> {
+        async fn chat_completion(
+            &self,
+            _: &GatewayRequest,
+        ) -> Result<GatewayResponse, GatewayError> {
             unimplemented!()
         }
 
@@ -528,7 +538,11 @@ mod tests {
         let filtered = ProviderSelector::filter(&candidates, &criteria);
 
         assert_eq!(filtered.len(), 2);
-        assert!(filtered.iter().find(|c| c.id == "p2").map(|c| c.preferred).unwrap_or(false));
+        assert!(filtered
+            .iter()
+            .find(|c| c.id == "p2")
+            .map(|c| c.preferred)
+            .unwrap_or(false));
     }
 
     #[test]
@@ -554,10 +568,10 @@ mod tests {
     fn test_candidate_score() {
         let provider: Arc<dyn LLMProvider> = Arc::new(MockProvider::new("test"));
 
-        let healthy = ProviderCandidate::new(Arc::clone(&provider))
-            .with_health(HealthStatus::Healthy);
-        let degraded = ProviderCandidate::new(Arc::clone(&provider))
-            .with_health(HealthStatus::Degraded);
+        let healthy =
+            ProviderCandidate::new(Arc::clone(&provider)).with_health(HealthStatus::Healthy);
+        let degraded =
+            ProviderCandidate::new(Arc::clone(&provider)).with_health(HealthStatus::Degraded);
 
         assert!(healthy.score() > degraded.score());
     }

@@ -42,7 +42,10 @@ impl std::str::FromStr for SigningAlgorithm {
         match s.to_uppercase().as_str() {
             "HMAC-SHA256" => Ok(Self::HmacSha256),
             "HMAC-SHA512" => Ok(Self::HmacSha512),
-            _ => Err(SecurityError::validation(format!("Unknown algorithm: {}", s))),
+            _ => Err(SecurityError::validation(format!(
+                "Unknown algorithm: {}",
+                s
+            ))),
         }
     }
 }
@@ -81,12 +84,10 @@ impl RequestSigner {
         let string_to_sign = format!("{}\n{}", timestamp.timestamp(), canonical);
 
         let signature = match self.algorithm {
-            SigningAlgorithm::HmacSha256 => {
-                HashingService::hmac_sha256_hex(
-                    self.secret.expose_secret().as_bytes(),
-                    string_to_sign.as_bytes(),
-                )?
-            }
+            SigningAlgorithm::HmacSha256 => HashingService::hmac_sha256_hex(
+                self.secret.expose_secret().as_bytes(),
+                string_to_sign.as_bytes(),
+            )?,
             SigningAlgorithm::HmacSha512 => {
                 let hmac = hmac_sha512(
                     self.secret.expose_secret().as_bytes(),
@@ -108,10 +109,7 @@ impl RequestSigner {
     /// # Errors
     /// Returns error if signing fails.
     pub fn sign_message(&self, message: &str) -> Result<String> {
-        HashingService::hmac_sha256_hex(
-            self.secret.expose_secret().as_bytes(),
-            message.as_bytes(),
-        )
+        HashingService::hmac_sha256_hex(self.secret.expose_secret().as_bytes(), message.as_bytes())
     }
 
     /// Create a signature header value.
@@ -225,12 +223,10 @@ impl SignatureVerifier {
         let string_to_sign = format!("{}\n{}", timestamp.timestamp(), canonical);
 
         let expected = match self.algorithm {
-            SigningAlgorithm::HmacSha256 => {
-                HashingService::hmac_sha256_hex(
-                    self.secret.expose_secret().as_bytes(),
-                    string_to_sign.as_bytes(),
-                )?
-            }
+            SigningAlgorithm::HmacSha256 => HashingService::hmac_sha256_hex(
+                self.secret.expose_secret().as_bytes(),
+                string_to_sign.as_bytes(),
+            )?,
             SigningAlgorithm::HmacSha512 => {
                 let hmac = hmac_sha512(
                     self.secret.expose_secret().as_bytes(),
@@ -426,8 +422,8 @@ impl Signature {
             .parse::<i64>()
             .map_err(|_| SecurityError::InvalidSignature)?;
 
-        let timestamp = DateTime::from_timestamp(timestamp, 0)
-            .ok_or(SecurityError::InvalidSignature)?;
+        let timestamp =
+            DateTime::from_timestamp(timestamp, 0).ok_or(SecurityError::InvalidSignature)?;
 
         Ok(Self {
             algorithm,
@@ -463,10 +459,8 @@ pub mod webhook {
         let timestamp = Utc::now().timestamp();
         let signed_payload = format!("{}:{}", timestamp, hex::encode(payload));
 
-        let signature = HashingService::hmac_sha256_hex(
-            secret.as_bytes(),
-            signed_payload.as_bytes(),
-        )?;
+        let signature =
+            HashingService::hmac_sha256_hex(secret.as_bytes(), signed_payload.as_bytes())?;
 
         Ok(format!("t={},v1={}", timestamp, signature))
     }
@@ -508,10 +502,8 @@ pub mod webhook {
 
         // Verify signature
         let signed_payload = format!("{}:{}", timestamp, hex::encode(payload));
-        let expected = HashingService::hmac_sha256_hex(
-            secret.as_bytes(),
-            signed_payload.as_bytes(),
-        )?;
+        let expected =
+            HashingService::hmac_sha256_hex(secret.as_bytes(), signed_payload.as_bytes())?;
 
         if !HashingService::constant_time_eq(expected.as_bytes(), sig_value.as_bytes()) {
             return Err(SecurityError::InvalidSignature);
@@ -585,8 +577,7 @@ mod tests {
     fn test_signature_expiration() {
         let secret = "shared_secret";
         let signer = RequestSigner::new(secret);
-        let verifier = SignatureVerifier::new(secret)
-            .with_validity(Duration::from_secs(1));
+        let verifier = SignatureVerifier::new(secret).with_validity(Duration::from_secs(1));
 
         let request = SignableRequest::new("GET", "/api/users");
         let mut signature = signer.sign(&request).unwrap();
@@ -658,10 +649,9 @@ mod tests {
 
     #[test]
     fn test_signing_with_sha512() {
-        let signer = RequestSigner::new("secret")
-            .with_algorithm(SigningAlgorithm::HmacSha512);
-        let verifier = SignatureVerifier::new("secret")
-            .with_algorithm(SigningAlgorithm::HmacSha512);
+        let signer = RequestSigner::new("secret").with_algorithm(SigningAlgorithm::HmacSha512);
+        let verifier =
+            SignatureVerifier::new("secret").with_algorithm(SigningAlgorithm::HmacSha512);
 
         let request = SignableRequest::new("GET", "/test");
         let signature = signer.sign(&request).unwrap();

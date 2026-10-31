@@ -496,7 +496,10 @@ impl LoadBalancingStrategy for LatencyBasedStrategy {
         let mut rng = rand::thread_rng();
         if rng.gen::<f64>() < self.exploration_rate {
             let idx = rng.gen_range(0..healthy.len());
-            debug!(provider_index = healthy[idx], "Exploration: random selection");
+            debug!(
+                provider_index = healthy[idx],
+                "Exploration: random selection"
+            );
             return Some(healthy[idx]);
         }
 
@@ -609,9 +612,7 @@ mod tests {
         let strategy = RoundRobinStrategy::new();
         let providers = create_test_providers(3);
 
-        let selections: Vec<usize> = (0..6)
-            .filter_map(|_| strategy.select(&providers))
-            .collect();
+        let selections: Vec<usize> = (0..6).filter_map(|_| strategy.select(&providers)).collect();
 
         // Should cycle through all providers
         assert_eq!(selections, vec![0, 1, 2, 0, 1, 2]);
@@ -623,9 +624,7 @@ mod tests {
         let mut providers = create_test_providers(3);
         providers[1].is_healthy = false;
 
-        let selections: Vec<usize> = (0..4)
-            .filter_map(|_| strategy.select(&providers))
-            .collect();
+        let selections: Vec<usize> = (0..4).filter_map(|_| strategy.select(&providers)).collect();
 
         // Should only select healthy providers (0 and 2)
         assert_eq!(selections, vec![0, 2, 0, 2]);

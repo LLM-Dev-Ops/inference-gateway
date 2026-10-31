@@ -3,7 +3,7 @@
 A high-performance, production-ready Rust-based gateway for unifying multiple Large Language Model (LLM) providers into a single, scalable API.
 
 [![License](https://img.shields.io/badge/license-Commercial-blue.svg)](LICENSE.md)
-[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
+[![Rust](https://img.shields.io/badge/rust-1.88%2B-orange.svg)](https://www.rust-lang.org)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![Tests](https://img.shields.io/badge/tests-128%20passed-brightgreen.svg)]()
 [![Kubernetes](https://img.shields.io/badge/kubernetes-1.24%2B-blue.svg)](https://kubernetes.io)
@@ -76,7 +76,7 @@ A high-performance, production-ready Rust-based gateway for unifying multiple La
 
 ### Prerequisites
 
-- **Rust 1.75+** (for local development)
+- **Rust 1.88+** (for local development)
 - **Docker** (for containerized deployment)
 - **PostgreSQL 14+** (for persistence)
 - **Redis 7.0+** (optional, for distributed caching)

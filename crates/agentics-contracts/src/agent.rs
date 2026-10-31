@@ -41,11 +41,7 @@ pub struct AgentMetadata {
 impl AgentMetadata {
     /// Creates new agent metadata with required fields.
     #[must_use]
-    pub fn new(
-        id: impl Into<String>,
-        version: impl Into<String>,
-        agent_type: AgentType,
-    ) -> Self {
+    pub fn new(id: impl Into<String>, version: impl Into<String>, agent_type: AgentType) -> Self {
         Self {
             id: id.into(),
             version: version.into(),

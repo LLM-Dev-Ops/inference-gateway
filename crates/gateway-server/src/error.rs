@@ -51,7 +51,11 @@ pub struct ApiError {
 
 impl ApiError {
     /// Create a new API error
-    pub fn new(status: StatusCode, error_type: impl Into<String>, message: impl Into<String>) -> Self {
+    pub fn new(
+        status: StatusCode,
+        error_type: impl Into<String>,
+        message: impl Into<String>,
+    ) -> Self {
         Self {
             status,
             error_type: error_type.into(),
@@ -152,21 +156,17 @@ impl From<GatewayError> for ApiError {
                 }
                 api_err
             }
-            GatewayError::Authentication { message } => {
-                Self::unauthorized(message)
-            }
-            GatewayError::Authorization { message } => {
-                Self::forbidden(message)
-            }
+            GatewayError::Authentication { message } => Self::unauthorized(message),
+            GatewayError::Authorization { message } => Self::forbidden(message),
             GatewayError::ModelNotFound { model } => {
                 Self::not_found(format!("Model not found: {model}"))
             }
             GatewayError::ProviderNotFound { provider } => {
                 Self::not_found(format!("Provider not found: {provider}"))
             }
-            GatewayError::NoHealthyProviders { model } => {
-                Self::service_unavailable(format!("No healthy provider available for model: {model}"))
-            }
+            GatewayError::NoHealthyProviders { model } => Self::service_unavailable(format!(
+                "No healthy provider available for model: {model}"
+            )),
             GatewayError::RateLimit { retry_after, .. } => {
                 let msg = if let Some(after) = retry_after {
                     format!("Rate limited. Retry after {} seconds", after.as_secs())
@@ -178,7 +178,12 @@ impl From<GatewayError> for ApiError {
             GatewayError::Timeout { duration } => {
                 Self::gateway_timeout(format!("Request timed out after {duration:?}"))
             }
-            GatewayError::Provider { provider, message, retryable, .. } => {
+            GatewayError::Provider {
+                provider,
+                message,
+                retryable,
+                ..
+            } => {
                 if *retryable {
                     Self::bad_gateway(format!("{provider}: {message}"))
                 } else {
@@ -188,20 +193,16 @@ impl From<GatewayError> for ApiError {
             GatewayError::CircuitBreakerOpen { provider } => {
                 Self::service_unavailable(format!("Provider {provider} is temporarily unavailable"))
             }
-            GatewayError::PayloadTooLarge { size, limit } => {
-                Self::bad_request(format!(
-                    "Payload too large: {size} bytes exceeds limit of {limit} bytes"
-                ))
-            }
+            GatewayError::PayloadTooLarge { size, limit } => Self::bad_request(format!(
+                "Payload too large: {size} bytes exceeds limit of {limit} bytes"
+            )),
             GatewayError::Streaming { message } => {
                 Self::internal(format!("Streaming error: {message}"))
             }
             GatewayError::Configuration { message } => {
                 Self::internal(format!("Configuration error: {message}"))
             }
-            GatewayError::Internal { message } => {
-                Self::internal(message)
-            }
+            GatewayError::Internal { message } => Self::internal(message),
         }
     }
 }

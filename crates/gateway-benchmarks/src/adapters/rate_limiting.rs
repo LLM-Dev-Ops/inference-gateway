@@ -111,11 +111,7 @@ impl BenchTarget for RateLimitingBenchmark {
         let p95_idx = (latencies.len() as f64 * 0.95) as usize;
         let p99_idx = (latencies.len() as f64 * 0.99) as usize;
 
-        let throughput_rps = if avg_ms > 0.0 {
-            1000.0 / avg_ms
-        } else {
-            0.0
-        };
+        let throughput_rps = if avg_ms > 0.0 { 1000.0 / avg_ms } else { 0.0 };
 
         Ok(BenchmarkResult::new(
             self.id(),
@@ -166,10 +162,12 @@ impl SimulatedRateLimiter {
         let mut buckets = self.buckets.lock();
         let now = Instant::now();
 
-        let bucket = buckets.entry(key.to_string()).or_insert_with(|| TokenBucket {
-            tokens: self.limit as f64,
-            last_update: now,
-        });
+        let bucket = buckets
+            .entry(key.to_string())
+            .or_insert_with(|| TokenBucket {
+                tokens: self.limit as f64,
+                last_update: now,
+            });
 
         // Refill tokens based on elapsed time
         let elapsed = now.duration_since(bucket.last_update).as_secs_f64();

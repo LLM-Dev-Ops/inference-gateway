@@ -433,7 +433,8 @@ mod mock_provider_tests {
     #[tokio::test]
     async fn test_mock_openai_integration() {
         let mock = MockOpenAI::new().await;
-        mock.mock_chat_completion("gpt-4o", "Hello from mock!").await;
+        mock.mock_chat_completion("gpt-4o", "Hello from mock!")
+            .await;
 
         let client = reqwest::Client::new();
         let response = client

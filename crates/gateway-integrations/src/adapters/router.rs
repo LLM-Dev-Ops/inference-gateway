@@ -226,7 +226,8 @@ impl RouterAdapter {
             .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.as_secs())
             .unwrap_or(0);
-        self.last_refresh.store(now, std::sync::atomic::Ordering::Relaxed);
+        self.last_refresh
+            .store(now, std::sync::atomic::Ordering::Relaxed);
     }
 }
 

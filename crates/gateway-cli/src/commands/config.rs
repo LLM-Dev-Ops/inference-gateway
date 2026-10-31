@@ -178,10 +178,7 @@ async fn execute_init(args: InitArgs, format: OutputFormat) -> Result<()> {
             result.print(format)?;
         }
         OutputFormat::Text => {
-            output::success(&format!(
-                "Created configuration file: {:?}",
-                args.output
-            ));
+            output::success(&format!("Created configuration file: {:?}", args.output));
             output::info(&format!("Format: {}", args.format));
 
             if args.full {

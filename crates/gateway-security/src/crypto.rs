@@ -166,9 +166,9 @@ impl HashingService {
     #[must_use]
     pub fn new() -> Self {
         Self {
-            memory_cost: 65536,   // 64 MB
-            time_cost: 3,         // 3 iterations
-            parallelism: 4,       // 4 threads
+            memory_cost: 65536, // 64 MB
+            time_cost: 3,       // 3 iterations
+            parallelism: 4,     // 4 threads
         }
     }
 
@@ -326,11 +326,7 @@ impl KeyDerivation {
         let mut output = Zeroizing::new(vec![0u8; self.key_length]);
 
         argon2
-            .hash_password_into(
-                password.expose_secret().as_bytes(),
-                salt,
-                &mut output,
-            )
+            .hash_password_into(password.expose_secret().as_bytes(), salt, &mut output)
             .map_err(|e| SecurityError::KeyDerivation(format!("Key derivation failed: {}", e)))?;
 
         Ok(output)
@@ -392,7 +388,9 @@ pub fn generate_uuid() -> String {
         u16::from_be_bytes([bytes[4], bytes[5]]),
         u16::from_be_bytes([bytes[6], bytes[7]]),
         u16::from_be_bytes([bytes[8], bytes[9]]),
-        u64::from_be_bytes([0, 0, bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]])
+        u64::from_be_bytes([
+            0, 0, bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
+        ])
     )
 }
 

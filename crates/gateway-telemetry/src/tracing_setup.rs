@@ -12,13 +12,7 @@ use opentelemetry_sdk::{
 };
 use std::collections::HashMap;
 use tracing::info;
-use tracing_subscriber::{
-    fmt,
-    layer::SubscriberExt,
-    util::SubscriberInitExt,
-    EnvFilter,
-    Layer,
-};
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer};
 
 /// Tracing configuration
 #[derive(Debug, Clone)]
@@ -109,8 +103,8 @@ impl TracingConfig {
 pub fn init_tracing(config: &TracingConfig) -> Result<Option<TracerProvider>, TracingError> {
     if !config.enabled {
         // Just set up basic logging without OpenTelemetry
-        let filter = EnvFilter::try_from_default_env()
-            .unwrap_or_else(|_| EnvFilter::new(&config.log_level));
+        let filter =
+            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(&config.log_level));
 
         tracing_subscriber::registry()
             .with(fmt::layer().with_filter(filter))
@@ -141,9 +135,7 @@ pub fn init_tracing(config: &TracingConfig) -> Result<Option<TracerProvider>, Tr
         .with_id_generator(RandomIdGenerator::default())
         .with_resource(resource);
 
-    let provider = TracerProvider::builder()
-        .with_config(tracer_config)
-        .build();
+    let provider = TracerProvider::builder().with_config(tracer_config).build();
 
     let tracer = provider.tracer(config.service_name.clone());
 
@@ -158,8 +150,8 @@ pub fn init_tracing(config: &TracingConfig) -> Result<Option<TracerProvider>, Tr
         .with_line_number(true);
 
     // Create filter
-    let filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| EnvFilter::new(&config.log_level));
+    let filter =
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(&config.log_level));
 
     // Initialize subscriber
     tracing_subscriber::registry()
@@ -245,12 +237,10 @@ mod tests {
 
     #[test]
     fn test_sampling_rate_clamping() {
-        let config = TracingConfig::new("test")
-            .with_sampling_rate(1.5); // Should clamp to 1.0
+        let config = TracingConfig::new("test").with_sampling_rate(1.5); // Should clamp to 1.0
         assert!((config.sampling_rate - 1.0).abs() < f64::EPSILON);
 
-        let config = TracingConfig::new("test")
-            .with_sampling_rate(-0.5); // Should clamp to 0.0
+        let config = TracingConfig::new("test").with_sampling_rate(-0.5); // Should clamp to 0.0
         assert!(config.sampling_rate.abs() < f64::EPSILON);
     }
 

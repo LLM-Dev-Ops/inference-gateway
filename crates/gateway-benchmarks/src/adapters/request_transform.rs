@@ -82,11 +82,7 @@ impl BenchTarget for RequestTransformBenchmark {
         let p95_idx = (latencies.len() as f64 * 0.95) as usize;
         let p99_idx = (latencies.len() as f64 * 0.99) as usize;
 
-        let throughput_rps = if avg_ms > 0.0 {
-            1000.0 / avg_ms
-        } else {
-            0.0
-        };
+        let throughput_rps = if avg_ms > 0.0 { 1000.0 / avg_ms } else { 0.0 };
 
         Ok(BenchmarkResult::new(
             self.id(),
@@ -133,10 +129,22 @@ fn transform_request(request: &serde_json::Value) -> serde_json::Value {
     // 2. Map to provider-specific format
     // 3. Add provider-specific headers/fields
 
-    let model = request.get("model").and_then(|v| v.as_str()).unwrap_or("gpt-4");
-    let messages = request.get("messages").cloned().unwrap_or(serde_json::json!([]));
-    let temperature = request.get("temperature").and_then(|v| v.as_f64()).unwrap_or(0.7);
-    let max_tokens = request.get("max_tokens").and_then(|v| v.as_u64()).unwrap_or(1000);
+    let model = request
+        .get("model")
+        .and_then(|v| v.as_str())
+        .unwrap_or("gpt-4");
+    let messages = request
+        .get("messages")
+        .cloned()
+        .unwrap_or(serde_json::json!([]));
+    let temperature = request
+        .get("temperature")
+        .and_then(|v| v.as_f64())
+        .unwrap_or(0.7);
+    let max_tokens = request
+        .get("max_tokens")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(1000);
 
     // Simulate OpenAI format transformation
     serde_json::json!({
@@ -168,7 +176,10 @@ mod tests {
         let request = create_sample_request();
         let transformed = transform_request(&request);
 
-        assert_eq!(transformed.get("model").and_then(|v| v.as_str()), Some("gpt-4"));
+        assert_eq!(
+            transformed.get("model").and_then(|v| v.as_str()),
+            Some("gpt-4")
+        );
         assert!(transformed.get("messages").is_some());
     }
 }

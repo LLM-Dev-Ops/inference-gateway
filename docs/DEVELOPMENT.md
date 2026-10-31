@@ -20,7 +20,7 @@ Guide for developing, testing, and contributing to the LLM Inference Gateway.
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| Rust | 1.75+ | Primary language |
+| Rust | 1.88+ | Primary language |
 | Docker | 20.10+ | Container builds |
 | Docker Compose | 2.0+ | Local development |
 | Redis | 7.0+ | Caching (optional) |

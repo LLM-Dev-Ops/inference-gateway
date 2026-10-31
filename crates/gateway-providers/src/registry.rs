@@ -162,7 +162,10 @@ impl ProviderRegistry {
 
     /// Get a provider entry by ID
     #[must_use]
-    pub fn get_entry(&self, id: &str) -> Option<dashmap::mapref::one::Ref<'_, String, ProviderEntry>> {
+    pub fn get_entry(
+        &self,
+        id: &str,
+    ) -> Option<dashmap::mapref::one::Ref<'_, String, ProviderEntry>> {
         self.providers.get(id)
     }
 
@@ -177,12 +180,7 @@ impl ProviderRegistry {
     pub fn get_providers_for_model(&self, model: &str) -> Vec<Arc<dyn LLMProvider>> {
         self.model_index
             .get(model)
-            .map(|provider_ids| {
-                provider_ids
-                    .iter()
-                    .filter_map(|id| self.get(id))
-                    .collect()
-            })
+            .map(|provider_ids| provider_ids.iter().filter_map(|id| self.get(id)).collect())
             .unwrap_or_default()
     }
 
@@ -365,10 +363,10 @@ impl Default for ProviderRegistry {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use futures::stream::BoxStream;
     use gateway_core::{
         ChatChunk, GatewayRequest, GatewayResponse, ProviderCapabilities, ProviderType,
     };
-    use futures::stream::BoxStream;
 
     struct MockProvider {
         id: String,
@@ -380,10 +378,7 @@ mod tests {
         fn new(id: &str, models: Vec<&str>) -> Self {
             Self {
                 id: id.to_string(),
-                models: models
-                    .into_iter()
-                    .map(|m| ModelInfo::new(m))
-                    .collect(),
+                models: models.into_iter().map(|m| ModelInfo::new(m)).collect(),
                 health: HealthStatus::Healthy,
             }
         }
@@ -399,7 +394,10 @@ mod tests {
             ProviderType::Custom
         }
 
-        async fn chat_completion(&self, _: &GatewayRequest) -> Result<GatewayResponse, GatewayError> {
+        async fn chat_completion(
+            &self,
+            _: &GatewayRequest,
+        ) -> Result<GatewayResponse, GatewayError> {
             unimplemented!()
         }
 

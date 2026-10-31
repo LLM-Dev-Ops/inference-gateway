@@ -417,7 +417,11 @@ impl HealthChecker {
     }
 
     /// Perform readiness check
-    pub async fn check_readiness(&self, provider_count: usize, healthy_provider_count: usize) -> ReadinessResponse {
+    pub async fn check_readiness(
+        &self,
+        provider_count: usize,
+        healthy_provider_count: usize,
+    ) -> ReadinessResponse {
         // Not ready if shutting down
         if self.is_shutting_down() {
             return ReadinessResponse {
@@ -768,7 +772,10 @@ mod tests {
         let component = aggregate_provider_health(&results);
         assert_eq!(component.status, HealthStatus::Degraded);
         assert_eq!(component.details.get("total"), Some(&serde_json::json!(3)));
-        assert_eq!(component.details.get("healthy"), Some(&serde_json::json!(2)));
+        assert_eq!(
+            component.details.get("healthy"),
+            Some(&serde_json::json!(2))
+        );
     }
 
     #[test]

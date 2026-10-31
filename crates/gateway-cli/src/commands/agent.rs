@@ -400,32 +400,35 @@ async fn execute_route(
             spinner.finish_and_clear();
 
             match response {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_routing_result(&args))
-                }
+                Ok(resp) if resp.status().is_success() => resp
+                    .json()
+                    .await
+                    .unwrap_or_else(|_| generate_sample_routing_result(&args)),
                 Ok(resp) => {
                     let status = resp.status();
                     let error_text = resp.text().await.unwrap_or_default();
-                    output::error(&format!("Routing failed with status {}: {}", status, error_text));
+                    output::error(&format!(
+                        "Routing failed with status {}: {}",
+                        status, error_text
+                    ));
                     return Ok(());
                 }
                 Err(_) => generate_sample_routing_result(&args),
             }
         }
-        OutputFormat::Json => {
-            match client.post(&url).json(&request_body).send().await {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_routing_result(&args))
-                }
-                Ok(resp) => {
-                    let result: CommandResult<RoutingResult> =
-                        CommandResult::failure(format!("Routing failed: {}", resp.status()));
-                    result.print(format)?;
-                    return Ok(());
-                }
-                Err(_) => generate_sample_routing_result(&args),
+        OutputFormat::Json => match client.post(&url).json(&request_body).send().await {
+            Ok(resp) if resp.status().is_success() => resp
+                .json()
+                .await
+                .unwrap_or_else(|_| generate_sample_routing_result(&args)),
+            Ok(resp) => {
+                let result: CommandResult<RoutingResult> =
+                    CommandResult::failure(format!("Routing failed: {}", resp.status()));
+                result.print(format)?;
+                return Ok(());
             }
-        }
+            Err(_) => generate_sample_routing_result(&args),
+        },
     };
 
     match format {
@@ -449,7 +452,10 @@ async fn execute_route(
             }
 
             output::key_value("Fallback Used", &result.fallback_used.to_string());
-            output::key_value("Routing Latency", &format!("{}ms", result.routing_latency_ms));
+            output::key_value(
+                "Routing Latency",
+                &format!("{}ms", result.routing_latency_ms),
+            );
             output::key_value("Cost Tier", &result.cost_tier);
             output::key_value("Priority", &result.priority);
 
@@ -503,20 +509,20 @@ async fn execute_inspect(
             spinner.finish_and_clear();
 
             match response {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_config(&args))
-                }
+                Ok(resp) if resp.status().is_success() => resp
+                    .json()
+                    .await
+                    .unwrap_or_else(|_| generate_sample_config(&args)),
                 _ => generate_sample_config(&args),
             }
         }
-        OutputFormat::Json => {
-            match client.get(&url).send().await {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_config(&args))
-                }
-                _ => generate_sample_config(&args),
-            }
-        }
+        OutputFormat::Json => match client.get(&url).send().await {
+            Ok(resp) if resp.status().is_success() => resp
+                .json()
+                .await
+                .unwrap_or_else(|_| generate_sample_config(&args)),
+            _ => generate_sample_config(&args),
+        },
     };
 
     match format {
@@ -536,21 +542,39 @@ async fn execute_inspect(
             output::section("Fallback Configuration");
             output::key_value("Enabled", &config.fallback.enabled.to_string());
             output::key_value("Max Retries", &config.fallback.max_retries.to_string());
-            output::key_value("Retry Delay", &format!("{}ms", config.fallback.retry_delay_ms));
+            output::key_value(
+                "Retry Delay",
+                &format!("{}ms", config.fallback.retry_delay_ms),
+            );
             output::key_value("Providers", &config.fallback.providers.join(", "));
 
             println!();
             output::section("Circuit Breaker");
             output::key_value("Enabled", &config.circuit_breaker.enabled.to_string());
-            output::key_value("Failure Threshold", &config.circuit_breaker.failure_threshold.to_string());
-            output::key_value("Success Threshold", &config.circuit_breaker.success_threshold.to_string());
-            output::key_value("Timeout", &format!("{}s", config.circuit_breaker.timeout_seconds));
-            output::key_value("Half-Open Requests", &config.circuit_breaker.half_open_requests.to_string());
+            output::key_value(
+                "Failure Threshold",
+                &config.circuit_breaker.failure_threshold.to_string(),
+            );
+            output::key_value(
+                "Success Threshold",
+                &config.circuit_breaker.success_threshold.to_string(),
+            );
+            output::key_value(
+                "Timeout",
+                &format!("{}s", config.circuit_breaker.timeout_seconds),
+            );
+            output::key_value(
+                "Half-Open Requests",
+                &config.circuit_breaker.half_open_requests.to_string(),
+            );
 
             println!();
             output::section("Rate Limiting");
             output::key_value("Enabled", &config.rate_limiting.enabled.to_string());
-            output::key_value("Requests/Second", &config.rate_limiting.requests_per_second.to_string());
+            output::key_value(
+                "Requests/Second",
+                &config.rate_limiting.requests_per_second.to_string(),
+            );
             output::key_value("Burst Size", &config.rate_limiting.burst_size.to_string());
             output::key_value("Per Tenant", &config.rate_limiting.per_tenant.to_string());
 
@@ -580,7 +604,10 @@ async fn execute_inspect(
                     output::key_value("Avg Latency", &format!("{:.2}ms", metrics.avg_latency_ms));
                     output::key_value("P95 Latency", &format!("{:.2}ms", metrics.p95_latency_ms));
                     output::key_value("P99 Latency", &format!("{:.2}ms", metrics.p99_latency_ms));
-                    output::key_value("Throughput", &format!("{:.2} req/s", metrics.requests_per_second));
+                    output::key_value(
+                        "Throughput",
+                        &format!("{:.2} req/s", metrics.requests_per_second),
+                    );
                 }
             }
 
@@ -608,7 +635,11 @@ async fn execute_status(
     let client = build_client(api_key, timeout)?;
 
     let url = if let Some(ref agent_id) = args.agent_id {
-        format!("{}/api/v1/agents/{}/status", base_url.trim_end_matches('/'), agent_id)
+        format!(
+            "{}/api/v1/agents/{}/status",
+            base_url.trim_end_matches('/'),
+            agent_id
+        )
     } else {
         format!("{}/api/v1/agents/status", base_url.trim_end_matches('/'))
     };
@@ -634,20 +665,20 @@ async fn execute_status(
             spinner.finish_and_clear();
 
             match response {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_status(&args))
-                }
+                Ok(resp) if resp.status().is_success() => resp
+                    .json()
+                    .await
+                    .unwrap_or_else(|_| generate_sample_status(&args)),
                 _ => generate_sample_status(&args),
             }
         }
-        OutputFormat::Json => {
-            match client.get(&url).send().await {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_status(&args))
-                }
-                _ => generate_sample_status(&args),
-            }
-        }
+        OutputFormat::Json => match client.get(&url).send().await {
+            Ok(resp) if resp.status().is_success() => resp
+                .json()
+                .await
+                .unwrap_or_else(|_| generate_sample_status(&args)),
+            _ => generate_sample_status(&args),
+        },
     };
 
     print_status(&status, &args, format)?;
@@ -656,9 +687,10 @@ async fn execute_status(
 
 async fn fetch_status(client: &reqwest::Client, url: &str, args: &StatusArgs) -> AgentStatus {
     match client.get(url).send().await {
-        Ok(resp) if resp.status().is_success() => {
-            resp.json().await.unwrap_or_else(|_| generate_sample_status(args))
-        }
+        Ok(resp) if resp.status().is_success() => resp
+            .json()
+            .await
+            .unwrap_or_else(|_| generate_sample_status(args)),
         _ => generate_sample_status(args),
     }
 }
@@ -678,8 +710,12 @@ fn print_status(status: &AgentStatus, args: &StatusArgs, format: OutputFormat) -
             };
 
             match status_indicator {
-                "healthy" => output::success(&format!("Agent {} is {}", status.agent_id, status.status)),
-                "degraded" => output::warning(&format!("Agent {} is {}", status.agent_id, status.status)),
+                "healthy" => {
+                    output::success(&format!("Agent {} is {}", status.agent_id, status.status))
+                }
+                "degraded" => {
+                    output::warning(&format!("Agent {} is {}", status.agent_id, status.status))
+                }
                 _ => output::error(&format!("Agent {} is {}", status.agent_id, status.status)),
             }
 
@@ -695,13 +731,28 @@ fn print_status(status: &AgentStatus, args: &StatusArgs, format: OutputFormat) -
 
             println!();
             output::section("Current Load");
-            output::key_value("Active Requests", &status.current_load.active_requests.to_string());
-            output::key_value("Queued Requests", &status.current_load.queued_requests.to_string());
-            output::key_value("Throughput", &format!("{:.2} req/s", status.current_load.requests_per_second));
+            output::key_value(
+                "Active Requests",
+                &status.current_load.active_requests.to_string(),
+            );
+            output::key_value(
+                "Queued Requests",
+                &status.current_load.queued_requests.to_string(),
+            );
+            output::key_value(
+                "Throughput",
+                &format!("{:.2} req/s", status.current_load.requests_per_second),
+            );
 
             if args.verbose {
-                output::key_value("CPU Usage", &format!("{:.1}%", status.current_load.cpu_percent));
-                output::key_value("Memory Usage", &format!("{:.1}%", status.current_load.memory_percent));
+                output::key_value(
+                    "CPU Usage",
+                    &format!("{:.1}%", status.current_load.cpu_percent),
+                );
+                output::key_value(
+                    "Memory Usage",
+                    &format!("{:.1}%", status.current_load.memory_percent),
+                );
             }
 
             if !status.providers.is_empty() {
@@ -732,20 +783,20 @@ async fn execute_list(
             spinner.finish_and_clear();
 
             match response {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_agents())
-                }
+                Ok(resp) if resp.status().is_success() => resp
+                    .json()
+                    .await
+                    .unwrap_or_else(|_| generate_sample_agents()),
                 _ => generate_sample_agents(),
             }
         }
-        OutputFormat::Json => {
-            match client.get(&url).send().await {
-                Ok(resp) if resp.status().is_success() => {
-                    resp.json().await.unwrap_or_else(|_| generate_sample_agents())
-                }
-                _ => generate_sample_agents(),
-            }
-        }
+        OutputFormat::Json => match client.get(&url).send().await {
+            Ok(resp) if resp.status().is_success() => resp
+                .json()
+                .await
+                .unwrap_or_else(|_| generate_sample_agents()),
+            _ => generate_sample_agents(),
+        },
     };
 
     // Apply filters
@@ -753,7 +804,11 @@ async fn execute_list(
         .into_iter()
         .filter(|a| {
             if let Some(ref agent_type) = args.agent_type {
-                if !a.agent_type.to_lowercase().contains(&agent_type.to_lowercase()) {
+                if !a
+                    .agent_type
+                    .to_lowercase()
+                    .contains(&agent_type.to_lowercase())
+                {
                     return false;
                 }
             }
@@ -788,8 +843,7 @@ async fn execute_list(
 // ============================================================================
 
 fn build_client(api_key: Option<&str>, timeout: u64) -> Result<reqwest::Client> {
-    let mut builder = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(timeout));
+    let mut builder = reqwest::Client::builder().timeout(std::time::Duration::from_secs(timeout));
 
     if let Some(key) = api_key {
         let mut headers = reqwest::header::HeaderMap::new();
@@ -849,8 +903,11 @@ fn generate_sample_routing_result(args: &RouteArgs) -> RoutingResult {
             format!("{}-model-routing", provider),
             "priority-based-selection".to_string(),
         ],
-        routing_reason: format!("Model prefix '{}' matched {} provider routing rule",
-            args.model.split('-').next().unwrap_or(&args.model), provider),
+        routing_reason: format!(
+            "Model prefix '{}' matched {} provider routing rule",
+            args.model.split('-').next().unwrap_or(&args.model),
+            provider
+        ),
         fallback_chain: vec![
             ProviderInfo {
                 name: provider.to_string(),
@@ -871,7 +928,12 @@ fn generate_sample_routing_result(args: &RouteArgs) -> RoutingResult {
                 latency_ms: 78,
             },
         ],
-        cost_tier: if args.model.contains("4") { "premium" } else { "standard" }.to_string(),
+        cost_tier: if args.model.contains("4") {
+            "premium"
+        } else {
+            "standard"
+        }
+        .to_string(),
         priority: args.priority.clone(),
     }
 }
@@ -1014,13 +1076,18 @@ fn generate_sample_config(args: &InspectArgs) -> AgentConfig {
 
 fn generate_sample_status(args: &StatusArgs) -> AgentStatus {
     AgentStatus {
-        agent_id: args.agent_id.clone().unwrap_or_else(|| "inference-routing-agent".to_string()),
+        agent_id: args
+            .agent_id
+            .clone()
+            .unwrap_or_else(|| "inference-routing-agent".to_string()),
         status: "healthy".to_string(),
         uptime_seconds: 432_156,
         version: "1.0.0".to_string(),
         health: HealthInfo {
             overall: "healthy".to_string(),
-            last_check: chrono::Utc::now().format("%Y-%m-%d %H:%M:%S UTC").to_string(),
+            last_check: chrono::Utc::now()
+                .format("%Y-%m-%d %H:%M:%S UTC")
+                .to_string(),
             checks_passed: 15,
             checks_failed: 0,
         },
