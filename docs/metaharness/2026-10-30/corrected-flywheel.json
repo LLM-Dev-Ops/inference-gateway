@@ -1,0 +1,560 @@
+{
+  "baselineRevision": "742da2b30dd56686aa970d439b99935021940377",
+  "candidateRevision": "f38eb7ac12477dbb3ccbcda18fefe8ae87de93f7",
+  "baseline": {
+    "probe": {
+      "holdout": [
+        {
+          "name": "malformed",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n200 !== 502\n"
+        },
+        {
+          "name": "html",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n200 !== 502\n"
+        },
+        {
+          "name": "null",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n200 !== 502\n"
+        },
+        {
+          "name": "array",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n200 !== 502\n"
+        },
+        {
+          "name": "string",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n200 !== 502\n"
+        },
+        {
+          "name": "boolean",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n200 !== 502\n"
+        },
+        {
+          "name": "number",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n200 !== 502\n"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "valid object preserves 200",
+          "passed": true
+        },
+        {
+          "name": "valid object preserves 401",
+          "passed": true
+        },
+        {
+          "name": "valid object preserves 429",
+          "passed": true
+        },
+        {
+          "name": "valid object preserves 503",
+          "passed": true
+        }
+      ],
+      "passed": false
+    },
+    "checks": {
+      "probe": {
+        "command": [
+          "/usr/bin/node",
+          "tests/upstream-shape.cjs",
+          "."
+        ],
+        "exit": 1,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 189,
+        "sha256": "2eba871bbf9dc11e21758bed694b906b0a1859c373f817c57f54cfc6bf28f5e9",
+        "pass": false
+      },
+      "node": {
+        "command": [
+          "npm",
+          "test"
+        ],
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 382,
+        "sha256": "076f5362e0e8c3b84948e31dceacadc63eef2e2b78a5e15d1fe952d9c78f353e",
+        "pass": true
+      },
+      "test": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "test",
+          "--workspace",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "-j2"
+        ],
+        "exit": null,
+        "signal": "SIGTERM",
+        "error": "spawnSync cargo ETIMEDOUT",
+        "elapsedMs": 120013,
+        "sha256": "93f4dfc70ba58c2c98917c439539f97419b465114be67728dcbd7c1ac427bb99",
+        "pass": false
+      },
+      "build": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "build",
+          "--workspace",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "-j2"
+        ],
+        "exit": 101,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 47389,
+        "sha256": "c4a4c084552427428f1b25a68121e5e25673a2e20655b68513a0e7d633aebfa9",
+        "pass": false
+      },
+      "clippy": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "clippy",
+          "--workspace",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "-j2",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 101,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 613,
+        "sha256": "f3d9ce461e1016c9547585c65341a64817e7b2dabe1f77114af8e1a1703ed17c",
+        "pass": false
+      },
+      "fmt": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 579,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pass": true
+      },
+      "audit": {
+        "command": [
+          "cargo",
+          "audit",
+          "--file",
+          "Cargo.lock",
+          "--no-fetch",
+          "--json"
+        ],
+        "exit": 1,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 375,
+        "sha256": "a58b1a691a91ace8c8e9bec05d3da40984e02d6ce6c7ee54dde56d805509c43d",
+        "pass": false
+      },
+      "npmAudit": {
+        "command": [
+          "npm",
+          "audit",
+          "--json"
+        ],
+        "exit": 1,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 954,
+        "sha256": "7558e65b876391f0ad12fb9552d0abc1df0db52170ca85caaf748eef70660032",
+        "pass": false
+      },
+      "productionAudit": {
+        "command": [
+          "npm",
+          "audit",
+          "--omit=dev",
+          "--json"
+        ],
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 357,
+        "sha256": "662d7d64bf79ce89afc8a9447b6e95ad1f5f145f4e202208c4f5e3afb3abbc57",
+        "pass": true
+      }
+    }
+  },
+  "candidate": {
+    "probe": {
+      "holdout": [
+        {
+          "name": "malformed",
+          "passed": true
+        },
+        {
+          "name": "html",
+          "passed": true
+        },
+        {
+          "name": "null",
+          "passed": true
+        },
+        {
+          "name": "array",
+          "passed": true
+        },
+        {
+          "name": "string",
+          "passed": true
+        },
+        {
+          "name": "boolean",
+          "passed": true
+        },
+        {
+          "name": "number",
+          "passed": true
+        }
+      ],
+      "anchors": [
+        {
+          "name": "valid object preserves 200",
+          "passed": true
+        },
+        {
+          "name": "valid object preserves 401",
+          "passed": true
+        },
+        {
+          "name": "valid object preserves 429",
+          "passed": true
+        },
+        {
+          "name": "valid object preserves 503",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "checks": {
+      "probe": {
+        "command": [
+          "/usr/bin/node",
+          "tests/upstream-shape.cjs",
+          "."
+        ],
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 184,
+        "sha256": "9a6d9897600bba55fa18076bef529a6b19a6b175f5d9af661e7c7304b4c9266c",
+        "pass": true
+      },
+      "node": {
+        "command": [
+          "npm",
+          "test"
+        ],
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 388,
+        "sha256": "623063f8985ae14ac3fef698e5413af9529618229db811ce3ca66cd7a8b774ad",
+        "pass": true
+      },
+      "test": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "test",
+          "--workspace",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "-j2"
+        ],
+        "exit": 101,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 501,
+        "sha256": "804ed3f86ae0ddd5971f992c1aa6c5277a44bd29072993aecc6481609bc8cc87",
+        "pass": false
+      },
+      "build": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "build",
+          "--workspace",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "-j2"
+        ],
+        "exit": 101,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 413,
+        "sha256": "9af9b067c8f08aac4dfc0f84e502b03342d71dd16ec1de75e511b4b0be44d4cb",
+        "pass": false
+      },
+      "clippy": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "clippy",
+          "--workspace",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "-j2",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 101,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 576,
+        "sha256": "6f290d5ce116a0cc55206fa99567d4bd1996a3fb1668e14ae7bcd8eb77bf8e8e",
+        "pass": false
+      },
+      "fmt": {
+        "command": [
+          "cargo",
+          "+1.88.0",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 569,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pass": true
+      },
+      "audit": {
+        "command": [
+          "cargo",
+          "audit",
+          "--file",
+          "Cargo.lock",
+          "--no-fetch",
+          "--json"
+        ],
+        "exit": 1,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 362,
+        "sha256": "a58b1a691a91ace8c8e9bec05d3da40984e02d6ce6c7ee54dde56d805509c43d",
+        "pass": false
+      },
+      "npmAudit": {
+        "command": [
+          "npm",
+          "audit",
+          "--json"
+        ],
+        "exit": 1,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 670,
+        "sha256": "7558e65b876391f0ad12fb9552d0abc1df0db52170ca85caaf748eef70660032",
+        "pass": false
+      },
+      "productionAudit": {
+        "command": [
+          "npm",
+          "audit",
+          "--omit=dev",
+          "--json"
+        ],
+        "exit": 0,
+        "signal": null,
+        "error": null,
+        "elapsedMs": 379,
+        "sha256": "662d7d64bf79ce89afc8a9447b6e95ad1f5f145f4e202208c4f5e3afb3abbc57",
+        "pass": true
+      }
+    }
+  },
+  "result": {
+    "liftCurve": [
+      {
+        "generation": 0,
+        "primary": 0,
+        "delta": 0,
+        "anchor": 1
+      }
+    ],
+    "promotions": [],
+    "lineage": {
+      "commits": {}
+    },
+    "replayBundle": {
+      "data_source": "LIVE",
+      "root_id": "root",
+      "chain": [
+        {
+          "id": "root",
+          "generation": 0,
+          "parents": [],
+          "mutation": null,
+          "primaryDelta": 0,
+          "anchorScore": 1,
+          "verdict": "ROOT",
+          "failureReasons": [],
+          "receipt": {
+            "payload": {
+              "kind": "root",
+              "root": "root"
+            },
+            "signature": "FnHSm8B15/QNia98J/PMQMOJSqucNVHPPAIq3maxFZRufCm+fffkCTu/A6eH8R4alhqWX3KJj/uOWTVEa23VCQ==",
+            "publicKey": "MCowBQYDK2VwAyEA45F3tqqZSfUadrl8DfYVeBcQkMkThSCL7HBCmnbbldk=",
+            "alg": "ed25519"
+          },
+          "createdAt": "gen-0"
+        }
+      ],
+      "all_commits": [
+        {
+          "id": "root__revision_gen1",
+          "generation": 1,
+          "parents": [
+            "root"
+          ],
+          "mutation": {
+            "target": "revision",
+            "summary": "Reject invalid upstream JSON with502 and failed execution layer",
+            "inverse": {
+              "path": "index.js",
+              "parentBytes": "'use strict';\n\nconst crypto = require('crypto');\n\nconst SERVICE_NAME = 'inference-gateway-agents';\nconst HEALTH_AGENTS = ['route'];\nconst GATEWAY_INTERNAL_URL = process.env.GATEWAY_INTERNAL_URL || 'http://localhost:8080';\nconst DEFAULT_GATEWAY_TIMEOUT_MS = 30_000;\nconst DEFAULT_GATEWAY_MAX_RESPONSE_BYTES = 1_048_576;\n\nfunction readGatewayTimeout() {\n  const value = Number.parseInt(process.env.GATEWAY_REQUEST_TIMEOUT_MS || '', 10);\n  return Number.isInteger(value) && value >= 100 && value <= 120_000\n    ? value\n    : DEFAULT_GATEWAY_TIMEOUT_MS;\n}\n\nfunction readGatewayMaxResponseBytes() {\n  const value = Number.parseInt(process.env.GATEWAY_MAX_RESPONSE_BYTES || '', 10);\n  return Number.isInteger(value) && value >= 1_024 && value <= 10_485_760\n    ? value\n    : DEFAULT_GATEWAY_MAX_RESPONSE_BYTES;\n}\n\nasync function readBoundedResponse(resp) {\n  const limit = readGatewayMaxResponseBytes();\n  const declaredLength = Number.parseInt(resp.headers.get('content-length') || '', 10);\n  if (Number.isFinite(declaredLength) && declaredLength > limit) {\n    throw new Error('gateway response exceeds configured limit');\n  }\n\n  if (!resp.body) return '';\n\n  const reader = resp.body.getReader();\n  const decoder = new TextDecoder();\n  let bytesRead = 0;\n  let responseText = '';\n\n  while (true) {\n    const { done, value } = await reader.read();\n    if (done) break;\n    bytesRead += value.byteLength;\n    if (bytesRead > limit) {\n      await reader.cancel();\n      throw new Error('gateway response exceeds configured limit');\n    }\n    responseText += decoder.decode(value, { stream: true });\n  }\n\n  return responseText + decoder.decode();\n}\n\nfunction normalizeTraceId(value) {\n  return typeof value === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(value)\n    ? value\n    : crypto.randomUUID();\n}\n\n// --- CORS ---\n\nfunction setCorsHeaders(res) {\n  res.set('Access-Control-Allow-Origin', '*');\n  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');\n  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Correlation-Id, X-Parent-Span-Id');\n  res.set('Access-Control-Expose-Headers', 'X-Correlation-Id, X-Request-Id, X-Response-Time');\n  res.set('Access-Control-Max-Age', '3600');\n}\n\n// --- Response envelope ---\n\nfunction buildExecutionMetadata(traceId, executionId) {\n  return {\n    trace_id: traceId,\n    timestamp: new Date().toISOString(),\n    service: SERVICE_NAME,\n    execution_id: executionId,\n  };\n}\n\nfunction envelop(data, traceId, executionId, layers) {\n  return {\n    ...data,\n    execution_metadata: buildExecutionMetadata(traceId, executionId),\n    layers_executed: layers,\n  };\n}\n\n// --- Gateway proxy ---\n\nasync function forwardToGateway(path, method, headers, body) {\n  const url = `${GATEWAY_INTERNAL_URL}${path}`;\n  const opts = {\n    method,\n    headers: { 'Content-Type': 'application/json', ...headers },\n    signal: AbortSignal.timeout(readGatewayTimeout()),\n  };\n  if (body && method !== 'GET') {\n    opts.body = typeof body === 'string' ? body : JSON.stringify(body);\n  }\n  const resp = await fetch(url, opts);\n  const contentType = resp.headers.get('content-type') || '';\n  const responseText = await readBoundedResponse(resp);\n  let respBody;\n\n  if (contentType.toLowerCase().includes('json')) {\n    try {\n      respBody = JSON.parse(responseText);\n    } catch {\n      respBody = {\n        error: {\n          type: 'invalid_gateway_response',\n          message: 'Inference gateway returned malformed JSON',\n        },\n      };\n    }\n  } else {\n    respBody = {\n      error: {\n        type: 'invalid_gateway_response',\n        message: 'Inference gateway returned a non-JSON response',\n      },\n    };\n  }\n  return { status: resp.status, body: respBody };\n}\n\n// --- Route handlers ---\n\nfunction handleHealth(_req, res, traceId, executionId) {\n  const payload = envelop(\n    { status: 'healthy', service: SERVICE_NAME, agents: HEALTH_AGENTS },\n    traceId,\n    executionId,\n    [{ layer: 'AGENT_ROUTING', status: 'completed' }],\n  );\n  res.status(200).json(payload);\n}\n\nasync function handleRoute(req, res, traceId, executionId) {\n  const start = Date.now();\n\n  try {\n    const fwdHeaders = { 'X-Correlation-Id': traceId };\n    const parentSpan = req.headers['x-parent-span-id'];\n    if (parentSpan) fwdHeaders['X-Parent-Span-Id'] = parentSpan;\n\n    const gw = await forwardToGateway('/agents/route', 'POST', fwdHeaders, req.body);\n    const elapsed = Date.now() - start;\n\n    const payload = envelop(gw.body, traceId, executionId, [\n      { layer: 'AGENT_ROUTING', status: 'completed' },\n      { layer: 'INFERENCE_GATEWAY_ROUTE', status: 'completed', duration_ms: elapsed },\n    ]);\n    res.status(gw.status).json(payload);\n  } catch {\n    const elapsed = Date.now() - start;\n    const payload = envelop(\n      { error: { type: 'gateway_error', message: 'Failed to reach inference gateway' } },\n      traceId,\n      executionId,\n      [\n        { layer: 'AGENT_ROUTING', status: 'completed' },\n        { layer: 'INFERENCE_GATEWAY_ROUTE', status: 'failed', duration_ms: elapsed },\n      ],\n    );\n    res.status(502).json(payload);\n  }\n}\n\nfunction handleNotFound(req, res, traceId, executionId) {\n  const payload = envelop(\n    {\n      error: {\n        type: 'not_found',\n        message: `Route ${req.method} ${req.path} not found`,\n        available_routes: [\n          { method: 'POST', path: '/v1/inference-gateway/route', description: 'Inference Routing Agent' },\n          { method: 'GET', path: '/health', description: 'Health check' },\n        ],\n      },\n    },\n    traceId,\n    executionId,\n    [{ layer: 'AGENT_ROUTING', status: 'completed' }],\n  );\n  res.status(404).json(payload);\n}\n\n// --- Entry point ---\n\nexports.handler = async (req, res) => {\n  // CORS preflight\n  setCorsHeaders(res);\n  if (req.method === 'OPTIONS') return res.status(204).send('');\n\n  // Request context\n  const traceId = normalizeTraceId(req.headers['x-correlation-id']);\n  const executionId = crypto.randomUUID();\n  res.set('X-Correlation-Id', traceId);\n\n  // Routing\n  const path = req.path;\n\n  if ((path === '/health' || path === '/healthz') && req.method === 'GET') {\n    return handleHealth(req, res, traceId, executionId);\n  }\n\n  if (path === '/v1/inference-gateway/route' && req.method === 'POST') {\n    return handleRoute(req, res, traceId, executionId);\n  }\n\n  return handleNotFound(req, res, traceId, executionId);\n};\n",
+              "hash": "c32c5bc1e31a55c34f9588f306a636fc40b313fbeab540ab5b573299817c9dc5"
+            }
+          },
+          "primaryDelta": 1,
+          "anchorScore": null,
+          "verdict": "REJECTED",
+          "failureReasons": [
+            "safety_regressed"
+          ],
+          "receipt": {
+            "payload": {
+              "kind": "candidate",
+              "id": "root__revision_gen1",
+              "target": "revision",
+              "verdict": "REJECTED",
+              "primaryDelta": 1,
+              "baselineScore": {
+                "primary": 0,
+                "noopRate": 1,
+                "costPerWin": 0,
+                "regressed": true
+              },
+              "candidateScore": {
+                "primary": 1,
+                "noopRate": 0,
+                "costPerWin": 0,
+                "regressed": true
+              },
+              "anchorScore": null,
+              "failureReasons": [
+                "safety_regressed"
+              ],
+              "parents": [
+                "root"
+              ],
+              "generation": 1
+            },
+            "signature": "xMJHntqAY8YAxyFK57cG55ONxBVD841cCVYQ4wufqqb9N6JSZvhP3yG9UqIa0PDkiUU4BsY8b7Gnke5PsmY+CA==",
+            "publicKey": "MCowBQYDK2VwAyEA45F3tqqZSfUadrl8DfYVeBcQkMkThSCL7HBCmnbbldk=",
+            "alg": "ed25519"
+          },
+          "createdAt": "gen-1",
+          "baselineScore": {
+            "primary": 0,
+            "noopRate": 1,
+            "costPerWin": 0,
+            "regressed": true
+          },
+          "candidateScore": {
+            "primary": 1,
+            "noopRate": 0,
+            "costPerWin": 0,
+            "regressed": true
+          }
+        }
+      ],
+      "lift_curve": [
+        {
+          "generation": 0,
+          "primary": 0,
+          "delta": 0,
+          "anchor": 1
+        }
+      ],
+      "gate_fingerprint": "c5942e7c9bf8f28fe7af47a6ec3887d11eeb3f8c8e8601cc6a7a54969ea0b981",
+      "verified_improvements": 0,
+      "anchor_surviving_improvements": 0,
+      "milestone_reached": false,
+      "created_at": "gen-1"
+    },
+    "generationsRun": 1,
+    "milestoneReached": false,
+    "finalPolicy": {
+      "revision": "742da2b30dd56686aa970d439b99935021940377"
+    }
+  },
+  "replay": {
+    "pass": true,
+    "checks": {
+      "receipts": true,
+      "reachesRoot": true,
+      "contiguousParents": true,
+      "allPromoted": true,
+      "gateUnchanged": true,
+      "gateReExecutes": true,
+      "allCommitsReceipts": true,
+      "sealedFieldsAuthentic": true
+    },
+    "failures": [],
+    "chainSummary": "gen0(root)"
+  },
+  "fingerprint": "c5942e7c9bf8f28fe7af47a6ec3887d11eeb3f8c8e8601cc6a7a54969ea0b981",
+  "decision": {
+    "promote": false,
+    "reasons": [
+      "safety_regressed"
+    ]
+  },
+  "rollback": {
+    "path": "index.js",
+    "parentBytes": "'use strict';\n\nconst crypto = require('crypto');\n\nconst SERVICE_NAME = 'inference-gateway-agents';\nconst HEALTH_AGENTS = ['route'];\nconst GATEWAY_INTERNAL_URL = process.env.GATEWAY_INTERNAL_URL || 'http://localhost:8080';\nconst DEFAULT_GATEWAY_TIMEOUT_MS = 30_000;\nconst DEFAULT_GATEWAY_MAX_RESPONSE_BYTES = 1_048_576;\n\nfunction readGatewayTimeout() {\n  const value = Number.parseInt(process.env.GATEWAY_REQUEST_TIMEOUT_MS || '', 10);\n  return Number.isInteger(value) && value >= 100 && value <= 120_000\n    ? value\n    : DEFAULT_GATEWAY_TIMEOUT_MS;\n}\n\nfunction readGatewayMaxResponseBytes() {\n  const value = Number.parseInt(process.env.GATEWAY_MAX_RESPONSE_BYTES || '', 10);\n  return Number.isInteger(value) && value >= 1_024 && value <= 10_485_760\n    ? value\n    : DEFAULT_GATEWAY_MAX_RESPONSE_BYTES;\n}\n\nasync function readBoundedResponse(resp) {\n  const limit = readGatewayMaxResponseBytes();\n  const declaredLength = Number.parseInt(resp.headers.get('content-length') || '', 10);\n  if (Number.isFinite(declaredLength) && declaredLength > limit) {\n    throw new Error('gateway response exceeds configured limit');\n  }\n\n  if (!resp.body) return '';\n\n  const reader = resp.body.getReader();\n  const decoder = new TextDecoder();\n  let bytesRead = 0;\n  let responseText = '';\n\n  while (true) {\n    const { done, value } = await reader.read();\n    if (done) break;\n    bytesRead += value.byteLength;\n    if (bytesRead > limit) {\n      await reader.cancel();\n      throw new Error('gateway response exceeds configured limit');\n    }\n    responseText += decoder.decode(value, { stream: true });\n  }\n\n  return responseText + decoder.decode();\n}\n\nfunction normalizeTraceId(value) {\n  return typeof value === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(value)\n    ? value\n    : crypto.randomUUID();\n}\n\n// --- CORS ---\n\nfunction setCorsHeaders(res) {\n  res.set('Access-Control-Allow-Origin', '*');\n  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');\n  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Correlation-Id, X-Parent-Span-Id');\n  res.set('Access-Control-Expose-Headers', 'X-Correlation-Id, X-Request-Id, X-Response-Time');\n  res.set('Access-Control-Max-Age', '3600');\n}\n\n// --- Response envelope ---\n\nfunction buildExecutionMetadata(traceId, executionId) {\n  return {\n    trace_id: traceId,\n    timestamp: new Date().toISOString(),\n    service: SERVICE_NAME,\n    execution_id: executionId,\n  };\n}\n\nfunction envelop(data, traceId, executionId, layers) {\n  return {\n    ...data,\n    execution_metadata: buildExecutionMetadata(traceId, executionId),\n    layers_executed: layers,\n  };\n}\n\n// --- Gateway proxy ---\n\nasync function forwardToGateway(path, method, headers, body) {\n  const url = `${GATEWAY_INTERNAL_URL}${path}`;\n  const opts = {\n    method,\n    headers: { 'Content-Type': 'application/json', ...headers },\n    signal: AbortSignal.timeout(readGatewayTimeout()),\n  };\n  if (body && method !== 'GET') {\n    opts.body = typeof body === 'string' ? body : JSON.stringify(body);\n  }\n  const resp = await fetch(url, opts);\n  const contentType = resp.headers.get('content-type') || '';\n  const responseText = await readBoundedResponse(resp);\n  let respBody;\n\n  if (contentType.toLowerCase().includes('json')) {\n    try {\n      respBody = JSON.parse(responseText);\n    } catch {\n      respBody = {\n        error: {\n          type: 'invalid_gateway_response',\n          message: 'Inference gateway returned malformed JSON',\n        },\n      };\n    }\n  } else {\n    respBody = {\n      error: {\n        type: 'invalid_gateway_response',\n        message: 'Inference gateway returned a non-JSON response',\n      },\n    };\n  }\n  return { status: resp.status, body: respBody };\n}\n\n// --- Route handlers ---\n\nfunction handleHealth(_req, res, traceId, executionId) {\n  const payload = envelop(\n    { status: 'healthy', service: SERVICE_NAME, agents: HEALTH_AGENTS },\n    traceId,\n    executionId,\n    [{ layer: 'AGENT_ROUTING', status: 'completed' }],\n  );\n  res.status(200).json(payload);\n}\n\nasync function handleRoute(req, res, traceId, executionId) {\n  const start = Date.now();\n\n  try {\n    const fwdHeaders = { 'X-Correlation-Id': traceId };\n    const parentSpan = req.headers['x-parent-span-id'];\n    if (parentSpan) fwdHeaders['X-Parent-Span-Id'] = parentSpan;\n\n    const gw = await forwardToGateway('/agents/route', 'POST', fwdHeaders, req.body);\n    const elapsed = Date.now() - start;\n\n    const payload = envelop(gw.body, traceId, executionId, [\n      { layer: 'AGENT_ROUTING', status: 'completed' },\n      { layer: 'INFERENCE_GATEWAY_ROUTE', status: 'completed', duration_ms: elapsed },\n    ]);\n    res.status(gw.status).json(payload);\n  } catch {\n    const elapsed = Date.now() - start;\n    const payload = envelop(\n      { error: { type: 'gateway_error', message: 'Failed to reach inference gateway' } },\n      traceId,\n      executionId,\n      [\n        { layer: 'AGENT_ROUTING', status: 'completed' },\n        { layer: 'INFERENCE_GATEWAY_ROUTE', status: 'failed', duration_ms: elapsed },\n      ],\n    );\n    res.status(502).json(payload);\n  }\n}\n\nfunction handleNotFound(req, res, traceId, executionId) {\n  const payload = envelop(\n    {\n      error: {\n        type: 'not_found',\n        message: `Route ${req.method} ${req.path} not found`,\n        available_routes: [\n          { method: 'POST', path: '/v1/inference-gateway/route', description: 'Inference Routing Agent' },\n          { method: 'GET', path: '/health', description: 'Health check' },\n        ],\n      },\n    },\n    traceId,\n    executionId,\n    [{ layer: 'AGENT_ROUTING', status: 'completed' }],\n  );\n  res.status(404).json(payload);\n}\n\n// --- Entry point ---\n\nexports.handler = async (req, res) => {\n  // CORS preflight\n  setCorsHeaders(res);\n  if (req.method === 'OPTIONS') return res.status(204).send('');\n\n  // Request context\n  const traceId = normalizeTraceId(req.headers['x-correlation-id']);\n  const executionId = crypto.randomUUID();\n  res.set('X-Correlation-Id', traceId);\n\n  // Routing\n  const path = req.path;\n\n  if ((path === '/health' || path === '/healthz') && req.method === 'GET') {\n    return handleHealth(req, res, traceId, executionId);\n  }\n\n  if (path === '/v1/inference-gateway/route' && req.method === 'POST') {\n    return handleRoute(req, res, traceId, executionId);\n  }\n\n  return handleNotFound(req, res, traceId, executionId);\n};\n",
+    "sha256": "c32c5bc1e31a55c34f9588f306a636fc40b313fbeab540ab5b573299817c9dc5"
+  },
+  "limitations": "Neutral unmeasured cost; noopRate is failed-case ratio. All broad failures block promotion."
+}

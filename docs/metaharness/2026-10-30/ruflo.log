@@ -1,0 +1,37 @@
+
+[INFO] Initializing swarm...
+  Creating coordination topology...
+  Initializing memory namespace...
+  Setting up communication channels...
+
++------------+----------------------------+
+| Property   | Value                      |
++------------+----------------------------+
+| Swarm ID   | swarm-1793405000132-puioh9 |
+| Topology   | hierarchical               |
+| Max Agents | 1                          |
+| Auto Scale | Disabled                   |
+| Protocol   | message-bus                |
+| V3 Mode    | Disabled                   |
++------------+----------------------------+
+
+[OK] Swarm initialized successfully
+  Wrote permission manifest (preset: strict, 3 roles) → .swarm/permissions.jsonl
+  Audit trail seeded → .swarm/permission-audit.jsonl
+{
+  "success": true,
+  "swarmId": "swarm-1793405000132-puioh9",
+  "topology": "hierarchical",
+  "strategy": "specialized",
+  "maxAgents": 1,
+  "initializedAt": "2026-10-31T00:03:20.132Z",
+  "config": {
+    "topology": "hierarchical",
+    "maxAgents": 1,
+    "strategy": "specialized",
+    "communicationProtocol": "message-bus",
+    "autoScaling": false,
+    "consensusMechanism": "majority"
+  },
+  "persisted": true
+}

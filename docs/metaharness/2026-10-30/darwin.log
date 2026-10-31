@@ -1,0 +1,20 @@
+Wrote suite (1 task, hash 76d16bf72fee…): /home/ruv/work/inference-oct30d-evidence/bench.json
+Suite repo-native@0.1.0: 1 tasks, hash OK (76d16bf72fee…)
+note: --sandbox real (the default) scores variants by this repo's own test
+command, which cannot distinguish between mutated harness surfaces — every
+variant will score identically and evolution will not converge on anything
+(see README "The evaluation substrate", ADR-099/102). Pass --sandbox mock
+(fast, deterministic), --sandbox agent (executes the real surface code,
+still offline), or --sandbox llm-agent (genuine real-LLM signal, real API
+spend, ADR-273) for genuine evolutionary signal.
+
+Darwin Mode — leaderboard
+  0.435  baseline  [planner]  safety=1.00  pass=0.00 ◀ winner
+  0.435  g1_v0  [memoryPolicy]  safety=1.00  pass=0.00
+
+Winner: baseline
+Lineage: baseline
+Delta over baseline: +0.000
+
+Artifacts: /tmp/inference-oct30d-tools/.metaharness
+DARWIN_RC=0

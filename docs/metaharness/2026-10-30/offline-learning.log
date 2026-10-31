@@ -1,0 +1,30 @@
+Offline local MiniLM model verified: 384 dimensions; remote loading disabled
+[INFO] Recording outcome for task: task-mvvn17cn
+Transformers.js loaded: Xenova/all-MiniLM-L6-v2
+{
+  "taskId": "task-mvvn17cn",
+  "success": false,
+  "duration": 702,
+  "learningUpdates": {
+    "patternsUpdated": 2,
+    "newPatterns": null,
+    "trajectoryId": null,
+    "controller": "intelligence+bridge-store",
+    "outcomePersisted": true,
+    "available": true
+  },
+  "trajectory": {
+    "recorded": true
+  },
+  "quality": 0.8,
+  "pheromone": {
+    "active": false,
+    "reason": "no running pheromone-adaptive swarm"
+  },
+  "feedback": {
+    "recorded": true,
+    "controller": "intelligence+bridge-store",
+    "updates": 2
+  },
+  "timestamp": "2026-10-31T00:12:21.051Z"
+}

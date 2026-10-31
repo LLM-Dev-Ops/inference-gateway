@@ -1,0 +1,1487 @@
+{
+  "pagination": {
+    "repositoryPages": [
+      {
+        "offset": 0,
+        "size": 100,
+        "count": 58
+      },
+      {
+        "offset": 100,
+        "size": 100,
+        "count": 0
+      }
+    ],
+    "openPRs": 149,
+    "errors": [],
+    "scope": "All accessible nonarchived repositories; main/latest main CI/open PR metadata checked, not all manifests/tests deeply inspected."
+  },
+  "worked": [
+    "inference-gateway"
+  ],
+  "deferred": [
+    "edge-agent",
+    "memory-graph",
+    "test-bench",
+    "observatory",
+    "forge",
+    "sentinel",
+    "latency-lens",
+    "shield",
+    "orchestrator",
+    "auto-optimizer",
+    "incident-manager",
+    "marketplace",
+    "cost-ops",
+    "governance-dashboard",
+    "policy-engine",
+    "registry",
+    "config-manager",
+    "simulator",
+    "copilot-agent",
+    "connector-hub",
+    "benchmark-exchange",
+    "schema-registry",
+    "analytics-hub",
+    "research-lab",
+    "integrations",
+    "infra",
+    "security-core",
+    "automation-core",
+    "ruvector-service",
+    "data-vault",
+    "intelligence-core",
+    "research-core",
+    "ecosystem-core",
+    "governance-core",
+    "agentics-platform",
+    "agentics-diligence-artifacts",
+    "data-core",
+    "interface-core",
+    "agentics-deployment-intent",
+    "agentics-cli",
+    "agentics-org-manifests",
+    "erp-surface",
+    "agentics-orchestration-engine",
+    "agentics-simulation-runner",
+    "agentics-deployment-exporters",
+    "enterprise-roi-engine",
+    "agentics-simulation-planner",
+    "agentics-cli-test",
+    "agentics-enforcement",
+    "agentics-execution-engine",
+    "platform-agents",
+    "agentics-contracts",
+    "agentics-results-index",
+    "agentics-usage-ledger",
+    "agentics-evolution",
+    "agentics-dream-machine",
+    "RuVector"
+  ],
+  "repositories": [
+    {
+      "name": "edge-agent",
+      "main": "483c8a353855d8d54a1b1dee181f12376b5f592a",
+      "ci": {
+        "id": 24814278326,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 1,
+          "head": "c07db02705cea0460454481603953cc036f5fea3",
+          "branch": "metaharness/edge-agent-cors-security-20261014",
+          "updated": "2026-10-20T12:27:09Z"
+        }
+      ]
+    },
+    {
+      "name": "memory-graph",
+      "main": "d9b9dc5eb7ac313eedc2831dce6af46641bfaaa7",
+      "ci": {
+        "id": 19159692238,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 3,
+          "head": "7876409fab034c441f828887c49c170d53aaf26c",
+          "branch": "metaharness/memory-graph-2026-10-16",
+          "updated": "2026-10-22T00:41:03Z"
+        }
+      ]
+    },
+    {
+      "name": "test-bench",
+      "main": "4d58c46426fe085d25fef3fcb35fa5e2cce83b30",
+      "ci": {
+        "id": 38097937003,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 24,
+          "head": "ca4e93dbe8fb8f9e81ebc0c97cafc34deaf5a4cb",
+          "branch": "metaharness/test-bench-cli-discovery-2026-10-10",
+          "updated": "2026-10-30T00:17:24Z"
+        },
+        {
+          "number": 23,
+          "head": "efd7dfec6453ebd250e6abf44b84ace8841b044d",
+          "branch": "dependabot/npm_and_yarn/ajv-8.18.0",
+          "updated": "2026-02-21T04:44:05Z"
+        },
+        {
+          "number": 21,
+          "head": "d72fbc1576f414bf0be1843ee9c700ef6ddb032f",
+          "branch": "dependabot/npm_and_yarn/yaml-2.8.2",
+          "updated": "2026-01-19T01:19:26Z"
+        },
+        {
+          "number": 19,
+          "head": "e1a92c290245fdece1ee405ce56fbd22f5f7d87f",
+          "branch": "dependabot/npm_and_yarn/linting-a1f4f38f5f",
+          "updated": "2026-02-23T09:37:42Z"
+        },
+        {
+          "number": 18,
+          "head": "1992779317b4d9e265f5d91aae18cf6c1cb32705",
+          "branch": "dependabot/github_actions/actions/checkout-6",
+          "updated": "2025-12-29T09:31:21Z"
+        },
+        {
+          "number": 17,
+          "head": "3696dcbe88b2228c1db4603b0dab704bd7669449",
+          "branch": "dependabot/npm_and_yarn/glob-10.5.0",
+          "updated": "2025-12-29T09:31:21Z"
+        },
+        {
+          "number": 16,
+          "head": "9394e959b5b7f5e3ecfe2bef18d297e8f623d0ab",
+          "branch": "dependabot/npm_and_yarn/build-962cbc3817",
+          "updated": "2026-02-23T09:37:34Z"
+        },
+        {
+          "number": 15,
+          "head": "1afdd2b742ec394455d3607e0cb621fa7789461b",
+          "branch": "dependabot/npm_and_yarn/typescript-2700eca835",
+          "updated": "2026-02-23T09:37:52Z"
+        },
+        {
+          "number": 13,
+          "head": "69363f6ee0c637ae3a8b8aaff5b0e29abdeb46f4",
+          "branch": "dependabot/npm_and_yarn/typescript-eslint/eslint-plugin-tw-6.21.0",
+          "updated": "2025-11-04T17:57:34Z"
+        },
+        {
+          "number": 12,
+          "head": "3dff73d169cc8067e3614e20a6ce0906ff8abfbd",
+          "branch": "dependabot/npm_and_yarn/lint-staged-tw-15.5.2",
+          "updated": "2025-11-04T17:57:34Z"
+        },
+        {
+          "number": 11,
+          "head": "770fdc7e2cc1f4d3bf65581b3364ad234b7881e3",
+          "branch": "dependabot/npm_and_yarn/typescript-eslint/parser-tw-6.21.0",
+          "updated": "2025-11-04T17:57:31Z"
+        },
+        {
+          "number": 10,
+          "head": "7655134401fab456cd126984662839146ffd790f",
+          "branch": "dependabot/npm_and_yarn/openai-tw-4.104.0",
+          "updated": "2025-11-04T17:57:32Z"
+        },
+        {
+          "number": 5,
+          "head": "d0d3b52cb0252d9c1a42098d6835762497a50999",
+          "branch": "dependabot/github_actions/actions/setup-node-6",
+          "updated": "2025-12-08T10:36:59Z"
+        },
+        {
+          "number": 4,
+          "head": "f199ef6e2f191219fabee51d9eecedfd55fce8a2",
+          "branch": "dependabot/github_actions/docker/build-push-action-6",
+          "updated": "2025-12-08T10:36:59Z"
+        },
+        {
+          "number": 3,
+          "head": "b52b962ee01ef954d6135615e0806e2445498e5c",
+          "branch": "dependabot/github_actions/actions/upload-artifact-5",
+          "updated": "2025-12-08T10:36:59Z"
+        },
+        {
+          "number": 2,
+          "head": "48e32848e3f97e9d82abafa38cd76e5e02a38737",
+          "branch": "dependabot/github_actions/github/codeql-action-4",
+          "updated": "2025-12-08T10:36:59Z"
+        }
+      ]
+    },
+    {
+      "name": "observatory",
+      "main": "020f9031a2f1272d55deef0d6c715650b6647150",
+      "ci": {
+        "id": 30303074167,
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      "prs": [
+        {
+          "number": 11,
+          "head": "4191b86704f56091eb51d03ceabf66de5526c891",
+          "branch": "metaharness/observatory-input-validation-2026-10-12",
+          "updated": "2026-10-19T00:22:21Z"
+        },
+        {
+          "number": 9,
+          "head": "dec9eca5812ba18d0dcea540d2324e360a47503e",
+          "branch": "dependabot/docker/services/analytics-api/rust-1.93-slim-bookworm",
+          "updated": "2026-01-26T03:14:32Z"
+        },
+        {
+          "number": 7,
+          "head": "d9e4c8ee9a80599dfa0328482c84993c5e1ba1ec",
+          "branch": "dependabot/github_actions/actions/checkout-6",
+          "updated": "2025-12-29T03:24:58Z"
+        },
+        {
+          "number": 5,
+          "head": "905067b61259fc8f4a8ddbb4571910ac007b887d",
+          "branch": "dependabot/github_actions/codecov/codecov-action-5",
+          "updated": "2025-12-08T03:26:43Z"
+        },
+        {
+          "number": 4,
+          "head": "5b9c5478c47a26235e6aadcf83c67ec1a513265d",
+          "branch": "dependabot/github_actions/github/codeql-action-4",
+          "updated": "2025-12-08T03:26:43Z"
+        },
+        {
+          "number": 3,
+          "head": "a297880321bf89ff3c74104dd2644dff6e2167df",
+          "branch": "dependabot/github_actions/actions/download-artifact-6",
+          "updated": "2025-12-08T03:26:43Z"
+        },
+        {
+          "number": 2,
+          "head": "5b3d59c225f12ddbf1f6e40372cb529dd986b33e",
+          "branch": "dependabot/github_actions/azure/setup-kubectl-4",
+          "updated": "2025-12-08T03:26:43Z"
+        }
+      ]
+    },
+    {
+      "name": "forge",
+      "main": "4b5e43618b8fd1b8f63bddd24ff524510d9514bc",
+      "ci": {
+        "id": 40990732581,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 105,
+          "head": "d210aaf8d2c0cd716ad3878ce7566dbc4a207f3c",
+          "branch": "dependabot/npm_and_yarn/production-dependencies-21c80c92da",
+          "updated": "2026-10-26T09:24:19Z"
+        },
+        {
+          "number": 104,
+          "head": "246bce5b2d731498faf3487939a0eb4a79b64495",
+          "branch": "dependabot/npm_and_yarn/development-dependencies-c437ce97a2",
+          "updated": "2026-10-26T09:19:51Z"
+        },
+        {
+          "number": 103,
+          "head": "a829cd744c1db002d78848bbd1067bb8e54ce258",
+          "branch": "metaharness/forge-security-recovery-20261013",
+          "updated": "2026-10-30T18:55:29Z"
+        }
+      ]
+    },
+    {
+      "name": "sentinel",
+      "main": "504b0ea466620ffacfd7ea19993d5a62b71babdd",
+      "ci": {
+        "id": 22300402856,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 22,
+          "head": "acd7ab14f7749158d7f63b59e79e0cf3fbe3820e",
+          "branch": "metaharness/sentinel-http-boundary-2026-10-13",
+          "updated": "2026-10-18T18:17:39Z"
+        },
+        {
+          "number": 21,
+          "head": "af6ca0c2161a411073b97bfe209244c4d54ce079",
+          "branch": "dependabot/docker/rust-1.93-slim-bookworm",
+          "updated": "2026-01-26T09:53:24Z"
+        },
+        {
+          "number": 19,
+          "head": "dd899114e8997204405a9ff3ebee26d414ec6eeb",
+          "branch": "dependabot/cargo/metrics-exporter-prometheus-0.18",
+          "updated": "2025-12-29T09:31:44Z"
+        },
+        {
+          "number": 18,
+          "head": "e41c82a66b7a11862456e0c549297c20cb3ceaaa",
+          "branch": "dependabot/github_actions/actions/checkout-6",
+          "updated": "2025-12-29T09:31:44Z"
+        },
+        {
+          "number": 17,
+          "head": "f1b6cb02f271e1cb9f26528880daaf292b4977c5",
+          "branch": "dependabot/cargo/nalgebra-0.34",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 16,
+          "head": "e99586ff18bb9e7bff1d7052b1c391d89be17ab8",
+          "branch": "dependabot/cargo/validator-0.20",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 15,
+          "head": "1d7bd08c53ef756d46aa490e619aa2cae953fcd7",
+          "branch": "dependabot/cargo/prost-0.14",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 14,
+          "head": "85ddbca75155dcc2227f4bb31e71085c864933ff",
+          "branch": "dependabot/cargo/ndarray-0.17",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 13,
+          "head": "33ed88554c01477f20e43db4d085272c9234eb9b",
+          "branch": "dependabot/cargo/statrs-0.18",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 12,
+          "head": "6747c44ca199f8dda2e4c40b97ca10642a6f8a81",
+          "branch": "dependabot/cargo/rdkafka-0.38",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 11,
+          "head": "0a71af3da501b701b38fa1bea74c151060d5aefe",
+          "branch": "dependabot/cargo/axum-0.8",
+          "updated": "2025-12-06T20:57:09Z"
+        },
+        {
+          "number": 9,
+          "head": "d09db45a4607bcbd66d398e3a45e2bf72a4fd274",
+          "branch": "dependabot/cargo/lapin-3.7",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 8,
+          "head": "0a6f4e48b07a17a0d53cf30117eeb2b7463fba68",
+          "branch": "dependabot/cargo/tonic-build-0.14",
+          "updated": "2025-12-15T09:45:18Z"
+        },
+        {
+          "number": 7,
+          "head": "4bf59c572d5a178f9b8d6abaf5785d419d615f13",
+          "branch": "dependabot/github_actions/github/codeql-action-4",
+          "updated": "2025-12-08T10:31:48Z"
+        },
+        {
+          "number": 6,
+          "head": "3999aea57ad7367f4ca8e066cbd87c514ca74742",
+          "branch": "dependabot/github_actions/actions/upload-artifact-5",
+          "updated": "2025-12-08T10:31:48Z"
+        },
+        {
+          "number": 5,
+          "head": "3dfc8733ab0ee6fcca1a6fef7d08a93b17a353fd",
+          "branch": "dependabot/github_actions/codecov/codecov-action-5",
+          "updated": "2025-12-08T10:31:48Z"
+        },
+        {
+          "number": 4,
+          "head": "43f808c0adc6ecf8e2e6f7d0a983a289675016b2",
+          "branch": "dependabot/github_actions/EmbarkStudios/cargo-deny-action-2",
+          "updated": "2025-12-08T10:31:48Z"
+        },
+        {
+          "number": 2,
+          "head": "20dede1e52a61a5d41a0d48f0089a85e75ed3172",
+          "branch": "dependabot/github_actions/azure/setup-kubectl-4",
+          "updated": "2025-12-08T10:31:48Z"
+        }
+      ]
+    },
+    {
+      "name": "latency-lens",
+      "main": "8370e90fa788959a0b80e3f9c4140422f3eccd69",
+      "ci": {
+        "id": 22300414590,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 25,
+          "head": "5886c58a866c120c84a1c29f0433b2b76600ed13",
+          "branch": "dependabot/docker/rust-1.93-slim-bookworm",
+          "updated": "2026-01-26T09:53:49Z"
+        },
+        {
+          "number": 24,
+          "head": "c2d181e36cc7dc02cc99766dce4bf5b817cce7cf",
+          "branch": "dependabot/cargo/clap_complete-4.5.62",
+          "updated": "2026-01-25T05:19:16Z"
+        },
+        {
+          "number": 23,
+          "head": "04c13e2f19f6fe5179cadeae690d5d88a24c11bb",
+          "branch": "dependabot/cargo/http-694c32ea1c",
+          "updated": "2026-02-23T09:37:29Z"
+        },
+        {
+          "number": 21,
+          "head": "ea8a15eb987f18e59f8d448f0bf48c2ef0891e7e",
+          "branch": "dependabot/cargo/observability-7aa51c3566",
+          "updated": "2026-02-23T09:38:10Z"
+        },
+        {
+          "number": 18,
+          "head": "7e5f9115672c444371ec0d0815a5018accac71a7",
+          "branch": "dependabot/cargo/bytes-1.11.0",
+          "updated": "2025-12-29T09:32:11Z"
+        },
+        {
+          "number": 17,
+          "head": "40c5e1d3942d1eb43ca61e7c75ac5b2a2273be36",
+          "branch": "dependabot/cargo/governor-0.10.2",
+          "updated": "2025-12-29T09:32:10Z"
+        },
+        {
+          "number": 16,
+          "head": "c8b6a431a5f340505a2093083abf4e02887c7297",
+          "branch": "dependabot/cargo/indicatif-0.18.3",
+          "updated": "2025-12-29T09:32:11Z"
+        },
+        {
+          "number": 15,
+          "head": "cdf5fba1ad608b4b0d5e333d27e20303b0c7153e",
+          "branch": "dependabot/cargo/config-0.15.19",
+          "updated": "2025-12-29T09:32:10Z"
+        },
+        {
+          "number": 14,
+          "head": "e17d6b4787a7b2c8302fae6b37cd540bbeaf2578",
+          "branch": "dependabot/cargo/criterion-0.7.0",
+          "updated": "2025-12-08T10:32:39Z"
+        },
+        {
+          "number": 13,
+          "head": "9324102432e64666ac038d6557ab5891231d73ab",
+          "branch": "dependabot/cargo/console-0.16.1",
+          "updated": "2025-12-08T10:32:39Z"
+        },
+        {
+          "number": 12,
+          "head": "d14516a0b09b59e0cf4a02cc66c007cdc722384a",
+          "branch": "dependabot/cargo/tabled-0.20.0",
+          "updated": "2025-12-08T10:32:39Z"
+        },
+        {
+          "number": 6,
+          "head": "4c163d0ccde808400eda16d85744675f5006dc54",
+          "branch": "dependabot/github_actions/docker/build-push-action-6",
+          "updated": "2025-12-08T10:32:42Z"
+        },
+        {
+          "number": 5,
+          "head": "6ceb56bb4b516227f9c7b7b584ae946021e4ea2a",
+          "branch": "dependabot/github_actions/github/codeql-action-4",
+          "updated": "2025-12-08T10:32:42Z"
+        },
+        {
+          "number": 4,
+          "head": "a672a0ef75c92594fd608b4dc70d9c69b5d663ec",
+          "branch": "dependabot/github_actions/slackapi/slack-github-action-2.1.1",
+          "updated": "2025-12-08T10:32:42Z"
+        },
+        {
+          "number": 3,
+          "head": "bc7952b948d9ba9580368c73b2d8c9e70cd2b780",
+          "branch": "dependabot/github_actions/actions/download-artifact-6",
+          "updated": "2025-12-08T10:32:42Z"
+        },
+        {
+          "number": 2,
+          "head": "c0c1d747c19b5ceecc240460111edcc3246c797a",
+          "branch": "dependabot/github_actions/slsa-framework/slsa-github-generator/dot-github/workflows/generator_generic_slsa3.yml-2.1.0",
+          "updated": "2025-12-08T10:32:42Z"
+        }
+      ]
+    },
+    {
+      "name": "shield",
+      "main": "1c46282495b94bb1fcae2d9e63cf34f495226699",
+      "ci": {
+        "id": 30311678327,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 3,
+          "head": "f0c74aec78b0df4e4760562dfcfb12c8abc4368a",
+          "branch": "metaharness/shield-security-hardening-2026-10-12",
+          "updated": "2026-10-29T18:24:38Z"
+        }
+      ]
+    },
+    {
+      "name": "orchestrator",
+      "main": "24b373c41cbac1d946fda31b7c86a5ff26037375",
+      "ci": {
+        "id": 30310547202,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "auto-optimizer",
+      "main": "114865b4c3beb78b9fbeacbfc19ef93ab4501f97",
+      "ci": {
+        "id": 30302637799,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 3,
+          "head": "09c1e49539760a526510a7986e8929f6d0253782",
+          "branch": "metaharness/auto-optimizer-webhook-security-20261014",
+          "updated": "2026-10-30T18:26:22Z"
+        }
+      ]
+    },
+    {
+      "name": "incident-manager",
+      "main": "bcb8c8d027997c3363a9fd0ebd0ddc9c086227c6",
+      "ci": {
+        "id": 30302621752,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 2,
+          "head": "f11f9c7396b6ce9ad37c9e76c6597ac4444fe2d6",
+          "branch": "metaharness/incident-manager-2026-10-10",
+          "updated": "2026-10-19T12:24:32Z"
+        }
+      ]
+    },
+    {
+      "name": "marketplace",
+      "main": "70071f0eda8e8bf76574488f74779ed7f1229b47",
+      "ci": {
+        "id": 30302618197,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": []
+    },
+    {
+      "name": "cost-ops",
+      "main": "aef76ae9c264b888abc60aace3dd6948f2422906",
+      "ci": {
+        "id": 41103485081,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 111,
+          "head": "3871153deff5da3ed6ad27c9052df383223c14e3",
+          "branch": "metaharness/cost-package-compat-20261020",
+          "updated": "2026-10-21T01:18:52Z"
+        },
+        {
+          "number": 110,
+          "head": "5ab8326781cd913e7effc1162416f2ae2f12fff5",
+          "branch": "dependabot/cargo/brotli-9.0",
+          "updated": "2026-10-19T13:08:25Z"
+        },
+        {
+          "number": 109,
+          "head": "f9a81266322869307968551de0c222ca352b2ef4",
+          "branch": "dependabot/cargo/redis-1.7",
+          "updated": "2026-10-19T13:08:10Z"
+        },
+        {
+          "number": 108,
+          "head": "60c6d78646271a19a3a15f92ef51822e1dcd80e7",
+          "branch": "dependabot/cargo/cron-0.17",
+          "updated": "2026-10-19T13:08:02Z"
+        },
+        {
+          "number": 107,
+          "head": "ed0582f3a036d51079865e2c00470445b5a190ab",
+          "branch": "dependabot/cargo/jsonwebtoken-11.1",
+          "updated": "2026-10-19T13:07:48Z"
+        },
+        {
+          "number": 106,
+          "head": "8a02872f99ba2d328e2ac9c086085ca810b3833f",
+          "branch": "dependabot/cargo/toml-1.1",
+          "updated": "2026-10-19T13:07:42Z"
+        },
+        {
+          "number": 105,
+          "head": "ca60d8a31fa9e44d1968f9acdc602d4bf0f6ce5e",
+          "branch": "dependabot/cargo/sha2-0.11",
+          "updated": "2026-10-19T13:07:32Z"
+        },
+        {
+          "number": 104,
+          "head": "9d4e07e55ed8da1beab351abfed155d3c25931f2",
+          "branch": "dependabot/cargo/thiserror-2.0",
+          "updated": "2026-10-19T13:07:21Z"
+        },
+        {
+          "number": 103,
+          "head": "9f976bf8acd204180bdbe03d5f4b2edeef6de0aa",
+          "branch": "dependabot/cargo/config-0.15",
+          "updated": "2026-10-19T13:06:26Z"
+        },
+        {
+          "number": 102,
+          "head": "775180f8bcb6a9c0480b901cb825c26e3721c8a9",
+          "branch": "dependabot/cargo/constant_time_eq-0.6",
+          "updated": "2026-10-19T13:06:13Z"
+        },
+        {
+          "number": 101,
+          "head": "15d02877b51840b590bb3229b91198d67dc22695",
+          "branch": "dependabot/cargo/rust_xlsxwriter-0.99",
+          "updated": "2026-10-19T13:06:06Z"
+        },
+        {
+          "number": 100,
+          "head": "f7efaa6b44938c33f87452fcdc448e15c393e210",
+          "branch": "dependabot/github_actions/madrapps/jacoco-report-1.8",
+          "updated": "2026-10-05T16:27:28Z"
+        },
+        {
+          "number": 99,
+          "head": "94c3f32f17e060b0cf8923653951f1b22541422f",
+          "branch": "dependabot/github_actions/nwtgck/actions-netlify-4.0",
+          "updated": "2026-10-05T16:25:41Z"
+        },
+        {
+          "number": 98,
+          "head": "e477fd221bfaf28f44d44e2d640575e92c0dd8e1",
+          "branch": "dependabot/github_actions/actions/labeler-7",
+          "updated": "2026-10-05T16:25:19Z"
+        },
+        {
+          "number": 97,
+          "head": "1dca8dd1354342ffbf9629debdd13bbb2bfcbc6e",
+          "branch": "dependabot/github_actions/peter-evans/create-pull-request-8",
+          "updated": "2026-10-05T16:25:04Z"
+        }
+      ]
+    },
+    {
+      "name": "governance-dashboard",
+      "main": "53047917da900f397a5045cfc7ddf5e32e735872",
+      "ci": {
+        "id": 40872801077,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 9,
+          "head": "477bc172c94d7852a4fb4d5f0a5cf1d7f0085a4a",
+          "branch": "metaharness/governance-dashboard-20261026",
+          "updated": "2026-10-29T18:21:02Z"
+        }
+      ]
+    },
+    {
+      "name": "policy-engine",
+      "main": "c44b699eadc6b8dbbd26fa35d7cf82d61275979b",
+      "prs": [
+        {
+          "number": 1,
+          "head": "343deaf5a4ac031b5b8e5cf4a6c964ec2dd62e77",
+          "branch": "metaharness/policy-engine-jwt-20261021",
+          "updated": "2026-10-21T18:41:54Z"
+        }
+      ]
+    },
+    {
+      "name": "registry",
+      "main": "ddede4cd93b0da9f003b2d90f91e33066877cae4",
+      "ci": {
+        "id": 39779720782,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 2,
+          "head": "b0e7b2cab83c55b050a73982ed87020b69531239",
+          "branch": "metaharness/registry-determinism-20261028",
+          "updated": "2026-10-28T18:15:27Z"
+        }
+      ]
+    },
+    {
+      "name": "inference-gateway",
+      "main": "a07a604dc14a3eeb2b9a07e85e9c41212156de9a",
+      "prs": [
+        {
+          "number": 1,
+          "head": "ba6f9786737778a7361ee433d3244f20d7375c8a",
+          "branch": "metaharness/inference-gateway-2026-10-10",
+          "updated": "2026-10-18T12:32:27Z"
+        }
+      ]
+    },
+    {
+      "name": "config-manager",
+      "main": "85667ace35b905fdd4acf79f2db06c64e4738969",
+      "ci": {
+        "id": 40685893318,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "simulator",
+      "main": "96091398ad2cb1189774d2581fb26c2bebe1abd9",
+      "ci": {
+        "id": 22340450613,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 1,
+          "head": "d445f436adbe3d30c4c5afee4ddf0f341f962521",
+          "branch": "metaharness/cors-supply-chain-2026-10-09",
+          "updated": "2026-10-30T12:21:32Z"
+        }
+      ]
+    },
+    {
+      "name": "copilot-agent",
+      "main": "756402a87e39419efa90a2accfe34b46083af945",
+      "ci": {
+        "id": 30302673097,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 4,
+          "head": "89060ed6324433628b9a9c90c1e93b9dabca5847",
+          "branch": "metaharness/copilot-agent-boundary-2026-10-25",
+          "updated": "2026-10-25T00:24:11Z"
+        }
+      ]
+    },
+    {
+      "name": "connector-hub",
+      "main": "b25fcb3bd9a06ae9e7d73c7acd677607123d081d",
+      "ci": {
+        "id": 30302596307,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 2,
+          "head": "7ac8863570764c4ebb15611e13b8a04fabc5b27d",
+          "branch": "metaharness/connector-oauth-20261020",
+          "updated": "2026-10-20T18:34:06Z"
+        }
+      ]
+    },
+    {
+      "name": "benchmark-exchange",
+      "main": "09236748843306e9cc5f33cd91b0c9182c7b18e1",
+      "ci": {
+        "id": 30302631143,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 3,
+          "head": "3fe6e55248a66bf7200da417936a22e0e8604f95",
+          "branch": "metaharness/benchmark-exchange-boundary-2026-10-23",
+          "updated": "2026-10-23T18:16:08Z"
+        }
+      ]
+    },
+    {
+      "name": "schema-registry",
+      "main": "d0d89f267c32a2d31b622ad112836435c2534f39",
+      "ci": {
+        "id": 30302600189,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 3,
+          "head": "711a2ffaa68f5fb7375712a30571374ad5554dfc",
+          "branch": "metaharness/request-boundary-2026-10-22",
+          "updated": "2026-10-29T00:09:26Z"
+        }
+      ]
+    },
+    {
+      "name": "analytics-hub",
+      "main": "88f4ffa94afd4a14ec94c9b4b3dc723badc7fac1",
+      "ci": {
+        "id": 30302708508,
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      "prs": [
+        {
+          "number": 2,
+          "head": "4b4e48f056ef7f886573063e56f57e8b3db7d166",
+          "branch": "metaharness/analytics-auth-hardening-2026-10-11",
+          "updated": "2026-10-19T18:09:27Z"
+        }
+      ]
+    },
+    {
+      "name": "research-lab",
+      "main": "83c4850c04d6243c1f700ec4a6a0e406a7d7198a",
+      "ci": {
+        "id": 38920009861,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "integrations",
+      "main": "42bbcbaa9c7401dbaa1bb18fa8956c5ba837b8e2",
+      "ci": {
+        "id": 40192958928,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "infra",
+      "main": "a8bc89c190f63b139812f30a54e21a25b8f70e81",
+      "prs": []
+    },
+    {
+      "name": "security-core",
+      "main": "6b07fd1e61363ba981986927355bc8c2e2810e6b",
+      "ci": {
+        "id": 40093103835,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "automation-core",
+      "main": "3f1b6f7dc755756305527e3672fd91c95acfb8b0",
+      "ci": {
+        "id": 40220720108,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "ruvector-service",
+      "main": "e3a56d6c4c42f61fec8afb9da01939578e39ffa4",
+      "ci": {
+        "id": 39834456701,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "data-vault",
+      "main": "01c0240871f03f0cbc0f497bff47360940bcb637",
+      "ci": {
+        "id": 30302592934,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": [
+        {
+          "number": 2,
+          "head": "e3f668e433d823297110a933ee1a2fa1e7bce00c",
+          "branch": "metaharness/data-vault-error-boundary-2026-10-24",
+          "updated": "2026-10-24T18:29:06Z"
+        }
+      ]
+    },
+    {
+      "name": "intelligence-core",
+      "main": "2da20a031c6d02cc99bd3dc86da450791f0f37e7",
+      "ci": {
+        "id": 40043422062,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "research-core",
+      "main": "9853244c59179d7a8e5742814d226b2f979c3bde",
+      "ci": {
+        "id": 39961105735,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "ecosystem-core",
+      "main": "2066fb4be1cc72031e19c71040e017310ab4dbae",
+      "ci": {
+        "id": 40376240205,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "governance-core",
+      "main": "7dc3b493ccfd9568b278d9f7a2bde351769b30d3",
+      "ci": {
+        "id": 40323345327,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "agentics-platform",
+      "main": "9b3fa8d3faeda67230e953355eee1ab87112fcaf",
+      "ci": {
+        "id": 30359780578,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": []
+    },
+    {
+      "name": "agentics-diligence-artifacts",
+      "main": "131b0aaa8d316655d7d860bc9ffa38fea4767447",
+      "prs": []
+    },
+    {
+      "name": "data-core",
+      "main": "d8a4d82b3918f2cf8aaf5fe003b5c351f184a9a9",
+      "ci": {
+        "id": 38734205492,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "interface-core",
+      "main": "ccdaa69b8b8e1adede067848841a26df024a4e44",
+      "ci": {
+        "id": 40248800026,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "agentics-deployment-intent",
+      "main": "95111d9f55c7aba9c392b2eab08540b3a67e1d51",
+      "prs": []
+    },
+    {
+      "name": "agentics-cli",
+      "main": "a6fa67a40fe3d08d51ff2c66d0f96e43a89ff9a6",
+      "ci": {
+        "id": 28767269473,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": []
+    },
+    {
+      "name": "agentics-org-manifests",
+      "main": "a52b61eea0e6b60883e436c982abc55bb9030edd",
+      "prs": []
+    },
+    {
+      "name": "erp-surface",
+      "main": "188099d51ff1f1d4af944401d5fef18666317643",
+      "ci": {
+        "id": 22001663894,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "prs": []
+    },
+    {
+      "name": "agentics-orchestration-engine",
+      "main": "a365c1a6f954041aefef67678fc3fe1b0b4eba7d",
+      "prs": []
+    },
+    {
+      "name": "agentics-simulation-runner",
+      "main": "ead6a0f0b2f0af389c1cae6dc7b001ecfe7a90f8",
+      "prs": []
+    },
+    {
+      "name": "agentics-deployment-exporters",
+      "main": "ea60a265f6fb9a89e0b2012ed7d0441cb6637168",
+      "prs": []
+    },
+    {
+      "name": "enterprise-roi-engine",
+      "main": "1f4d33cc057740f9f96e75e6c11b0dfd44cd35e7",
+      "prs": [
+        {
+          "number": 1,
+          "head": "16f585c28c48fc42004ae2a05ba44fe01649de09",
+          "branch": "metaharness/roi-boundary-20261027",
+          "updated": "2026-10-27T18:21:34Z"
+        }
+      ]
+    },
+    {
+      "name": "agentics-simulation-planner",
+      "main": "144a6c41b8532cfc0ae8bffe7e2f1676cb5068fe",
+      "prs": []
+    },
+    {
+      "name": "agentics-cli-test",
+      "main": "fb73fe95db97bd35cfe378291004f09f2929675d",
+      "prs": []
+    },
+    {
+      "name": "agentics-enforcement",
+      "main": "45277702166465be82fe2fa255aaa0dec0893994",
+      "prs": []
+    },
+    {
+      "name": "agentics-execution-engine",
+      "main": "accaf090c78cb0dfe439c771b2ecba868cdfbeac",
+      "prs": []
+    },
+    {
+      "name": "platform-agents",
+      "main": "94fbbc82db9cc10f66093df428560ef01aa2b322",
+      "prs": []
+    },
+    {
+      "name": "agentics-contracts",
+      "main": "716a33348721f78a7a14bd98e6717e3b40470730",
+      "prs": []
+    },
+    {
+      "name": "agentics-results-index",
+      "main": "876cd8cf38eb9e5687c92b73e8d3b8ac7e34e57c",
+      "prs": []
+    },
+    {
+      "name": "agentics-usage-ledger",
+      "main": "dbd63a6ae35a45f889170fc2ca3e611907506c45",
+      "prs": []
+    },
+    {
+      "name": "agentics-evolution",
+      "main": "855c0b2e9a53ade5ab2f06d4185b7c3c8fff0369",
+      "ci": {
+        "id": 31584866986,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 27,
+          "head": "e1d5f3236b4c938e1febb9cdd8ab0c2d4b1655d0",
+          "branch": "prompt/06-private-ruvector-brain",
+          "updated": "2026-08-12T09:56:03Z"
+        }
+      ]
+    },
+    {
+      "name": "agentics-dream-machine",
+      "main": "2fba2550182d81b36423447221823e98e227482a",
+      "ci": {
+        "id": 40928847561,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "prs": [
+        {
+          "number": 107,
+          "head": "8de03c06452d7f70c011c745b69bc3a3ad83c55c",
+          "branch": "dream/2026-10-30-compiler-parity",
+          "updated": "2026-10-30T09:14:19Z"
+        },
+        {
+          "number": 105,
+          "head": "d6e2f884ba4395c452c6728f910b8087f3f2f33d",
+          "branch": "dream/2026-10-29-developer-experience",
+          "updated": "2026-10-29T09:19:06Z"
+        },
+        {
+          "number": 103,
+          "head": "8c4feb2060d2765f9c5b91111f857fc4141d841f",
+          "branch": "dream/2026-10-28-security-adversarial",
+          "updated": "2026-10-28T09:19:46Z"
+        },
+        {
+          "number": 101,
+          "head": "5ba55823a2d2327eadc8d05fe8ef9a1dc4ec2218",
+          "branch": "dream/2026-10-27-evaluation-adapters",
+          "updated": "2026-10-27T09:19:58Z"
+        },
+        {
+          "number": 99,
+          "head": "0c4de8e921156f9f382102156680e86fd09d27ea",
+          "branch": "dream/2026-10-26-ledger-signals",
+          "updated": "2026-10-26T09:21:13Z"
+        },
+        {
+          "number": 97,
+          "head": "89bdc067013287b1c65b32ad4706c12ea9b94636",
+          "branch": "dream/2026-10-25-compiler-parity",
+          "updated": "2026-10-25T09:21:29Z"
+        },
+        {
+          "number": 95,
+          "head": "593b408f3dea15959a02a1cb5b9d7d9628ec2d27",
+          "branch": "dream/2026-10-24-developer-experience",
+          "updated": "2026-10-24T09:17:18Z"
+        },
+        {
+          "number": 93,
+          "head": "e7efbe2d3b9a7c54cc4a6e7bb57471a92aa4111e",
+          "branch": "dream/2026-10-23-security-adversarial",
+          "updated": "2026-10-23T09:16:37Z"
+        },
+        {
+          "number": 91,
+          "head": "ceff2a35195a1264eba7a4131da506fc485928c6",
+          "branch": "dream/2026-10-22-security-adversarial",
+          "updated": "2026-10-22T09:19:00Z"
+        },
+        {
+          "number": 89,
+          "head": "2304450a606a95a83fc0dbcf2fab829bdc054b60",
+          "branch": "dream/2026-10-21-ledger-signals",
+          "updated": "2026-10-21T09:23:45Z"
+        },
+        {
+          "number": 87,
+          "head": "57aedefedf2e7de3877a8a2e7d01df2f4f7afa3e",
+          "branch": "dream/2026-10-20-compiler-parity",
+          "updated": "2026-10-20T09:18:53Z"
+        },
+        {
+          "number": 85,
+          "head": "9cd4a7ee2c83dc37b33950ce94dd3df8d654371c",
+          "branch": "dream/2026-10-19-developer-experience",
+          "updated": "2026-10-19T09:14:56Z"
+        },
+        {
+          "number": 83,
+          "head": "8e116361aeb3079bb9c55d6d4d6855a5c5891bad",
+          "branch": "dream/2026-10-18-security-adversarial",
+          "updated": "2026-10-18T09:18:05Z"
+        },
+        {
+          "number": 81,
+          "head": "26c1bbdb3f8792a04acdb8c310a1d36eb0635621",
+          "branch": "dream/2026-10-17-evaluation-adapters",
+          "updated": "2026-10-17T09:27:55Z"
+        },
+        {
+          "number": 79,
+          "head": "c39085ea3210c857cf0c8256754e7399067c0e53",
+          "branch": "dream/2026-10-16-ledger-signals",
+          "updated": "2026-10-16T09:28:36Z"
+        },
+        {
+          "number": 76,
+          "head": "53d4b7ea7597decb27d3254f12e56724ba2b5ae3",
+          "branch": "dream/2026-10-15-compiler-parity",
+          "updated": "2026-10-15T10:18:25Z"
+        },
+        {
+          "number": 75,
+          "head": "84fd71ebc4c8deffd260a0e5e81dfbd2e2a3a95b",
+          "branch": "dream/2026-10-14-developer-experience",
+          "updated": "2026-10-14T09:25:01Z"
+        },
+        {
+          "number": 73,
+          "head": "fcb8129a84b382402d06a1907cbe6ec39295b645",
+          "branch": "dream/2026-10-13-security-adversarial",
+          "updated": "2026-10-13T09:21:28Z"
+        },
+        {
+          "number": 71,
+          "head": "f5208532e05962ce6dbed9b413997276fbca13a3",
+          "branch": "dream/2026-10-12-evaluation-adapters",
+          "updated": "2026-10-12T09:24:13Z"
+        },
+        {
+          "number": 69,
+          "head": "6e7467a74a71886dc740e3ef6ba2ba1f1ea093b4",
+          "branch": "dream/2026-10-11-ledger-signals",
+          "updated": "2026-10-11T09:25:53Z"
+        },
+        {
+          "number": 67,
+          "head": "29fb4c570d1399f919e163d616d4e64f584124b3",
+          "branch": "dream/2026-10-10-compiler-parity",
+          "updated": "2026-10-10T18:21:02Z"
+        },
+        {
+          "number": 65,
+          "head": "792412a91861cb070a6821b33b4208a15a79c02d",
+          "branch": "dream/2026-10-09-developer-experience",
+          "updated": "2026-10-09T09:22:11Z"
+        },
+        {
+          "number": 63,
+          "head": "67a9aedd482d9c36deccd74a9c6b9c876d7b9357",
+          "branch": "dream/2026-10-08-security-adversarial",
+          "updated": "2026-10-08T09:22:19Z"
+        },
+        {
+          "number": 61,
+          "head": "a9071c45113b9ad72d9c046aedb64d26f1b95689",
+          "branch": "dream/2026-10-07-evaluation-adapters",
+          "updated": "2026-10-07T09:24:20Z"
+        },
+        {
+          "number": 58,
+          "head": "dbd897d744c57a251032f3a46c94efef23865de1",
+          "branch": "dream/2026-10-06-ledger-signals",
+          "updated": "2026-10-06T09:27:47Z"
+        },
+        {
+          "number": 57,
+          "head": "d008846b708f3a26a904ee8a11148a5c4b49a2eb",
+          "branch": "dream/2026-10-05-compiler-parity",
+          "updated": "2026-10-05T09:23:35Z"
+        },
+        {
+          "number": 55,
+          "head": "33cb36382e5b23c9be4d471abd6817d4e8270deb",
+          "branch": "dream/2026-10-04-developer-experience",
+          "updated": "2026-10-04T09:21:39Z"
+        },
+        {
+          "number": 53,
+          "head": "c7cf2e70d920b4a6b4b5b24efb0c26c58ccdba61",
+          "branch": "dream/2026-10-01-evaluation-adapters",
+          "updated": "2026-10-01T09:17:57Z"
+        },
+        {
+          "number": 51,
+          "head": "3f7163c36e2ca56f2eba7c073cefcf513f9f0a79",
+          "branch": "dream/2026-09-30-compiler-parity",
+          "updated": "2026-09-30T09:25:28Z"
+        },
+        {
+          "number": 49,
+          "head": "fdd865fdc828fec3104f750caff26542d5790106",
+          "branch": "dream/2026-09-29-developer-experience",
+          "updated": "2026-09-29T09:16:33Z"
+        },
+        {
+          "number": 47,
+          "head": "23b6e883b5d5412e472aa2b7baafff2493b07fac",
+          "branch": "dream/2026-09-28-security-adversarial",
+          "updated": "2026-09-28T09:15:13Z"
+        },
+        {
+          "number": 45,
+          "head": "6d99e21b50905b27d1fb4ef0cf78287decf70396",
+          "branch": "dream/2026-09-27-evaluation-adapters",
+          "updated": "2026-09-27T09:21:01Z"
+        },
+        {
+          "number": 43,
+          "head": "2e5a0ec95cd5e14c5a8f580516be5f86b63fd4b2",
+          "branch": "dream/2026-09-26-ledger-signals-audit",
+          "updated": "2026-09-26T09:35:45Z"
+        },
+        {
+          "number": 41,
+          "head": "27bcc0f041b43041564609c27e3811bd6c7c9277",
+          "branch": "dream/2026-09-25-compiler-parity",
+          "updated": "2026-09-25T09:20:15Z"
+        },
+        {
+          "number": 39,
+          "head": "ad835db2f3a164f45cdcba5ace9b45698acf8018",
+          "branch": "dream/2026-09-24-developer-experience",
+          "updated": "2026-09-24T09:18:16Z"
+        },
+        {
+          "number": 37,
+          "head": "7207c0e9d8a15c654fc694076f10641ac3a82d92",
+          "branch": "dream/2026-09-23-developer-experience",
+          "updated": "2026-09-23T09:19:45Z"
+        },
+        {
+          "number": 35,
+          "head": "f6a143d804ce25d6016f505cddb77f4281c1a805",
+          "branch": "dream/2026-09-22-evaluation-adapters",
+          "updated": "2026-09-22T09:22:25Z"
+        },
+        {
+          "number": 33,
+          "head": "6f706e5adb2514c03cb5026ea87b8fecd9a1784e",
+          "branch": "dream/2026-09-21-ledger-signals",
+          "updated": "2026-09-21T09:26:38Z"
+        },
+        {
+          "number": 31,
+          "head": "eda473dd25615de0ee3488334b13c287df8bd33a",
+          "branch": "dream/2026-09-20-compiler-parity",
+          "updated": "2026-09-20T09:19:15Z"
+        },
+        {
+          "number": 30,
+          "head": "06761bdba9b4746f643fa7be55eb2178a03a8761",
+          "branch": "dream/2026-09-19-developer-experience",
+          "updated": "2026-09-19T09:29:15Z"
+        },
+        {
+          "number": 28,
+          "head": "40692acc12c068a7e7b48cc10d41eb7963d08c1b",
+          "branch": "dream/2026-09-18-security-adversarial",
+          "updated": "2026-09-18T09:21:49Z"
+        },
+        {
+          "number": 26,
+          "head": "655c24f0d46d7edab4fa2b7688202a26463cf458",
+          "branch": "dream/2026-09-17-evaluation-adapters",
+          "updated": "2026-09-17T09:18:33Z"
+        },
+        {
+          "number": 24,
+          "head": "8915bdba6a5d63f3cf82f68b93aae26509ed8ca7",
+          "branch": "dream/2026-09-16-ledger-signals",
+          "updated": "2026-09-16T09:17:25Z"
+        },
+        {
+          "number": 23,
+          "head": "0953415c3d13079570a59b214c75c85d22e5278e",
+          "branch": "dream/2026-09-15-compiler-parity",
+          "updated": "2026-09-19T12:51:29Z"
+        },
+        {
+          "number": 22,
+          "head": "bc4dd3158c66011e720c62a716293b76372f4978",
+          "branch": "dream/2026-09-14-developer-experience",
+          "updated": "2026-09-14T09:18:48Z"
+        },
+        {
+          "number": 20,
+          "head": "ecdf8759ae12f797c6f3f17bcfaf87b46ccee63e",
+          "branch": "dream/2026-09-13-security-adversarial",
+          "updated": "2026-09-13T09:25:54Z"
+        },
+        {
+          "number": 18,
+          "head": "b827b70ad6f049ef629508a946b5b4425af8f394",
+          "branch": "dream/2026-09-12-evaluation-adapters",
+          "updated": "2026-10-15T09:20:43Z"
+        },
+        {
+          "number": 16,
+          "head": "55a0893c1aabd8461f6c0b5e4734ad4a3feebb83",
+          "branch": "dream/2026-09-11-ledger-signals",
+          "updated": "2026-09-11T09:27:18Z"
+        },
+        {
+          "number": 14,
+          "head": "3c322eeaaffaa2aba3cb65a7ed6f7eb330678d18",
+          "branch": "dream/2026-09-10-compiler-parity",
+          "updated": "2026-09-10T09:18:30Z"
+        },
+        {
+          "number": 12,
+          "head": "dc7f8804861df66ef22e85581b8279b66c67d4fc",
+          "branch": "dream/2026-09-09-developer-experience",
+          "updated": "2026-09-09T09:23:41Z"
+        },
+        {
+          "number": 6,
+          "head": "b1021c7097df63f24bc6157ba9f6b096aa5c2420",
+          "branch": "dependabot/github_actions/actions/checkout-7",
+          "updated": "2026-09-03T20:38:18Z"
+        },
+        {
+          "number": 5,
+          "head": "3f3b36dd5d7c65ac795f085613b1f4463fb3f0c8",
+          "branch": "dependabot/github_actions/actions/setup-node-7",
+          "updated": "2026-09-03T20:38:14Z"
+        },
+        {
+          "number": 4,
+          "head": "ed94cd5b362954ff2bc6ed9aed19fca1c6927833",
+          "branch": "dependabot/github_actions/actions/configure-pages-6",
+          "updated": "2026-09-03T20:38:07Z"
+        },
+        {
+          "number": 3,
+          "head": "fb9f37683f1e06b6ac13c3e9a77f211bc18c73d9",
+          "branch": "dependabot/github_actions/actions/upload-pages-artifact-5",
+          "updated": "2026-09-03T20:38:04Z"
+        },
+        {
+          "number": 2,
+          "head": "e520845badf8a5a9df2d7ed6d1b4ceb18f2265f2",
+          "branch": "dependabot/github_actions/github/codeql-action-4",
+          "updated": "2026-09-03T20:38:00Z"
+        },
+        {
+          "number": 1,
+          "head": "070c8403bc4ac466b388f8bed03d14e2720c63eb",
+          "branch": "dependabot/npm_and_yarn/dev-dependencies-bd256a1f29",
+          "updated": "2026-10-29T18:15:38Z"
+        }
+      ]
+    },
+    {
+      "name": "RuVector",
+      "main": "9e12078ae2af74d0613ae604266cf22fb1113b10",
+      "prs": []
+    }
+  ]
+}

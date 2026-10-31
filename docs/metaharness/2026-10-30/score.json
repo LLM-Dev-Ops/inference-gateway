@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "repo": "inference-gateway-agents",
+  "harnessFit": 76,
+  "compileConfidence": 100,
+  "taskCoverage": 65,
+  "toolSafety": 100,
+  "memoryUsefulness": 47,
+  "estCostPerRunUsd": 0.048,
+  "recommendedMode": "CLI + MCP",
+  "archetype": "devops-harness",
+  "template": "vertical:devops",
+  "scaffoldReady": true,
+  "hardConstraints": "6/6",
+  "generatedAt": "2026-10-31T00:03:21.864Z"
+}

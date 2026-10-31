@@ -1,0 +1,19 @@
+harness analyze-repo — /tmp/inference-oct30d-tools
+
+Languages: rust, typescript
+Signals: claude, ci
+
+Best archetype: rust-crate-harness  (65% · lexical)
+Harness:  inference-oct30d-tools-harness  ·  template vertical:coding  ·  hosts claude-code
+MCP: local  ·  risk: shell gated, network gated, file-write read-scoped
+Agents:   architect, implementer, reviewer, test-writer
+Commands: doctor, review-diff
+Suggested commands (execution disabled, never run):
+  - cargo build  [trust: inferred]
+  - npm test  [trust: inferred]
+  - cargo test  [trust: inferred]
+
+Wrote: /tmp/inference-oct30d-tools/repo-profile.json
+Wrote: /tmp/inference-oct30d-tools/harness-plan.json
+
+Scaffold it:  harness analyze-repo . --scaffold inference-oct30d-tools-harness

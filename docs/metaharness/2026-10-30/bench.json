@@ -1,0 +1,38 @@
+{
+  "id": "repo-native",
+  "version": "0.1.0",
+  "createdAt": "2026-10-31T00:03:22.108Z",
+  "taskHash": "76d16bf72fee2661d58707eae94c6a9beb7d0935b40702c61372d4794cd8f985",
+  "tasks": [
+    {
+      "id": "task-0001",
+      "repo": "/tmp/inference-oct30d-tools",
+      "commit": "WORKDIR",
+      "title": "Repo native smoke task",
+      "prompt": "Keep the repository test suite green.",
+      "publicTestCommand": "npm test",
+      "hiddenTestCommand": "npm test",
+      "regressionTestCommand": "npm test",
+      "timeoutMs": 300000,
+      "maxCostUsd": 2,
+      "allowedMutationFiles": [],
+      "blockedFiles": [
+        ".env",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+        ".github/workflows"
+      ],
+      "successCriteria": [
+        "public test passes",
+        "hidden test passes",
+        "regression suite passes"
+      ],
+      "difficulty": 1,
+      "tags": [
+        "smoke",
+        "repo-native"
+      ]
+    }
+  ]
+}

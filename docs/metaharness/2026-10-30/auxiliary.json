@@ -1,0 +1,106 @@
+{
+  "cycle": "2026-10-30-evening",
+  "taskId": "task-mvvn17cn",
+  "status": "BLOCKED",
+  "sourceHead": "f38eb7ac12477dbb3ccbcda18fefe8ae87de93f7",
+  "main": "a07a604dc14a3eeb2b9a07e85e9c41212156de9a",
+  "frozenBaseline": "742da2b30dd56686aa970d439b99935021940377",
+  "versions": {
+    "ruflo": "3.56.3",
+    "transformers": "4.3.1",
+    "metaharness": "0.4.2",
+    "darwin": "0.10.3",
+    "flywheel": "0.1.12",
+    "node": "20.20.2",
+    "npm": "10.8.2",
+    "rust": "1.88.0",
+    "openssl": "3.0.13",
+    "cargoAudit": "0.22.2"
+  },
+  "rustWarm": {
+    "baseline": {
+      "passed": 879,
+      "failed": 0,
+      "ignored": 19
+    },
+    "candidate": {
+      "passed": 879,
+      "failed": 0,
+      "ignored": 19
+    }
+  },
+  "hostedRust": {
+    "passed": 879,
+    "failed": 0,
+    "ignored": 19,
+    "job": 124377973720,
+    "clippy": "failure",
+    "phase7": {
+      "holdouts": 15,
+      "anchors": 10,
+      "passed": true
+    }
+  },
+  "profile": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "debugAssertions": "unchanged",
+    "timeoutSeconds": 120
+  },
+  "audit": {
+    "rustVulnerabilities": 20,
+    "advisoryRevision": "ee1a49a2769a24a596afc1c20cb33748d2769586",
+    "npm": {
+      "total": 10,
+      "moderate": 6,
+      "high": 3,
+      "critical": 1,
+      "production": 0
+    }
+  },
+  "rejected": [
+    {
+      "revision": "cccafe7a2514c15d432d891948eef9891b869403",
+      "reason": "Original non-JSON upstream503 test regressed to502; retained original test and corrected source."
+    },
+    {
+      "attempt": "default-debuginfo",
+      "reason": "Local target ENOSPC and baseline120-second timeout; raw corrected-flywheel.json retained."
+    },
+    {
+      "attempt": "no-debuginfo cold-cache",
+      "reason": "Baseline120-second cold test timeout; candidate879pass; raw bounded-flywheel.json retained."
+    },
+    {
+      "attempt": "Darwin deterministic real substrate",
+      "reason": "Equal0.435 scores; Node13/14 because environment-scrubbed sandbox uses localhost8080; no discriminating mutation signal; Node20 strip-types preflight exit9 blocks agent substrate."
+    }
+  ],
+  "cleanup": {
+    "operation": "cargo +1.88.0 clean --target-dir /tmp/inference-oct30d-target",
+    "removed": "10162 generated files /4.4GiB; sources untouched; reproducible by rebuild"
+  },
+  "offlineLearning": {
+    "modelRevision": "751bff37182d3f1213fa05d7196b954e230abad9",
+    "dimensions": 384,
+    "remoteLoading": false,
+    "kernelOfflineRestrictions": true,
+    "available": true,
+    "outcomePersisted": true,
+    "feedbackRecorded": true,
+    "trajectoryRecorded": true,
+    "sha256": "e2d8a30228559e197b6d86765efd723201fdef2854ee3c9d2c853345156da011"
+  },
+  "rollback": {
+    "indexSha256": "c32c5bc1e31a55c34f9588f306a636fc40b313fbeab540ab5b573299817c9dc5",
+    "reversePatchCheckExit": 0
+  },
+  "conflict": {
+    "ahead": 7,
+    "behind": 0,
+    "nativeMergeTreeExit": 0,
+    "tree": "e6b4dcecd3600450e83ac1fd3643abbf9ea000dc"
+  },
+  "merged": false,
+  "mergedMainSha": null
+}
